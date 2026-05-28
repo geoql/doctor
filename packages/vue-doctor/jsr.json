@@ -1,0 +1,12 @@
+{
+  "name": "@geoql/vue-doctor",
+  "version": "0.0.0",
+  "description": "CLI auditor for Vue 3 apps. Detects anti-patterns, AI-slop, and best-practice violations.",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publish": {
+    "include": ["src", "bin", "README.md", "LICENSE"]
+  }
+}

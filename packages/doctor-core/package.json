@@ -1,0 +1,64 @@
+{
+  "name": "@geoql/doctor-core",
+  "version": "0.0.0",
+  "private": false,
+  "description": "Audit engine for @geoql/vue-doctor and @geoql/nuxt-doctor. Hybrid two-pass: @vue/compiler-sfc template AST + oxlint subprocess. TypeScript, ESM.",
+  "keywords": [
+    "audit",
+    "doctor",
+    "geoql",
+    "lint",
+    "nuxt",
+    "oxlint",
+    "vue",
+    "vue3"
+  ],
+  "homepage": "https://github.com/geoql/doctor#readme",
+  "bugs": {
+    "url": "https://github.com/geoql/doctor/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Vinayak Kulkarni",
+    "email": "inbox.vinayak@gmail.com",
+    "url": "https://vinayakkulkarni.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geoql/doctor.git",
+    "directory": "packages/doctor-core"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "lint": "vp lint src",
+    "lint:fix": "vp lint src --fix",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
+    "build": "vp pack",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@vue/compiler-sfc": "^3.5.35",
+    "c12": "^4.0.0-beta.5",
+    "kolorist": "^1.8.0",
+    "tinyglobby": "^0.2.16"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  },
+  "peerDependencies": {
+    "oxlint": "^1.66.0"
+  }
+}
