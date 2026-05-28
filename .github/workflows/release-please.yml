@@ -1,0 +1,74 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+    steps:
+      - name: Release Please
+        id: release
+        uses: googleapis/release-please-action@v5
+        with:
+          token: ${{ secrets.RELEASE_PAT }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Pack tarballs (rewrites workspace:^ to real versions)
+        run: |
+          rm -rf .release && mkdir -p .release
+          for dir in packages/doctor-core packages/oxlint-plugin-vue-doctor packages/vue-doctor; do
+            (cd "$dir" && pnpm pack --pack-destination "$GITHUB_WORKSPACE/.release")
+          done
+
+      - name: Publish to npm with provenance
+        run: |
+          for tgz in .release/*.tgz; do
+            npm publish "$tgz" --provenance --access public --ignore-scripts
+          done
+
+      - name: Sync JSR versions
+        run: node scripts/bump-jsr-version.mjs
+
+      - name: Publish to JSR
+        run: |
+          for dir in packages/doctor-core packages/oxlint-plugin-vue-doctor packages/vue-doctor; do
+            (cd "$dir" && pnpm dlx jsr publish --allow-dirty --allow-slow-types)
+          done

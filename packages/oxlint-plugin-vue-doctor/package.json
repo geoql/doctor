@@ -38,6 +38,9 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "lint": "vp lint src",
     "lint:fix": "vp lint src --fix",
