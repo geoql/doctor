@@ -1,0 +1,73 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor dirs and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Coverage dir used by tools like istanbul
+coverage
+*.lcov
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Build outputs
+dist/
+build/
+.output/
+.nuxt/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Cache
+.cache
+.eslintcache
+.parcel-cache
+.rollup.cache
+
+# Optional REPL history
+.node_repl_history
+
+# tmp files
+tmp/
+.tmp/
+
+# Local notes
+TODO.local.md
+NOTES.local.md
+
+# Cloudflare Pages / Workers local state (D1, KV, etc.)
+.wrangler
+
+# Git worktrees for parallel branch work
+.worktrees
+
+# AI assistant local state
+.sisyphus
+.opencode
+.cursor/local
+
+# OS
+Thumbs.db
