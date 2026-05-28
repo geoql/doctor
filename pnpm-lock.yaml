@@ -282,7 +282,7 @@ importers:
   packages/vue-doctor:
     dependencies:
       '@geoql/doctor-core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../doctor-core
       '@geoql/oxlint-plugin-vue-doctor':
         specifier: workspace:*

@@ -75,3 +75,4 @@ Thumbs.db
 # Fixture local installs (npm install --no-save creates these)
 fixtures/**/node_modules
 fixtures/**/package-lock.json
+.release/
