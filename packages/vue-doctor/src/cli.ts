@@ -1,5 +1,7 @@
-import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import {
   audit,
   format,
@@ -7,6 +9,18 @@ import {
   type ReporterFormat,
 } from '@geoql/doctor-core';
 import { cac } from 'cac';
+
+function readVersion(): string {
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const pkg = JSON.parse(
+      readFileSync(resolve(here, '../package.json'), 'utf-8'),
+    ) as { version?: string };
+    return pkg.version ?? '0.0.0';
+  } catch {
+    return '0.0.0';
+  }
+}
 
 interface CliFlags {
   format?: string;
@@ -58,7 +72,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     });
 
   cli.help();
-  cli.version('0.0.0');
+  cli.version(readVersion());
   cli.parse(argv, { run: false });
   await cli.runMatchedCommand();
   return process.exitCode ?? 0;
