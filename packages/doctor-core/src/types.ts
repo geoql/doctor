@@ -1,6 +1,6 @@
 export type Severity = 'error' | 'warning';
 
-export type DiagnosticSource = 'template' | 'oxlint';
+export type DiagnosticSource = 'template' | 'oxlint' | 'sfc';
 
 export interface Diagnostic {
   file: string;

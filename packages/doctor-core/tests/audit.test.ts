@@ -56,6 +56,22 @@ describe('audit', () => {
     }
   });
 
+  it('flags a mixed Options/Composition SFC via the sfc pass', async () => {
+    const dir = await fixture({
+      'mixed.vue':
+        '<script setup>const x = 1;</script>\n' +
+        '<script>export default { data() {} };</script>\n',
+    });
+    const report = await audit({ rootDir: dir });
+    expect(report.score).toBeLessThan(100);
+    const diag = report.diagnostics.find(
+      (d) => d.ruleId === 'vue-doctor/sfc/no-mixed-options-and-composition-api',
+    );
+    expect(diag).toBeDefined();
+    expect(diag?.source).toBe('sfc');
+    expect(report.exitCode).toBe(1);
+  });
+
   it('defaults rootDir to process.cwd() when not provided', async () => {
     const dir = await fixture({
       'clean.vue': '<template><div /></template>\n',

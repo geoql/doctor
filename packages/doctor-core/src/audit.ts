@@ -3,6 +3,7 @@ import { listSourceFiles } from './file-scan.js';
 import { mergeDiagnostics } from './merge-diagnostics.js';
 import { runScriptPass } from './oxlint/run.js';
 import { scoreDiagnostics } from './score.js';
+import { runSfcPass } from './sfc/run.js';
 import { runTemplatePass } from './template/run.js';
 import type { AuditConfig, AuditReport, Diagnostic } from './types.js';
 
@@ -34,6 +35,11 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     ruleOverrides: config.rules,
   });
 
+  const sfcDiagnostics = await runSfcPass({
+    files,
+    ruleOverrides: config.rules,
+  });
+
   let scriptDiagnostics: Diagnostic[] = [];
   let oxlintStderr = '';
   try {
@@ -53,7 +59,11 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     }
   }
 
-  const merged = mergeDiagnostics(templateDiagnostics, scriptDiagnostics);
+  const merged = mergeDiagnostics(
+    templateDiagnostics,
+    sfcDiagnostics,
+    scriptDiagnostics,
+  );
   const { score, errorCount, warningCount } = scoreDiagnostics(merged);
 
   let exitCode: 0 | 1 | 2 = 0;
