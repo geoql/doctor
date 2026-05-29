@@ -15,6 +15,7 @@ const DEFAULT_RULES: Record<string, Severity> = {
   'vue-doctor/no-destructure-props-without-to-refs': 'error',
   'vue-doctor/no-destructure-reactive-without-to-refs': 'error',
   'vue-doctor/no-non-null-assertion-on-ref-value': 'warning',
+  'vue-doctor/no-imports-from-vue-when-auto-imported': 'warning',
 };
 
 function toOxlintSeverity(s: Severity | 'off'): 'error' | 'warn' | 'off' {
