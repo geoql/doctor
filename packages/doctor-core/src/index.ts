@@ -1,6 +1,13 @@
 export { audit } from './audit.js';
 export { loadAuditConfig } from './config.js';
+export { detectProject } from './detect-project.js';
 export { format, type ReporterFormat } from './reporters/index.js';
+export type {
+  Capability,
+  Framework,
+  MonorepoKind,
+  ProjectInfo,
+} from './types/project-info.js';
 export type {
   AuditConfig,
   AuditReport,

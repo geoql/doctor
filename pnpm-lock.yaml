@@ -252,9 +252,15 @@ importers:
       kolorist:
         specifier: ^1.8.0
         version: 1.8.0
+      oxc-parser:
+        specifier: 0.133.0
+        version: 0.133.0
       oxlint:
         specifier: ^1.67.0
         version: 1.67.0(oxlint-tsgolint@0.22.1)(vite-plus@0.1.22(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jiti@2.6.1)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(jiti@2.6.1)(yaml@2.9.0))(yaml@2.9.0))
+      semver:
+        specifier: ^7.8.1
+        version: 7.8.1
       tinyglobby:
         specifier: ^0.2.16
         version: 0.2.16
@@ -262,6 +268,9 @@ importers:
       '@types/node':
         specifier: ^25.9.1
         version: 25.9.1
+      '@types/semver':
+        specifier: ^7.7.1
+        version: 7.7.1
       '@vue/compiler-core':
         specifier: ^3.5.35
         version: 3.5.35
@@ -1118,6 +1127,9 @@ packages:
 
   '@types/node@25.9.1':
     resolution: {integrity: sha512-xfrlY7UD5rMJk3ZVJP8BNzS28J36YJg+xp+LPXV1TdWxr8uMH5A860QNxYDGQe/ylDSgjxE52Q9VnO7p75tJxg==}
+
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
 
   '@vitest/coverage-v8@4.1.7':
     resolution: {integrity: sha512-qsYPeXc5Q9dFLd1i8Ap+Bx8sQgcp+rFVQo4R0dDsWNBzl26ldVF1qOO+RL24K7FDrR6pA+50XedRLSoSG24bVQ==}
@@ -2556,6 +2568,8 @@ snapshots:
   '@types/node@25.9.1':
     dependencies:
       undici-types: 7.24.6
+
+  '@types/semver@7.7.1': {}
 
   '@vitest/coverage-v8@4.1.7(vitest@4.1.7)':
     dependencies:
