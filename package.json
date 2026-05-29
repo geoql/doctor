@@ -37,6 +37,7 @@
     "format:check": "vp fmt --check",
     "build": "pnpm -r --filter './packages/*' run build",
     "test": "pnpm -r --filter './packages/*' run test",
+    "coverage": "vitest run --coverage",
     "typecheck": "pnpm -r --filter './packages/*' run typecheck",
     "prepare": "is-ci || husky"
   },
@@ -44,11 +45,13 @@
     "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^21.0.1",
     "@types/node": "^25.9.0",
+    "@vitest/coverage-v8": "4.1.7",
     "husky": "^9.1.7",
     "is-ci": "^4.1.0",
     "lint-staged": "^17.0.5",
     "typescript": "^6.0.3",
-    "vite-plus": "^0.1.22"
+    "vite-plus": "^0.1.22",
+    "vitest": "4.1.7"
   },
   "devEngines": {
     "packageManager": {
