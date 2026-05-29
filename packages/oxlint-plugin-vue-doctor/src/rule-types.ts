@@ -18,6 +18,8 @@ export interface RuleContext {
   report: (descriptor: ReportDescriptor) => void;
   getFilename?: () => string | undefined;
   settings?: Record<string, unknown>;
+  /** Capability tokens detected for the project (e.g. 'auto-imports:vue'). */
+  capabilities?: Set<string>;
 }
 
 export type RuleVisitor = (node: AstNode) => void;

@@ -12,6 +12,9 @@ const DEFAULT_RULES: Record<string, Severity> = {
   'vue/no-export-in-script-setup': 'error',
   'vue/require-typed-ref': 'warning',
   'vue-doctor/no-em-dash-in-string': 'warning',
+  'vue-doctor/no-destructure-props-without-to-refs': 'error',
+  'vue-doctor/no-destructure-reactive-without-to-refs': 'error',
+  'vue-doctor/no-non-null-assertion-on-ref-value': 'warning',
 };
 
 function toOxlintSeverity(s: Severity | 'off'): 'error' | 'warn' | 'off' {
