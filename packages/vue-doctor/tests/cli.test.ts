@@ -79,8 +79,7 @@ describe('run', () => {
     expect(code).toBe(0);
     const text = stdout.join('');
     expect(text).toContain('Score:');
-    expect(text).toContain('0 errors, 0 warnings in 1 file');
-    // Plain text output is not valid JSON.
+    expect(text).toContain('0 errors, 0 warnings, 0 infos in 1 file');
     expect(() => JSON.parse(text)).toThrow();
   });
 
@@ -108,7 +107,7 @@ describe('run', () => {
     expect(() => JSON.parse(text)).toThrow();
   });
 
-  it('accepts --fail-on warning and still exits 0 on a clean project', async () => {
+  it('accepts --fail-on warn and still exits 0 on a clean project', async () => {
     const code = await run([
       'node',
       'vue-doctor',
@@ -116,7 +115,7 @@ describe('run', () => {
       '--format',
       'json',
       '--fail-on',
-      'warning',
+      'warn',
     ]);
 
     expect(code).toBe(0);
@@ -135,7 +134,6 @@ describe('run', () => {
       'bogus',
     ]);
 
-    // An error-severity diagnostic still trips the default error threshold.
     expect(code).toBe(1);
     const report = JSON.parse(stdout.join(''));
     expect(report.errorCount).toBe(1);
@@ -201,8 +199,6 @@ describe('run', () => {
       return {
         ...actual,
         loadAuditConfig: () => {
-          // Throw a non-Error value to exercise the String(err) branch.
-
           throw 'plain string failure';
         },
       };

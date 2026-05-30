@@ -27,6 +27,7 @@ describe('audit script-pass failure', () => {
     const report = await audit({ rootDir: dir });
     expect(report.exitCode).toBe(2);
     expect(report.errorCount).toBe(0);
+    expect(report.warnCount).toBe(0);
   });
 
   it('writes a debug line when DOCTOR_DEBUG is set', async () => {

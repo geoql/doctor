@@ -118,10 +118,10 @@ describe('runTemplatePass — rule overrides', () => {
     );
     const diags = await runTemplatePass({
       files: [path],
-      ruleOverrides: { 'vue-doctor/template/v-for-has-key': 'warning' },
+      ruleOverrides: { 'vue-doctor/template/v-for-has-key': 'warn' },
     });
     const keyDiag = diags.find((d) => d.ruleId.includes('v-for-has-key'));
-    expect(keyDiag?.severity).toBe('warning');
+    expect(keyDiag?.severity).toBe('warn');
   });
 });
 

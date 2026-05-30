@@ -39,17 +39,17 @@ describe('audit', () => {
     ).toBe(true);
   });
 
-  it('flips a warning-only result to exitCode 1 when failOn is warning', async () => {
+  it('flips a warn-only result to exitCode 1 when failOn is warn', async () => {
     const dir = await fixture({
       'warn.vue':
         '<template><li v-for="i in items" :key="i">{{ i }}</li></template>\n',
     });
     const report = await audit({
       rootDir: dir,
-      rules: { 'vue-doctor/template/v-for-has-key': 'warning' },
-      failOn: 'warning',
+      rules: { 'vue-doctor/template/v-for-has-key': 'warn' },
+      failOn: 'warn',
     });
-    if (report.warningCount > 0) {
+    if (report.warnCount > 0) {
       expect(report.exitCode).toBe(1);
     } else {
       expect(report.exitCode).toBe(0);

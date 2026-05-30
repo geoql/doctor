@@ -1,4 +1,4 @@
-export type Severity = 'error' | 'warning';
+export type Severity = 'error' | 'warn' | 'info';
 
 export type DiagnosticSource = 'template' | 'oxlint' | 'sfc';
 
@@ -20,7 +20,7 @@ export interface AuditConfig {
   include?: string[];
   exclude?: string[];
   rules?: Record<string, Severity | 'off'>;
-  failOn?: Severity;
+  failOn?: 'error' | 'warn';
 }
 
 export interface AuditReport {
@@ -29,6 +29,7 @@ export interface AuditReport {
   diagnostics: Diagnostic[];
   score: number;
   errorCount: number;
-  warningCount: number;
+  warnCount: number;
+  infoCount: number;
   exitCode: 0 | 1 | 2;
 }

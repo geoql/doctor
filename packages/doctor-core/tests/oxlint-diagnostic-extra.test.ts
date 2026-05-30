@@ -37,7 +37,7 @@ describe('toCanonicalDiagnostic location fallbacks', () => {
     expect(d.column).toBe(4);
     expect(d.endLine).toBe(13);
     expect(d.endColumn).toBe(9);
-    expect(d.severity).toBe('warning');
+    expect(d.severity).toBe('warn');
   });
 
   it('defaults to 1/1 when no span or start positions exist', () => {
@@ -66,6 +66,6 @@ describe('toCanonicalDiagnostics', () => {
     );
     expect(out).toHaveLength(2);
     expect(out[0]?.file).toBe('/proj/a.vue');
-    expect(out[1]?.severity).toBe('warning');
+    expect(out[1]?.severity).toBe('warn');
   });
 });

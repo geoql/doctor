@@ -10,17 +10,17 @@ export interface GenerateConfigInput {
 
 const DEFAULT_RULES: Record<string, Severity> = {
   'vue/no-export-in-script-setup': 'error',
-  'vue/require-typed-ref': 'warning',
-  'vue-doctor/no-em-dash-in-string': 'warning',
+  'vue/require-typed-ref': 'warn',
+  'vue-doctor/no-em-dash-in-string': 'warn',
   'vue-doctor/no-destructure-props-without-to-refs': 'error',
   'vue-doctor/no-destructure-reactive-without-to-refs': 'error',
-  'vue-doctor/no-non-null-assertion-on-ref-value': 'warning',
-  'vue-doctor/no-imports-from-vue-when-auto-imported': 'warning',
+  'vue-doctor/no-non-null-assertion-on-ref-value': 'warn',
+  'vue-doctor/no-imports-from-vue-when-auto-imported': 'warn',
 };
 
-function toOxlintSeverity(s: Severity | 'off'): 'error' | 'warn' | 'off' {
-  if (s === 'warning') return 'warn';
-  return s;
+function toOxlintSeverity(s: Severity): 'error' | 'warn' {
+  if (s === 'error') return 'error';
+  return 'warn';
 }
 
 export async function generateOxlintConfig(
@@ -36,7 +36,7 @@ export async function generateOxlintConfig(
   }
   const rules: Record<string, 'error' | 'warn'> = {};
   for (const [id, sev] of Object.entries(merged)) {
-    rules[id] = toOxlintSeverity(sev) as 'error' | 'warn';
+    rules[id] = toOxlintSeverity(sev);
   }
   const config = {
     $schema:

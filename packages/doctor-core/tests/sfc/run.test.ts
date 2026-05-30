@@ -55,9 +55,9 @@ describe('runSfcPass', () => {
     const path = await writeVue(MIXED);
     const diags = await runSfcPass({
       files: [path],
-      ruleOverrides: { [RULE_ID]: 'warning' },
+      ruleOverrides: { [RULE_ID]: 'warn' },
     });
     const diag = diags.find((d) => d.ruleId === RULE_ID);
-    expect(diag?.severity).toBe('warning');
+    expect(diag?.severity).toBe('warn');
   });
 });

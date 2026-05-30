@@ -19,7 +19,7 @@ export function toCanonicalDiagnostic(
   rootDir: string,
 ): Diagnostic {
   const ruleId = normalizeOxlintRuleId(raw);
-  const severity = raw.severity === 'warning' ? 'warning' : 'error';
+  const severity = raw.severity === 'warning' ? 'warn' : 'error';
   const primary = raw.labels?.[0]?.span;
   const line = primary?.line ?? raw.start_line ?? 1;
   const column = primary?.column ?? raw.start_column ?? 1;

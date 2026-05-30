@@ -24,17 +24,28 @@ describe('generateOxlintConfig', () => {
     expect(cfg.rules['vue-doctor/no-em-dash-in-string']).toBe('warn');
   });
 
-  it('applies severity overrides and maps warning to warn', async () => {
+  it('applies severity overrides and maps warn to warn', async () => {
     const path = await generateOxlintConfig({
       pluginPath: '/p.js',
       ruleOverrides: {
         'vue/require-typed-ref': 'error',
-        'vue/no-export-in-script-setup': 'warning',
+        'vue/no-export-in-script-setup': 'warn',
       },
     });
     const cfg = await readConfig(path);
     expect(cfg.rules['vue/require-typed-ref']).toBe('error');
     expect(cfg.rules['vue/no-export-in-script-setup']).toBe('warn');
+  });
+
+  it('maps info severity to warn in oxlint config', async () => {
+    const path = await generateOxlintConfig({
+      pluginPath: '/p.js',
+      ruleOverrides: {
+        'vue/require-typed-ref': 'info',
+      },
+    });
+    const cfg = await readConfig(path);
+    expect(cfg.rules['vue/require-typed-ref']).toBe('warn');
   });
 
   it('removes a rule set to off and adds a brand-new override rule', async () => {

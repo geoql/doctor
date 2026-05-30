@@ -30,11 +30,11 @@ describe('loadAuditConfig', () => {
     const root = await tmp();
     await writeFile(
       join(root, 'doctor.config.json'),
-      JSON.stringify({ failOn: 'warning', include: ['app/**/*.vue'] }),
+      JSON.stringify({ failOn: 'warn', include: ['app/**/*.vue'] }),
     );
     const loaded = await loadAuditConfig(root);
     expect(loaded.config.rootDir).toBe(root);
-    expect(loaded.config.failOn).toBe('warning');
+    expect(loaded.config.failOn).toBe('warn');
     expect(loaded.config.include).toContain('app/**/*.vue');
     expect(loaded.configFile).toBeTruthy();
   });
@@ -42,10 +42,10 @@ describe('loadAuditConfig', () => {
   it('loads an explicitly provided config path', async () => {
     const root = await tmp();
     const explicit = join(root, 'custom.config.json');
-    await writeFile(explicit, JSON.stringify({ failOn: 'warning' }));
+    await writeFile(explicit, JSON.stringify({ failOn: 'warn' }));
     const loaded = await loadAuditConfig(root, explicit);
     expect(loaded.config.rootDir).toBe(root);
-    expect(loaded.config.failOn).toBe('warning');
+    expect(loaded.config.failOn).toBe('warn');
     expect(loaded.configFile).toBeTruthy();
   });
 });

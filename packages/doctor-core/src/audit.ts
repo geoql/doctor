@@ -64,7 +64,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     sfcDiagnostics,
     scriptDiagnostics,
   );
-  const { score, errorCount, warningCount } = scoreDiagnostics(merged);
+  const scored = scoreDiagnostics(merged);
 
   let exitCode: 0 | 1 | 2 = 0;
   if (
@@ -75,7 +75,9 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     exitCode = 2;
   } else {
     const tripping =
-      failOn === 'warning' ? errorCount + warningCount : errorCount;
+      failOn === 'warn'
+        ? scored.errorCount + scored.warnCount
+        : scored.errorCount;
     if (tripping > 0) exitCode = 1;
   }
 
@@ -83,9 +85,10 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     rootDir,
     filesScanned: files.length,
     diagnostics: merged,
-    score,
-    errorCount,
-    warningCount,
+    score: scored.score,
+    errorCount: scored.errorCount,
+    warnCount: scored.warnCount,
+    infoCount: scored.infoCount,
     exitCode,
   };
 }

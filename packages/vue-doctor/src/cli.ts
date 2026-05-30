@@ -32,8 +32,8 @@ function isReporter(v: string): v is ReporterFormat {
   return v === 'text' || v === 'json';
 }
 
-function isSeverity(v: string): v is 'error' | 'warning' {
-  return v === 'error' || v === 'warning';
+function isSeverity(v: string): v is 'error' | 'warn' {
+  return v === 'error' || v === 'warn';
 }
 
 export async function run(argv: string[] = process.argv): Promise<number> {
@@ -45,7 +45,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--config <path>', 'Path to doctor.config.ts')
     .option(
       '--fail-on <level>',
-      'Exit non-zero on this severity or worse (error|warning)',
+      'Exit non-zero on this severity or worse (error|warn)',
       {
         default: 'error',
       },
