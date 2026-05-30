@@ -9,6 +9,8 @@ const cleanDir = resolve(here, 'fixtures/clean');
 const violationDir = resolve(here, 'fixtures/violation');
 const badConfig = resolve(here, 'fixtures/bad-config/doctor.config.ts');
 
+const ANSI = new RegExp(`${String.fromCharCode(27)}\\[`);
+
 describe('run', () => {
   let stdout: string[];
   let stderr: string[];
@@ -34,9 +36,10 @@ describe('run', () => {
     vi.restoreAllMocks();
     process.exitCode = originalExitCode;
     process.chdir(originalCwd);
+    delete process.env.NO_COLOR;
   });
 
-  it('audits a clean project as JSON and exits 0', async () => {
+  it('audits a clean project as JSON envelope and exits 0', async () => {
     const code = await run([
       'node',
       'vue-doctor',
@@ -48,14 +51,14 @@ describe('run', () => {
     expect(code).toBe(0);
     expect(process.exitCode).toBe(0);
     const report = JSON.parse(stdout.join(''));
-    expect(report.score).toBe(100);
-    expect(report.errorCount).toBe(0);
+    expect(report.schemaVersion).toBe('1');
+    expect(report.score.value).toBe(100);
+    expect(report.score.bySeverity.error).toBe(0);
     expect(report.diagnostics).toEqual([]);
-    expect(report.exitCode).toBe(0);
     expect(stderr.join('')).toBe('');
   });
 
-  it('reports template violations and exits 1', async () => {
+  it('reports template violations as JSON and exits 1', async () => {
     const code = await run([
       'node',
       'vue-doctor',
@@ -67,23 +70,24 @@ describe('run', () => {
     expect(code).toBe(1);
     expect(process.exitCode).toBe(1);
     const report = JSON.parse(stdout.join(''));
-    expect(report.errorCount).toBe(1);
-    expect(report.exitCode).toBe(1);
+    expect(report.score.bySeverity.error).toBe(1);
     const ruleIds = report.diagnostics.map((d: { ruleId: string }) => d.ruleId);
     expect(ruleIds).toContain('vue-doctor/template/v-for-has-key');
   });
 
-  it('defaults to text output when no format flag is given', async () => {
+  it('defaults to the agent reporter when no format flag is given', async () => {
     const code = await run(['node', 'vue-doctor', cleanDir]);
 
     expect(code).toBe(0);
     const text = stdout.join('');
-    expect(text).toContain('Score:');
-    expect(text).toContain('0 errors, 0 warnings, 0 infos in 1 file');
+    expect(text).toContain('@geoql/vue-doctor v');
+    expect(text).toContain('SCORE: 100/100 (threshold: 0)');
+    expect(text).toContain('FINDINGS: 0 (clean)');
+    expect(text).not.toMatch(ANSI);
     expect(() => JSON.parse(text)).toThrow();
   });
 
-  it('falls back to text when --format is an unknown value', async () => {
+  it('falls back to the agent reporter when --format is unknown', async () => {
     const code = await run([
       'node',
       'vue-doctor',
@@ -94,17 +98,70 @@ describe('run', () => {
 
     expect(code).toBe(0);
     const text = stdout.join('');
-    expect(text).toContain('Score:');
+    expect(text).toContain('SCORE:');
     expect(() => JSON.parse(text)).toThrow();
   });
 
-  it('falls back to text when --format is empty (falsy)', async () => {
+  it('falls back to the agent reporter when --format is empty (falsy)', async () => {
     const code = await run(['node', 'vue-doctor', cleanDir, '--format', '']);
 
     expect(code).toBe(0);
     const text = stdout.join('');
-    expect(text).toContain('Score:');
+    expect(text).toContain('SCORE:');
     expect(() => JSON.parse(text)).toThrow();
+  });
+
+  it('honors --json as a shorthand for the json envelope', async () => {
+    const code = await run(['node', 'vue-doctor', cleanDir, '--json']);
+
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join(''));
+    expect(report.schemaVersion).toBe('1');
+  });
+
+  it('honors --json-compact as a single line', async () => {
+    const code = await run(['node', 'vue-doctor', cleanDir, '--json-compact']);
+
+    expect(code).toBe(0);
+    const out = stdout.join('');
+    expect(out.endsWith('\n')).toBe(true);
+    expect(out.trimEnd()).not.toContain('\n');
+    expect(JSON.parse(out).schemaVersion).toBe('1');
+  });
+
+  it('renders colored output with --format pretty', async () => {
+    delete process.env.NO_COLOR;
+    const code = await run([
+      'node',
+      'vue-doctor',
+      violationDir,
+      '--format',
+      'pretty',
+    ]);
+
+    expect(code).toBe(1);
+    expect(stdout.join('')).toMatch(ANSI);
+  });
+
+  it('disables color with --no-color on the pretty reporter', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      cleanDir,
+      '--format',
+      'pretty',
+      '--no-color',
+    ]);
+
+    expect(code).toBe(0);
+    expect(stdout.join('')).not.toMatch(ANSI);
+  });
+
+  it('suppresses NEXT STEPS with --quiet', async () => {
+    const code = await run(['node', 'vue-doctor', violationDir, '--quiet']);
+
+    expect(code).toBe(1);
+    expect(stdout.join('')).not.toContain('NEXT STEPS:');
   });
 
   it('accepts --fail-on warn and still exits 0 on a clean project', async () => {
@@ -120,7 +177,7 @@ describe('run', () => {
 
     expect(code).toBe(0);
     const report = JSON.parse(stdout.join(''));
-    expect(report.exitCode).toBe(0);
+    expect(report.score.passed).toBe(true);
   });
 
   it('falls back to error severity when --fail-on is an unknown value', async () => {
@@ -136,7 +193,7 @@ describe('run', () => {
 
     expect(code).toBe(1);
     const report = JSON.parse(stdout.join(''));
-    expect(report.errorCount).toBe(1);
+    expect(report.score.bySeverity.error).toBe(1);
   });
 
   it('falls back to error severity when --fail-on is empty (falsy)', async () => {
@@ -152,7 +209,7 @@ describe('run', () => {
 
     expect(code).toBe(1);
     const report = JSON.parse(stdout.join(''));
-    expect(report.errorCount).toBe(1);
+    expect(report.score.bySeverity.error).toBe(1);
   });
 
   it('defaults the path to the current working directory when omitted', async () => {
@@ -161,8 +218,8 @@ describe('run', () => {
 
     expect(code).toBe(0);
     const report = JSON.parse(stdout.join(''));
-    expect(report.rootDir).toBe(cleanDir);
-    expect(report.filesScanned).toBe(1);
+    expect(report.projectInfo.rootDirectory).toBe(cleanDir);
+    expect(report.timing.analyzedFileCount).toBe(1);
   });
 
   it('writes to stderr and exits 2 when config loading throws', async () => {

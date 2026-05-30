@@ -7,6 +7,7 @@ import {
   format,
   loadAuditConfig,
   type ReporterFormat,
+  type ReporterInput,
 } from '@geoql/doctor-core';
 import { cac } from 'cac';
 
@@ -26,10 +27,25 @@ interface CliFlags {
   format?: string;
   config?: string;
   failOn?: string;
+  json?: boolean;
+  jsonCompact?: boolean;
+  color?: boolean;
+  quiet?: boolean;
 }
 
-function isReporter(v: string): v is ReporterFormat {
-  return v === 'text' || v === 'json';
+function resolveFormat(flags: CliFlags): ReporterFormat {
+  if (flags.jsonCompact) return 'json-compact';
+  if (flags.json) return 'json';
+  const kind = flags.format;
+  if (
+    kind === 'agent' ||
+    kind === 'pretty' ||
+    kind === 'json' ||
+    kind === 'json-compact'
+  ) {
+    return kind;
+  }
+  return 'agent';
 }
 
 function isSeverity(v: string): v is 'error' | 'warn' {
@@ -41,7 +57,15 @@ export async function run(argv: string[] = process.argv): Promise<number> {
 
   cli
     .command('[path]', 'Audit a Vue project')
-    .option('--format <kind>', 'Output format (text|json)', { default: 'text' })
+    .option(
+      '--format <kind>',
+      'Output format (agent|pretty|json|json-compact)',
+      {
+        default: 'agent',
+      },
+    )
+    .option('--json', 'Shorthand for --format json')
+    .option('--json-compact', 'Emit single-line JSON')
     .option('--config <path>', 'Path to doctor.config.ts')
     .option(
       '--fail-on <level>',
@@ -50,9 +74,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         default: 'error',
       },
     )
+    .option('--quiet', 'Only show the summary')
+    .option('--no-color', 'Disable colored output')
     .action(async (path: string | undefined, flags: CliFlags) => {
-      const reporter =
-        flags.format && isReporter(flags.format) ? flags.format : 'text';
+      const reporter = resolveFormat(flags);
       const failOn =
         flags.failOn && isSeverity(flags.failOn) ? flags.failOn : 'error';
       const rootDir = resolve(path ?? '.');
@@ -60,9 +85,21 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       try {
         const { config } = await loadAuditConfig(rootDir, flags.config);
         const report = await audit({ ...config, rootDir, failOn });
-        const out = format(report, reporter);
+        const input: ReporterInput = {
+          toolName: '@geoql/vue-doctor',
+          toolVersion: readVersion(),
+          rootDirectory: report.rootDir,
+          analyzedFileCount: report.filesScanned,
+          elapsedMs: report.elapsedMs,
+          diagnostics: report.diagnostics,
+          score: report.scoreResult,
+          projectInfo: report.projectInfo,
+        };
+        const out = format(input, reporter, {
+          color: flags.color,
+          quiet: flags.quiet,
+        });
         process.stdout.write(out);
-        process.stdout.write('\n');
         process.exitCode = report.exitCode;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);

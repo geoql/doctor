@@ -1,3 +1,6 @@
+import type { ScoreResult } from './score.js';
+import type { ProjectInfoLite } from './reporters/types.js';
+
 export type Severity = 'error' | 'warn' | 'info';
 
 export type DiagnosticSource = 'template' | 'oxlint' | 'sfc';
@@ -13,6 +16,7 @@ export interface Diagnostic {
   message: string;
   source: DiagnosticSource;
   recommendation?: string;
+  codeSnippet?: string;
 }
 
 export interface AuditConfig {
@@ -32,4 +36,7 @@ export interface AuditReport {
   warnCount: number;
   infoCount: number;
   exitCode: 0 | 1 | 2;
+  scoreResult: ScoreResult;
+  projectInfo: ProjectInfoLite;
+  elapsedMs: number;
 }

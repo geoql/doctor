@@ -63,7 +63,7 @@ describe('readVersion fallback', () => {
 
     expect(code).toBe(0);
     const report = JSON.parse(stdout.join(''));
-    expect(report.score).toBe(100);
+    expect(report.score.value).toBe(100);
   });
 
   it('defaults version to 0.0.0 when package.json has no version field', async () => {
@@ -102,7 +102,7 @@ describe('readVersion fallback', () => {
 
     expect(code).toBe(0);
     const report = JSON.parse(stdout.join(''));
-    expect(report.score).toBe(100);
+    expect(report.score.value).toBe(100);
   });
 
   it('audits normally on the readVersion success path', async () => {
@@ -119,6 +119,6 @@ describe('readVersion fallback', () => {
 
     expect(code).toBe(0);
     const report = JSON.parse(stdout.join(''));
-    expect(report.score).toBe(100);
+    expect(report.score.value).toBe(100);
   });
 });

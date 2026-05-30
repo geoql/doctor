@@ -1,7 +1,11 @@
 import { resolve } from 'node:path';
+import { performance } from 'node:perf_hooks';
+import { attachCodeSnippets } from './code-snippet.js';
+import { detectProject } from './detect-project.js';
 import { listSourceFiles } from './file-scan.js';
 import { mergeDiagnostics } from './merge-diagnostics.js';
 import { runScriptPass } from './oxlint/run.js';
+import type { ProjectInfoLite } from './reporters/types.js';
 import { scoreDiagnostics } from './score.js';
 import { runSfcPass } from './sfc/run.js';
 import { runTemplatePass } from './template/run.js';
@@ -29,6 +33,8 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
   const failOn = config.failOn ?? 'error';
 
   const files = await listSourceFiles({ rootDir, include, exclude });
+
+  const start = performance.now();
 
   const templateDiagnostics = await runTemplatePass({
     files,
@@ -59,12 +65,24 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     }
   }
 
+  const elapsedMs = performance.now() - start;
+
   const merged = mergeDiagnostics(
     templateDiagnostics,
     sfcDiagnostics,
     scriptDiagnostics,
   );
-  const scored = scoreDiagnostics(merged);
+  const diagnostics = await attachCodeSnippets(merged);
+  const scored = scoreDiagnostics(diagnostics);
+
+  const project = await detectProject(rootDir);
+  const projectInfo: ProjectInfoLite = {
+    framework: project.framework,
+    vueVersion: project.vueVersion,
+    nuxtVersion: project.nuxtVersion,
+    capabilities: [...project.capabilities].sort(),
+    rootDirectory: project.rootDirectory,
+  };
 
   let exitCode: 0 | 1 | 2 = 0;
   if (
@@ -84,11 +102,14 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
   return {
     rootDir,
     filesScanned: files.length,
-    diagnostics: merged,
+    diagnostics,
     score: scored.score,
     errorCount: scored.errorCount,
     warnCount: scored.warnCount,
     infoCount: scored.infoCount,
     exitCode,
+    scoreResult: scored,
+    projectInfo,
+    elapsedMs,
   };
 }
