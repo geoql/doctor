@@ -1,4 +1,6 @@
 import type { Plugin } from './rule-types.js';
+import { definePropsTyped } from './rules/composition/defineProps-typed.js';
+import { preferScriptSetupForNewFiles } from './rules/composition/prefer-script-setup-for-new-files.js';
 import { noDestructurePropsWithoutToRefs } from './rules/ai-slop/no-destructure-props-without-toRefs.js';
 import { noDestructureReactiveWithoutToRefs } from './rules/ai-slop/no-destructure-reactive-without-toRefs.js';
 import { noEmDashInString } from './rules/ai-slop/no-em-dash-in-string.js';
@@ -20,5 +22,8 @@ export const plugin: Plugin = {
     'reactivity/watch-without-cleanup': watchWithoutCleanup,
     'reactivity/prefer-shallowRef-for-large-data': preferShallowRefForLargeData,
     'reactivity/prefer-readonly-for-injected': preferReadonlyForInjected,
+    'composition/prefer-script-setup-for-new-files':
+      preferScriptSetupForNewFiles,
+    'composition/defineProps-typed': definePropsTyped,
   },
 };

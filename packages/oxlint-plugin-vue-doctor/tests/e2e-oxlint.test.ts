@@ -68,4 +68,26 @@ describe('e2e: real oxlint integration', () => {
       'vue-doctor(reactivity/prefer-readonly-for-injected)',
     );
   });
+
+  it('composition/prefer-script-setup-for-new-files fires on options setup()', () => {
+    const result = runOxlint(
+      'composition/prefer-script-setup-for-new-files',
+      `export default { setup() { return {}; } };`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).toContain(
+      'vue-doctor(composition/prefer-script-setup-for-new-files)',
+    );
+  });
+
+  it('composition/defineProps-typed fires on a runtime props object', () => {
+    const result = runOxlint(
+      'composition/defineProps-typed',
+      `defineProps({ name: String });`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).toContain(
+      'vue-doctor(composition/defineProps-typed)',
+    );
+  });
 });

@@ -24,6 +24,8 @@ const DEFAULT_RULES: Record<string, Severity> = {
   'vue-doctor/no-non-null-assertion-on-ref-value': 'warn',
   'vue-doctor/no-imports-from-vue-when-auto-imported': 'warn',
   'vue-doctor/reactivity/watch-without-cleanup': 'warn',
+  'vue-doctor/composition/prefer-script-setup-for-new-files': 'warn',
+  'vue-doctor/composition/defineProps-typed': 'warn',
 };
 
 function toOxlintSeverity(s: Severity): 'error' | 'warn' {

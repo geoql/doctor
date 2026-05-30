@@ -6,7 +6,7 @@ describe('plugin index', () => {
     expect(plugin.meta.name).toBe('vue-doctor');
   });
 
-  it('registers all eight rules', () => {
+  it('registers all ten rules', () => {
     expect(Object.keys(plugin.rules).sort()).toEqual(
       [
         'no-destructure-props-without-to-refs',
@@ -17,6 +17,8 @@ describe('plugin index', () => {
         'reactivity/watch-without-cleanup',
         'reactivity/prefer-shallowRef-for-large-data',
         'reactivity/prefer-readonly-for-injected',
+        'composition/prefer-script-setup-for-new-files',
+        'composition/defineProps-typed',
       ].sort(),
     );
   });
