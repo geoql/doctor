@@ -367,6 +367,26 @@ describe('run', () => {
     expect(stderr.join('')).toContain('Invalid --threshold');
   });
 
+  it('outputs only the integer score with --score', async () => {
+    const code = await run(['node', 'vue-doctor', '--score', cleanDir]);
+
+    expect(code).toBe(0);
+    expect(stdout.join('')).toBe('100\n');
+  });
+
+  it('exits 2 when --score is combined with --json', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--score',
+      '--json',
+      cleanDir,
+    ]);
+
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('mutually exclusive');
+  });
+
   it('accepts a repeatable flag passed multiple times (array form)', async () => {
     const code = await run([
       'node',

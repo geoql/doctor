@@ -40,6 +40,7 @@ interface CliFlags {
   exclude?: string | string[];
   deadCode?: boolean;
   threshold?: string;
+  score?: boolean;
 }
 
 function toArray(value: string | string[] | undefined): string[] | undefined {
@@ -131,6 +132,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--exclude <glob>', 'Glob of files to exclude (repeatable)')
     .option('--no-dead-code', 'Skip the dead-code (knip) analysis pass')
     .option('--threshold <n>', 'Minimum passing score (0-100)')
+    .option('--score', 'Output only the numeric score (for piping)')
     .option('--output <file>', 'Write the report to a file instead of stdout')
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
@@ -139,6 +141,11 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       const rootDir = resolve(path ?? '.');
 
       try {
+        if (flags.score && (flags.json || flags.jsonCompact)) {
+          throw new Error(
+            '--score and --json are mutually exclusive (--score outputs a plaintext integer).',
+          );
+        }
         const ruleOverrides = parseRuleOverrides(toArray(flags.rule));
         const threshold =
           flags.threshold === undefined ? undefined : Number(flags.threshold);
@@ -166,6 +173,11 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           threshold: merged.threshold,
           deadCode: flags.deadCode,
         });
+        if (flags.score) {
+          process.stdout.write(`${report.score}\n`);
+          process.exitCode = report.exitCode;
+          return;
+        }
         const input: ReporterInput = {
           toolName: '@geoql/vue-doctor',
           toolVersion: readVersion(),
