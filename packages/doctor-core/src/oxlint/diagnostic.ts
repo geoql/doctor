@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import type { Diagnostic } from '../types.js';
 import type { OxlintRawDiagnostic } from './types.js';
 
-const OXLINT_CODE_PATTERN = /^([a-z0-9_-]+)\(([a-z0-9_-]+)\)$/i;
+const OXLINT_CODE_PATTERN = /^([a-z0-9_-]+)\(([a-z0-9/_-]+)\)$/i;
 
 export function normalizeOxlintRuleId(raw: OxlintRawDiagnostic): string {
   if (raw.code) {

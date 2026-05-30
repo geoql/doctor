@@ -14,6 +14,14 @@ describe('normalizeOxlintRuleId', () => {
     ).toBe('vue/no-export-in-script-setup');
   });
 
+  it('converts plugin(category/rule) form with a slashed rule name', () => {
+    expect(
+      normalizeOxlintRuleId({
+        code: 'vue-doctor(reactivity/watch-without-cleanup)',
+      } as OxlintRawDiagnostic),
+    ).toBe('vue-doctor/reactivity/watch-without-cleanup');
+  });
+
   it('falls back to raw code if pattern does not match', () => {
     expect(
       normalizeOxlintRuleId({ code: 'weird' } as OxlintRawDiagnostic),
