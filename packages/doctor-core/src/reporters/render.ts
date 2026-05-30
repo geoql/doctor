@@ -115,6 +115,10 @@ export function render(
   options: ReporterOptions | undefined,
   theme: Theme,
 ): string {
+  if (options?.quiet) {
+    return `SCORE: ${theme.scoreValue(input.score.score)}/100 (threshold: ${input.score.threshold})\n`;
+  }
+
   const seconds = (input.elapsedMs / 1000).toFixed(1);
   const segments: string[] = [
     `${input.toolName} v${input.toolVersion}`,
@@ -133,7 +137,7 @@ export function render(
     );
   });
 
-  if (!options?.quiet && input.score.breakdown.length > 0) {
+  if (input.score.breakdown.length > 0) {
     segments.push('');
     segments.push(nextSteps(input.score.breakdown));
   }

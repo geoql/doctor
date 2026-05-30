@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { agentReport } from '../src/reporters/agent.js';
-import { format } from '../src/reporters/index.js';
+import { format, renderVerboseTrace } from '../src/reporters/index.js';
 import { compareStrings } from '../src/reporters/render.js';
 import { jsonCompactReport } from '../src/reporters/json-compact.js';
 import {
@@ -461,5 +461,101 @@ describe('format dispatch', () => {
     const out = format(makeInput(), 'json-compact');
     expect(out.endsWith('\n')).toBe(true);
     expect(JSON.parse(out).schemaVersion).toBe('1');
+  });
+});
+
+describe('renderVerboseTrace', () => {
+  it('renders per-pass timings section', () => {
+    const report = {
+      timings: {
+        template: 10.5,
+        sfc: 8.2,
+        script: 25.0,
+        deadCode: 50.0,
+        total: 93.7,
+      },
+      ruleCounts: {},
+      diagnostics: [],
+      score: {
+        score: 100,
+        passed: true,
+        threshold: 0,
+        totalFindings: 0,
+        errorCount: 0,
+        warnCount: 0,
+        infoCount: 0,
+        breakdown: [],
+      },
+    };
+    const out = renderVerboseTrace(report, {});
+    expect(out).toContain('TIMINGS');
+    expect(out).toContain('template');
+    expect(out).toContain('10.5');
+  });
+
+  it('renders per-rule counts section', () => {
+    const report = {
+      timings: { template: 10, sfc: 8, script: 25, deadCode: 0, total: 43 },
+      ruleCounts: {
+        'vue-doctor/template/v-for-has-key': 3,
+        'vue-doctor/sfc/no-mixed-options-and-composition-api': 1,
+      },
+      diagnostics: [],
+      score: {
+        score: 95,
+        passed: true,
+        threshold: 0,
+        totalFindings: 4,
+        errorCount: 3,
+        warnCount: 1,
+        infoCount: 0,
+        breakdown: [],
+      },
+    };
+    const out = renderVerboseTrace(report, {});
+    expect(out).toContain('RULE COUNTS');
+    expect(out).toContain('v-for-has-key');
+    expect(out).toContain('3');
+  });
+
+  it('renders config trace when configSource is provided', () => {
+    const report = {
+      timings: { template: 10, sfc: 8, script: 25, deadCode: 0, total: 43 },
+      ruleCounts: {},
+      diagnostics: [],
+      score: {
+        score: 100,
+        passed: true,
+        threshold: 0,
+        totalFindings: 0,
+        errorCount: 0,
+        warnCount: 0,
+        infoCount: 0,
+        breakdown: [],
+      },
+    };
+    const out = renderVerboseTrace(report, { configSource: 'ts' });
+    expect(out).toContain('CONFIG');
+    expect(out).toContain('ts');
+  });
+
+  it('omits config trace when configSource is absent', () => {
+    const report = {
+      timings: { template: 10, sfc: 8, script: 25, deadCode: 0, total: 43 },
+      ruleCounts: {},
+      diagnostics: [],
+      score: {
+        score: 100,
+        passed: true,
+        threshold: 0,
+        totalFindings: 0,
+        errorCount: 0,
+        warnCount: 0,
+        infoCount: 0,
+        breakdown: [],
+      },
+    };
+    const out = renderVerboseTrace(report, {});
+    expect(out).not.toContain('CONFIG');
   });
 });

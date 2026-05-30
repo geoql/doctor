@@ -223,4 +223,67 @@ describe('audit', () => {
     expect(noLint.score).toBe(100);
     expect(noLint.exitCode).toBe(0);
   });
+
+  it('populates timings with template, sfc, script, deadCode, and total fields', async () => {
+    const dir = await fixture({
+      'Bad.vue': '<template><li v-for="i in items">{{ i }}</li></template>\n',
+    });
+    const report = await audit({ rootDir: dir, deadCode: false });
+    expect(report.timings).toBeDefined();
+    expect(report.timings!.template).toBeGreaterThanOrEqual(0);
+    expect(report.timings!.sfc).toBeGreaterThanOrEqual(0);
+    expect(report.timings!.script).toBeGreaterThanOrEqual(0);
+    expect(report.timings!.deadCode).toBe(0);
+    expect(report.timings!.total).toBeGreaterThan(0);
+  });
+
+  it('populates timings.deadCode when dead code pass runs', async () => {
+    const dir = await fixture({
+      'package.json': JSON.stringify({
+        name: 'test',
+        dependencies: { vue: '^3.0.0' },
+      }),
+      'index.html': '<div id="app"></div>',
+      'src/main.ts':
+        'import { createApp } from "vue";\ncreateApp({}).mount("#app");',
+      'src/unused.ts': 'export const unused = 1;',
+    });
+    const report = await audit({ rootDir: dir });
+    expect(report.timings!.deadCode).toBeGreaterThan(0);
+  });
+
+  it('populates ruleCounts mapping ruleId to occurrence count', async () => {
+    const dir = await fixture({
+      'Bad.vue': '<template><li v-for="i in items">{{ i }}</li></template>\n',
+    });
+    const report = await audit({ rootDir: dir, deadCode: false });
+    expect(report.ruleCounts).toBeDefined();
+    const vForKeyDiags = report.diagnostics.filter((d) =>
+      d.ruleId.includes('v-for-has-key'),
+    );
+    expect(vForKeyDiags.length).toBeGreaterThan(0);
+    expect(report.ruleCounts!['vue-doctor/template/v-for-has-key']).toBe(
+      vForKeyDiags.length,
+    );
+  });
+
+  it('ruleCounts sums occurrences across all passes', async () => {
+    const dir = await fixture({
+      'Bad.vue': '<template><li v-for="i in items">{{ i }}</li></template>\n',
+      'package.json': JSON.stringify({
+        name: 'test',
+        dependencies: { vue: '^3.0.0' },
+      }),
+      'index.html': '<div id="app"></div>',
+      'src/main.ts':
+        'import { createApp } from "vue";\ncreateApp({}).mount("#app");',
+      'src/unused.ts': 'export const unused = 1;',
+    });
+    const report = await audit({ rootDir: dir });
+    const totalRules = Object.values(report.ruleCounts ?? {}).reduce(
+      (sum, count) => sum + count,
+      0,
+    );
+    expect(totalRules).toBe(report.diagnostics.length);
+  });
 });

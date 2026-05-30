@@ -35,7 +35,12 @@ export { listChangedFiles, type GitScopeMode } from './git-scope.js';
 export { OxlintOutputTooLarge, OxlintSpawnFailed } from './oxlint/errors.js';
 export { agentReport } from './reporters/agent.js';
 export { docsUrl } from './reporters/docs-url.js';
-export { format, type ReporterFormat } from './reporters/index.js';
+export {
+  format,
+  renderVerboseTrace,
+  type ReporterFormat,
+  type VerboseTraceOptions,
+} from './reporters/index.js';
 export {
   buildDoctorReport,
   DOCTOR_REPORT_SCHEMA_VERSION,
@@ -60,6 +65,7 @@ export type {
 export type {
   AuditConfig,
   AuditReport,
+  AuditTimings,
   Diagnostic,
   DiagnosticSource,
   Severity,

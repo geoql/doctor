@@ -9,6 +9,7 @@ import {
   listChangedFiles,
   loadDoctorConfig,
   mergeCliOverrides,
+  renderVerboseTrace,
   type ReporterFormat,
   type ReporterInput,
   type Severity,
@@ -35,6 +36,7 @@ interface CliFlags {
   jsonCompact?: boolean;
   color?: boolean;
   quiet?: boolean;
+  verbose?: boolean;
   output?: string;
   rule?: string | string[];
   include?: string | string[];
@@ -129,6 +131,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       },
     )
     .option('--quiet', 'Only show the summary')
+    .option('--verbose', 'Emit per-pass timing and rule diagnostics to stderr')
     .option('--no-color', 'Disable colored output')
     .option(
       '--rule <id:level>',
@@ -175,6 +178,9 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         if (flags.diff && flags.staged) {
           throw new Error('--diff and --staged are mutually exclusive.');
         }
+        if (flags.verbose && flags.quiet) {
+          throw new Error('--verbose and --quiet are mutually exclusive.');
+        }
         let scopeFiles: string[] | undefined;
         if (!flags.full && (flags.diff || flags.staged)) {
           scopeFiles = await listChangedFiles({
@@ -202,6 +208,12 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           respectInlineDisables: flags.respectInlineDisables,
           scopeFiles,
         });
+        if (flags.verbose) {
+          const verboseOutput = renderVerboseTrace(report, {
+            configSource: resolved.source,
+          });
+          process.stderr.write(`${verboseOutput}\n`);
+        }
         if (flags.score) {
           process.stdout.write(`${report.score}\n`);
           process.exitCode = report.exitCode;

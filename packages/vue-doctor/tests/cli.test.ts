@@ -639,4 +639,55 @@ describe('run', () => {
       rmSync(gitDir, { recursive: true, force: true });
     }
   });
+
+  it('exits 2 when --verbose and --quiet are combined', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--verbose',
+      '--quiet',
+      cleanDir,
+    ]);
+
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('mutually exclusive');
+  });
+
+  it('writes verbose trace to stderr with --verbose', async () => {
+    const code = await run(['node', 'vue-doctor', '--verbose', violationDir]);
+
+    expect(code).toBe(1);
+    expect(stderr.join('')).toContain('TIMINGS');
+    expect(stderr.join('')).toContain('RULE COUNTS');
+  });
+
+  it('leaves stdout as clean report when --verbose is used', async () => {
+    const code = await run(['node', 'vue-doctor', '--verbose', violationDir]);
+
+    expect(code).toBe(1);
+    expect(stdout.join('')).toContain('SCORE:');
+    expect(stdout.join('')).toContain('FINDINGS:');
+    expect(stdout.join('')).not.toContain('TIMINGS');
+  });
+
+  it('omits report body with --quiet but keeps score and findings', async () => {
+    const code = await run(['node', 'vue-doctor', '--quiet', violationDir]);
+
+    expect(code).toBe(1);
+    const out = stdout.join('');
+    expect(out).toContain('SCORE:');
+    expect(out).not.toContain('FINDINGS:');
+    expect(out).not.toContain('NEXT STEPS:');
+    expect(out).not.toContain('v-for');
+  });
+
+  it('--quiet on clean project outputs only score line', async () => {
+    const code = await run(['node', 'vue-doctor', '--quiet', cleanDir]);
+
+    expect(code).toBe(0);
+    const out = stdout.join('');
+    expect(out).toContain('SCORE:');
+    expect(out).not.toContain('FINDINGS:');
+    expect(out).not.toContain('NEXT STEPS:');
+  });
 });

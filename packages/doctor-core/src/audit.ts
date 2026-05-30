@@ -12,7 +12,12 @@ import type { ProjectInfoLite } from './reporters/types.js';
 import { scoreDiagnostics } from './score.js';
 import { runSfcPass } from './sfc/run.js';
 import { runTemplatePass } from './template/run.js';
-import type { AuditConfig, AuditReport, Diagnostic } from './types.js';
+import type {
+  AuditConfig,
+  AuditReport,
+  Diagnostic,
+  AuditTimings,
+} from './types.js';
 
 const DEFAULT_INCLUDE = [
   '**/*.vue',
@@ -29,6 +34,14 @@ const DEFAULT_EXCLUDE = [
   'coverage',
 ];
 
+function countRuleCounts(diagnostics: Diagnostic[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const d of diagnostics) {
+    counts[d.ruleId] = (counts[d.ruleId] ?? 0) + 1;
+  }
+  return counts;
+}
+
 export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
   const rootDir = resolve(config.rootDir ?? process.cwd());
   const include = config.include ?? DEFAULT_INCLUDE;
@@ -39,18 +52,23 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
 
   const files = await listSourceFiles({ rootDir, include, exclude });
 
-  const start = performance.now();
+  const overallStart = performance.now();
 
+  const templateStart = performance.now();
   const templateDiagnostics = lintEnabled
     ? await runTemplatePass({ files, ruleOverrides: config.rules })
     : [];
+  const templateElapsed = performance.now() - templateStart;
 
+  const sfcStart = performance.now();
   const sfcDiagnostics = lintEnabled
     ? await runSfcPass({ files, ruleOverrides: config.rules })
     : [];
+  const sfcElapsed = performance.now() - sfcStart;
 
   let scriptDiagnostics: Diagnostic[] = [];
   let oxlintStderr = '';
+  const scriptStart = performance.now();
   if (lintEnabled) {
     try {
       const result = await runScriptPass({
@@ -69,12 +87,15 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
       }
     }
   }
+  const scriptElapsed = performance.now() - scriptStart;
 
   const project = await detectProject(rootDir);
 
   let deadCodeDiagnostics: Diagnostic[] = [];
+  let deadCodeElapsed = 0;
   const deadCodeEnabled = config.deadCode !== false;
   if (deadCodeEnabled) {
+    const deadCodeStart = performance.now();
     try {
       const { loadDoctorConfig } = await import('./config/load.js');
       const doctorConfig = await loadDoctorConfig(rootDir);
@@ -94,9 +115,18 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     } catch {
       // knip failed — diagnostics remain empty for this pass
     }
+    deadCodeElapsed = performance.now() - deadCodeStart;
   }
 
-  const elapsedMs = performance.now() - start;
+  const elapsedMs = performance.now() - overallStart;
+
+  const timings: AuditTimings = {
+    template: templateElapsed,
+    sfc: sfcElapsed,
+    script: scriptElapsed,
+    deadCode: deadCodeElapsed,
+    total: elapsedMs,
+  };
 
   const merged = mergeDiagnostics(
     templateDiagnostics,
@@ -115,6 +145,8 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
   }
   const diagnostics = await attachCodeSnippets(afterDisables);
   const scored = scoreDiagnostics(diagnostics, { threshold });
+
+  const ruleCounts = countRuleCounts(diagnostics);
 
   const projectInfo: ProjectInfoLite = {
     framework: project.framework,
@@ -151,5 +183,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     scoreResult: scored,
     projectInfo,
     elapsedMs,
+    timings,
+    ruleCounts,
   };
 }

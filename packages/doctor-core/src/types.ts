@@ -32,6 +32,14 @@ export interface AuditConfig {
   respectInlineDisables?: boolean;
 }
 
+export interface AuditTimings {
+  template: number;
+  sfc: number;
+  script: number;
+  deadCode: number;
+  total: number;
+}
+
 export interface AuditReport {
   rootDir: string;
   filesScanned: number;
@@ -44,4 +52,6 @@ export interface AuditReport {
   scoreResult: ScoreResult;
   projectInfo: ProjectInfoLite;
   elapsedMs: number;
+  timings: AuditTimings;
+  ruleCounts: Record<string, number>;
 }
