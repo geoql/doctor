@@ -25,20 +25,25 @@ export async function runScriptPass(
 ): Promise<ScriptPassResult> {
   const pluginPath = resolveVueDoctorPluginPath(opts.rootDir);
   const oxlintBin = resolveOxlintBin(opts.rootDir);
-  const configPath = await generateOxlintConfig({
+  const { configPath, cleanup } = await generateOxlintConfig({
     pluginPath,
     ruleOverrides: opts.ruleOverrides,
-  });
-  const raw = await runOxlint({
     rootDir: opts.rootDir,
-    targetPath: opts.targetPath,
-    configPath,
-    oxlintBin,
-    timeoutMs: opts.timeoutMs,
   });
-  return {
-    diagnostics: toCanonicalDiagnostics(raw.diagnostics, opts.rootDir),
-    stderr: raw.stderr,
-    exitCode: raw.exitCode,
-  };
+  try {
+    const raw = await runOxlint({
+      rootDir: opts.rootDir,
+      targetPath: opts.targetPath,
+      configPath,
+      oxlintBin,
+      timeoutMs: opts.timeoutMs,
+    });
+    return {
+      diagnostics: toCanonicalDiagnostics(raw.diagnostics, opts.rootDir),
+      stderr: raw.stderr,
+      exitCode: raw.exitCode,
+    };
+  } finally {
+    await cleanup();
+  }
 }

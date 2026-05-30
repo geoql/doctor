@@ -16,6 +16,7 @@ export type {
   ResolvedDoctorConfig,
 } from './config/index.js';
 export { detectProject } from './detect-project.js';
+export { OxlintOutputTooLarge, OxlintSpawnFailed } from './oxlint/errors.js';
 export { agentReport } from './reporters/agent.js';
 export { docsUrl } from './reporters/docs-url.js';
 export { format, type ReporterFormat } from './reporters/index.js';
