@@ -35,7 +35,6 @@ interface CliFlags {
   color?: boolean;
   quiet?: boolean;
   output?: string;
-  preset?: string;
   rule?: string | string[];
   include?: string | string[];
   exclude?: string | string[];
@@ -125,7 +124,6 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     )
     .option('--quiet', 'Only show the summary')
     .option('--no-color', 'Disable colored output')
-    .option('--preset <name>', 'Rule preset (recommended|strict|all)')
     .option(
       '--rule <id:level>',
       'Override a rule (repeatable), e.g. --rule a/b:off',
@@ -160,11 +158,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
             `--threshold must be an integer 0-100, got "${flags.threshold}".`,
           );
         }
-        const resolved = await loadDoctorConfig(
-          rootDir,
-          flags.config,
-          flags.preset,
-        );
+        const resolved = await loadDoctorConfig(rootDir, flags.config);
         const merged = mergeCliOverrides(resolved, {
           failOn,
           include: toArray(flags.include),

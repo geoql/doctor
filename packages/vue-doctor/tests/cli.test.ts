@@ -286,12 +286,10 @@ describe('run', () => {
     expect(stdout.join('')).toContain('SCORE:');
   });
 
-  it('honors --preset, --include, --exclude, and --threshold', async () => {
+  it('honors --include, --exclude, and --threshold', async () => {
     const code = await run([
       'node',
       'vue-doctor',
-      '--preset',
-      'strict',
       '--include',
       '**/*.vue',
       '--exclude',
