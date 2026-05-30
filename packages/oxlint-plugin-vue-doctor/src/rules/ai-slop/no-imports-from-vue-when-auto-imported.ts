@@ -1,6 +1,6 @@
 import { defineRule } from '../../define-rule.js';
 import type { AstNode, RuleContext } from '../../rule-types.js';
-import { VUE_AUTO_IMPORTED } from './_vue-auto-imported-symbols.js';
+import { VUE_AUTO_IMPORTED } from '../../shared/vue-auto-imported-symbols.js';
 
 const DOCS_URL = 'https://nuxt.com/docs/4.x/guide/concepts/auto-imports';
 const WHOLE_MESSAGE = `The entire import from 'vue' can be removed — these names are auto-imported in this project. See ${DOCS_URL}`;
