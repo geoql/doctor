@@ -76,3 +76,4 @@ Thumbs.db
 fixtures/**/node_modules
 fixtures/**/package-lock.json
 .release/
+.omo
