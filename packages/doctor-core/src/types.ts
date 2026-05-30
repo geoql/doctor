@@ -26,6 +26,7 @@ export interface AuditConfig {
   rules?: Record<string, Severity | 'off'>;
   failOn?: 'error' | 'warn';
   deadCode?: boolean;
+  threshold?: number;
 }
 
 export interface AuditReport {

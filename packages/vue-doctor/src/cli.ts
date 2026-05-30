@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -9,6 +9,7 @@ import {
   mergeCliOverrides,
   type ReporterFormat,
   type ReporterInput,
+  type Severity,
 } from '@geoql/doctor-core';
 import { cac } from 'cac';
 
@@ -32,6 +33,50 @@ interface CliFlags {
   jsonCompact?: boolean;
   color?: boolean;
   quiet?: boolean;
+  output?: string;
+  preset?: string;
+  rule?: string | string[];
+  include?: string | string[];
+  exclude?: string | string[];
+  deadCode?: boolean;
+  threshold?: string;
+}
+
+function toArray(value: string | string[] | undefined): string[] | undefined {
+  if (value === undefined) return undefined;
+  return Array.isArray(value) ? value : [value];
+}
+
+function parseRuleOverrides(
+  rules: string[] | undefined,
+): Record<string, Severity | 'off'> | undefined {
+  if (!rules || rules.length === 0) return undefined;
+  const out: Record<string, Severity | 'off'> = {};
+  for (const entry of rules) {
+    const idx = entry.lastIndexOf(':');
+    if (idx === -1) {
+      throw new Error(
+        `Invalid --rule "${entry}". Expected format <ruleId>:<error|warn|info|off>.`,
+      );
+    }
+    const ruleId = entry.slice(0, idx);
+    const level = entry.slice(idx + 1);
+    if (
+      level !== 'error' &&
+      level !== 'warn' &&
+      level !== 'info' &&
+      level !== 'off'
+    ) {
+      throw new Error(
+        `Invalid severity "${level}" for --rule "${entry}". Expected error|warn|info|off.`,
+      );
+    }
+    if (ruleId.length === 0) {
+      throw new Error(`Invalid --rule "${entry}". Rule id must not be empty.`);
+    }
+    out[ruleId] = level;
+  }
+  return out;
 }
 
 function resolveFormat(flags: CliFlags): ReporterFormat {
@@ -77,6 +122,16 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     )
     .option('--quiet', 'Only show the summary')
     .option('--no-color', 'Disable colored output')
+    .option('--preset <name>', 'Rule preset (recommended|strict|all)')
+    .option(
+      '--rule <id:level>',
+      'Override a rule (repeatable), e.g. --rule a/b:off',
+    )
+    .option('--include <glob>', 'Glob of files to include (repeatable)')
+    .option('--exclude <glob>', 'Glob of files to exclude (repeatable)')
+    .option('--no-dead-code', 'Skip the dead-code (knip) analysis pass')
+    .option('--threshold <n>', 'Minimum passing score (0-100)')
+    .option('--output <file>', 'Write the report to a file instead of stdout')
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
       const failOn =
@@ -84,14 +139,32 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       const rootDir = resolve(path ?? '.');
 
       try {
-        const resolved = await loadDoctorConfig(rootDir, flags.config);
-        const merged = mergeCliOverrides(resolved, { failOn });
+        const ruleOverrides = parseRuleOverrides(toArray(flags.rule));
+        const threshold =
+          flags.threshold === undefined ? undefined : Number(flags.threshold);
+        if (threshold !== undefined && Number.isNaN(threshold)) {
+          throw new Error(`Invalid --threshold "${flags.threshold}".`);
+        }
+        const resolved = await loadDoctorConfig(
+          rootDir,
+          flags.config,
+          flags.preset,
+        );
+        const merged = mergeCliOverrides(resolved, {
+          failOn,
+          include: toArray(flags.include),
+          exclude: toArray(flags.exclude),
+          rules: ruleOverrides,
+          threshold,
+        });
         const report = await audit({
           rootDir: merged.rootDir,
           include: merged.include,
           exclude: merged.exclude,
           rules: merged.rules,
           failOn: merged.failOn,
+          threshold: merged.threshold,
+          deadCode: flags.deadCode,
         });
         const input: ReporterInput = {
           toolName: '@geoql/vue-doctor',
@@ -107,7 +180,11 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           color: flags.color,
           quiet: flags.quiet,
         });
-        process.stdout.write(out);
+        if (flags.output) {
+          writeFileSync(resolve(flags.output), out);
+        } else {
+          process.stdout.write(out);
+        }
         process.exitCode = report.exitCode;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);

@@ -1,3 +1,4 @@
+import { readFileSync, rmSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -269,5 +270,115 @@ describe('run', () => {
 
     vi.doUnmock('@geoql/doctor-core');
     vi.resetModules();
+  });
+
+  it('applies --rule override and --no-dead-code on a clean project', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--rule',
+      'vue-doctor/reactivity/watch-without-cleanup:off',
+      '--no-dead-code',
+      cleanDir,
+    ]);
+
+    expect(code).toBe(0);
+    expect(stdout.join('')).toContain('SCORE:');
+  });
+
+  it('honors --preset, --include, --exclude, and --threshold', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--preset',
+      'strict',
+      '--include',
+      '**/*.vue',
+      '--exclude',
+      '**/node_modules/**',
+      '--threshold',
+      '50',
+      cleanDir,
+    ]);
+
+    expect(code).toBe(0);
+    expect(stdout.join('')).toContain('threshold: 50');
+  });
+
+  it('writes the report to --output instead of stdout', async () => {
+    const outFile = resolve(here, '.cli-output.txt');
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--output',
+      outFile,
+      cleanDir,
+    ]);
+
+    expect(code).toBe(0);
+    expect(stdout.join('')).toBe('');
+    expect(readFileSync(outFile, 'utf-8')).toContain('SCORE:');
+    rmSync(outFile, { force: true });
+  });
+
+  it('exits 2 on a --rule with no colon separator', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--rule',
+      'badformat',
+      cleanDir,
+    ]);
+
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('Invalid --rule');
+  });
+
+  it('exits 2 on a --rule with an invalid severity', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--rule',
+      'a/b:loud',
+      cleanDir,
+    ]);
+
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('Invalid severity');
+  });
+
+  it('exits 2 on a --rule with an empty rule id', async () => {
+    const code = await run(['node', 'vue-doctor', '--rule', ':off', cleanDir]);
+
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('Rule id must not be empty');
+  });
+
+  it('exits 2 on a non-numeric --threshold', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--threshold',
+      'abc',
+      cleanDir,
+    ]);
+
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('Invalid --threshold');
+  });
+
+  it('accepts a repeatable flag passed multiple times (array form)', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--rule',
+      'vue-doctor/reactivity/watch-without-cleanup:off',
+      '--rule',
+      'vue-doctor/template/v-for-has-key:off',
+      cleanDir,
+    ]);
+
+    expect(code).toBe(0);
+    expect(stdout.join('')).toContain('SCORE:');
   });
 });

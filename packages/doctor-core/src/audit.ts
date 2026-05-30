@@ -33,6 +33,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
   const include = config.include ?? DEFAULT_INCLUDE;
   const exclude = config.exclude ?? DEFAULT_EXCLUDE;
   const failOn = config.failOn ?? 'error';
+  const threshold = config.threshold ?? 0;
 
   const files = await listSourceFiles({ rootDir, include, exclude });
 
@@ -102,7 +103,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     deadCodeDiagnostics,
   );
   const diagnostics = await attachCodeSnippets(merged);
-  const scored = scoreDiagnostics(diagnostics);
+  const scored = scoreDiagnostics(diagnostics, { threshold });
 
   const projectInfo: ProjectInfoLite = {
     framework: project.framework,
