@@ -255,7 +255,7 @@ describe('run', () => {
         await importOriginal<typeof import('@geoql/doctor-core')>();
       return {
         ...actual,
-        loadAuditConfig: () => {
+        loadDoctorConfig: () => {
           throw 'plain string failure';
         },
       };

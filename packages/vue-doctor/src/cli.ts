@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 import {
   audit,
   format,
-  loadAuditConfig,
+  loadDoctorConfig,
+  mergeCliOverrides,
   type ReporterFormat,
   type ReporterInput,
 } from '@geoql/doctor-core';
@@ -83,8 +84,15 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       const rootDir = resolve(path ?? '.');
 
       try {
-        const { config } = await loadAuditConfig(rootDir, flags.config);
-        const report = await audit({ ...config, rootDir, failOn });
+        const resolved = await loadDoctorConfig(rootDir, flags.config);
+        const merged = mergeCliOverrides(resolved, { failOn });
+        const report = await audit({
+          rootDir: merged.rootDir,
+          include: merged.include,
+          exclude: merged.exclude,
+          rules: merged.rules,
+          failOn: merged.failOn,
+        });
         const input: ReporterInput = {
           toolName: '@geoql/vue-doctor',
           toolVersion: readVersion(),

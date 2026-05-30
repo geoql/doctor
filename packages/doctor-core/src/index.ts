@@ -1,5 +1,20 @@
 export { audit } from './audit.js';
-export { loadAuditConfig } from './config.js';
+export {
+  BUILT_IN_RECOMMENDED,
+  ConfigCycleError,
+  ConfigFileNotFoundError,
+  InvalidConfigError,
+  defineConfig,
+  loadDoctorConfig,
+  mergeCliOverrides,
+  validateConfig,
+} from './config/index.js';
+export type {
+  CliOverrides,
+  ConfigSource,
+  DoctorUserConfig,
+  ResolvedDoctorConfig,
+} from './config/index.js';
 export { detectProject } from './detect-project.js';
 export { agentReport } from './reporters/agent.js';
 export { docsUrl } from './reporters/docs-url.js';

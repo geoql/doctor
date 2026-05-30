@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BUILT_IN_RECOMMENDED > matches the locked snapshot 1`] = `
+{
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".nuxt",
+    ".output",
+    "coverage",
+  ],
+  "failOn": "error",
+  "include": [
+    "**/*.vue",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+  ],
+  "rules": {},
+  "threshold": 0,
+}
+`;
