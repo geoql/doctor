@@ -3,7 +3,7 @@ import type { ProjectInfoLite } from './reporters/types.js';
 
 export type Severity = 'error' | 'warn' | 'info';
 
-export type DiagnosticSource = 'template' | 'oxlint' | 'sfc';
+export type DiagnosticSource = 'template' | 'oxlint' | 'sfc' | 'dead-code';
 
 export interface Diagnostic {
   file: string;
@@ -25,6 +25,7 @@ export interface AuditConfig {
   exclude?: string[];
   rules?: Record<string, Severity | 'off'>;
   failOn?: 'error' | 'warn';
+  deadCode?: boolean;
 }
 
 export interface AuditReport {

@@ -1,0 +1,7 @@
+{
+  "name": "vue3-dead-export-fixture",
+  "type": "module",
+  "dependencies": {
+    "vue": "^3.5.0"
+  }
+}

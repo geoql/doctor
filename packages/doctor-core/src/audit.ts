@@ -1,5 +1,7 @@
 import { resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
+import { checkDeadCode } from './check-dead-code.js';
+import { dedupeDeadCodeAgainstLint } from './dead-code/dedupe.js';
 import { attachCodeSnippets } from './code-snippet.js';
 import { detectProject } from './detect-project.js';
 import { listSourceFiles } from './file-scan.js';
@@ -65,17 +67,43 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     }
   }
 
+  const project = await detectProject(rootDir);
+
+  let deadCodeDiagnostics: Diagnostic[] = [];
+  const deadCodeEnabled = config.deadCode !== false;
+  if (deadCodeEnabled) {
+    try {
+      const { loadDoctorConfig } = await import('./config/load.js');
+      const doctorConfig = await loadDoctorConfig(rootDir);
+      const raw = await checkDeadCode({
+        projectInfo: project,
+        doctorConfig,
+        enabled: true,
+      });
+      const deduplicated = dedupeDeadCodeAgainstLint(raw, [
+        ...templateDiagnostics,
+        ...sfcDiagnostics,
+        ...scriptDiagnostics,
+      ]);
+      deadCodeDiagnostics = deduplicated.filter(
+        (d) => config.rules?.[d.ruleId] !== 'off',
+      );
+    } catch {
+      // knip failed — diagnostics remain empty for this pass
+    }
+  }
+
   const elapsedMs = performance.now() - start;
 
   const merged = mergeDiagnostics(
     templateDiagnostics,
     sfcDiagnostics,
     scriptDiagnostics,
+    deadCodeDiagnostics,
   );
   const diagnostics = await attachCodeSnippets(merged);
   const scored = scoreDiagnostics(diagnostics);
 
-  const project = await detectProject(rootDir);
   const projectInfo: ProjectInfoLite = {
     framework: project.framework,
     vueVersion: project.vueVersion,

@@ -1,5 +1,11 @@
 export { audit } from './audit.js';
 export {
+  checkDeadCode,
+  dedupeDeadCodeAgainstLint,
+  DeadCodeImportFailed,
+  DeadCodeTimeoutError,
+} from './check-dead-code.js';
+export {
   BUILT_IN_RECOMMENDED,
   ConfigCycleError,
   ConfigFileNotFoundError,

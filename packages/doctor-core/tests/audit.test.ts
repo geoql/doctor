@@ -1,14 +1,18 @@
 import { realpathSync } from 'node:fs';
-import { mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { audit } from '../src/audit.js';
 
 async function fixture(files: Record<string, string>): Promise<string> {
   const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-audit-'));
   for (const [name, content] of Object.entries(files)) {
-    await writeFile(join(dir, name), content);
+    const filePath = join(dir, name);
+    await mkdir(join(dir, name.split('/').slice(0, -1).join('/') || '.'), {
+      recursive: true,
+    });
+    await writeFile(filePath, content);
   }
   return dir;
 }
@@ -87,5 +91,54 @@ describe('audit', () => {
     } finally {
       process.chdir(original);
     }
+  });
+
+  it('includes dead-code diagnostics from knip in the audit report', async () => {
+    const dir = await fixture({
+      'package.json': JSON.stringify({
+        name: 'test',
+        dependencies: { vue: '^3.0.0' },
+      }),
+      'index.html': '<div id="app"></div>',
+      'src/main.ts':
+        'import { createApp } from "vue";\ncreateApp({}).mount("#app");',
+      'src/unused.ts': 'export const unused = 1;',
+    });
+    const report = await audit({ rootDir: dir });
+    const deadCodeDiags = report.diagnostics.filter(
+      (d) => d.source === 'dead-code',
+    );
+    expect(deadCodeDiags.length).toBeGreaterThan(0);
+    expect(
+      deadCodeDiags.some((d) => d.ruleId === 'dead-code/unused-file'),
+    ).toBe(true);
+  });
+
+  it('skips dead-code pass when deadCode config is false', async () => {
+    const dir = await fixture({
+      'clean.vue': '<template><div /></template>\n',
+    });
+    const report = await audit({ rootDir: dir, deadCode: false });
+    expect(
+      report.diagnostics.filter((d) => d.source === 'dead-code'),
+    ).toHaveLength(0);
+  });
+
+  it('survives dead-code pass failure gracefully', async () => {
+    const dir = await fixture({
+      'package.json': JSON.stringify({
+        name: 'test',
+        dependencies: { vue: '^3.0.0' },
+      }),
+      'index.html': '<div id="app"></div>',
+      'src/main.ts':
+        'import { createApp } from "vue";\ncreateApp({}).mount("#app");',
+    });
+    const { _knipLoader } = await import('../src/check-dead-code.js');
+    vi.spyOn(_knipLoader, 'load').mockRejectedValueOnce(
+      new Error('knip failed'),
+    );
+    const report = await audit({ rootDir: dir });
+    expect(report.score).toBe(100);
   });
 });
