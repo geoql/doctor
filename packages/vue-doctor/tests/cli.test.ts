@@ -22,6 +22,14 @@ const noInlineObjectInListDir = resolve(
   here,
   'fixtures/no-inline-object-in-list',
 );
+const noComputedGetterInLoopDir = resolve(
+  here,
+  'fixtures/no-computed-getter-in-loop',
+);
+const deepVBindSpreadInListDir = resolve(
+  here,
+  'fixtures/deep-v-bind-spread-in-list',
+);
 const badConfig = resolve(here, 'fixtures/bad-config/doctor.config.ts');
 
 const ANSI = new RegExp(`${String.fromCharCode(27)}\\[`);
@@ -122,6 +130,42 @@ describe('run', () => {
       'vue-doctor/template/no-inline-object-prop-in-list',
     );
     expect(report.score.bySeverity.warn).toBeGreaterThan(0);
+  });
+
+  it('surfaces no-computed-getter-in-template-loop through the CLI on a real fixture', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      noComputedGetterInLoopDir,
+      '--format',
+      'json',
+    ]);
+
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join(''));
+    const ruleIds = report.diagnostics.map((d: { ruleId: string }) => d.ruleId);
+    expect(ruleIds).toContain(
+      'vue-doctor/template/no-computed-getter-in-template-loop',
+    );
+    expect(report.score.bySeverity.warn).toBeGreaterThan(0);
+  });
+
+  it('surfaces avoid-deep-v-bind-spread-in-list through the CLI on a real fixture', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      deepVBindSpreadInListDir,
+      '--format',
+      'json',
+    ]);
+
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join(''));
+    const ruleIds = report.diagnostics.map((d: { ruleId: string }) => d.ruleId);
+    expect(ruleIds).toContain(
+      'vue-doctor/template/avoid-deep-v-bind-spread-in-list',
+    );
+    expect(report.score.bySeverity.info).toBeGreaterThan(0);
   });
 
   it('defaults to the agent reporter when no format flag is given', async () => {

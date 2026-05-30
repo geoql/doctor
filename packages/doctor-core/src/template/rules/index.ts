@@ -2,6 +2,8 @@ import { check as vForHasKey } from './v-for-has-key.js';
 import { check as vIfVForPrecedence } from './v-if-v-for-precedence.js';
 import { check as vMemoOnLargeList } from './v-memo-on-large-list.js';
 import { check as noInlineObjectPropInList } from './no-inline-object-prop-in-list.js';
+import { check as noComputedGetterInTemplateLoop } from './no-computed-getter-in-template-loop.js';
+import { check as avoidDeepVBindSpreadInList } from './avoid-deep-v-bind-spread-in-list.js';
 import type { TemplateRule } from './types.js';
 
 export const TEMPLATE_RULES: TemplateRule[] = [
@@ -11,5 +13,13 @@ export const TEMPLATE_RULES: TemplateRule[] = [
   {
     id: 'vue-doctor/template/no-inline-object-prop-in-list',
     check: noInlineObjectPropInList,
+  },
+  {
+    id: 'vue-doctor/template/no-computed-getter-in-template-loop',
+    check: noComputedGetterInTemplateLoop,
+  },
+  {
+    id: 'vue-doctor/template/avoid-deep-v-bind-spread-in-list',
+    check: avoidDeepVBindSpreadInList,
   },
 ];
