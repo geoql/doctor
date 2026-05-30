@@ -174,6 +174,43 @@ describe('audit', () => {
     expect(report.score).toBe(100);
   });
 
+  it('suppresses a diagnostic guarded by an inline doctor-disable directive', async () => {
+    const dir = await fixture({
+      'Bad.vue': [
+        '<template>',
+        '  <!-- doctor-disable-next-line v-for-has-key -->',
+        '  <li v-for="i in items">{{ i }}</li>',
+        '</template>',
+        '',
+      ].join('\n'),
+    });
+    const report = await audit({ rootDir: dir, deadCode: false });
+    expect(report.diagnostics).toEqual([]);
+    expect(report.score).toBe(100);
+    expect(report.exitCode).toBe(0);
+  });
+
+  it('surfaces the suppressed diagnostic when respectInlineDisables is false', async () => {
+    const dir = await fixture({
+      'Bad.vue': [
+        '<template>',
+        '  <!-- doctor-disable-next-line v-for-has-key -->',
+        '  <li v-for="i in items">{{ i }}</li>',
+        '</template>',
+        '',
+      ].join('\n'),
+    });
+    const report = await audit({
+      rootDir: dir,
+      deadCode: false,
+      respectInlineDisables: false,
+    });
+    expect(
+      report.diagnostics.some((d) => d.ruleId.includes('v-for-has-key')),
+    ).toBe(true);
+    expect(report.exitCode).toBe(1);
+  });
+
   it('skips the lint passes when lint is false', async () => {
     const dir = await fixture({
       'Bad.vue': '<template><li v-for="i in items">{{ i }}</li></template>\n',
