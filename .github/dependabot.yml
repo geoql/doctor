@@ -1,0 +1,31 @@
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: daily
+      time: '00:00'
+    assignees:
+      - vinayakkulkarni
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope
+
+  # npm ecosystem covers the pnpm workspace (packages/* + example via
+  # pnpm-workspace.yaml). Dependabot's `package-ecosystem: pnpm` is NOT
+  # supported yet — the `npm` ecosystem auto-detects pnpm-lock.yaml and
+  # atomically updates BOTH package.json AND pnpm-lock.yaml in the same PR
+  # (pnpm catalog support went GA under the npm ecosystem in Feb 2025).
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: daily
+      time: '00:00'
+    assignees:
+      - vinayakkulkarni
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope

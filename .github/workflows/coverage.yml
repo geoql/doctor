@@ -1,26 +1,25 @@
-name: Coverage
+name: 'Coverage'
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
 
 jobs:
   coverage:
+    name: 'Code Coverage'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          run_install: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -42,4 +41,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
+          flags: unittests
+          name: geoql-doctor
           fail_ci_if_error: true
