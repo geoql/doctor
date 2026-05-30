@@ -40,6 +40,7 @@ interface CliFlags {
   include?: string | string[];
   exclude?: string | string[];
   deadCode?: boolean;
+  lint?: boolean;
   threshold?: string;
   score?: boolean;
   annotations?: boolean;
@@ -134,6 +135,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--include <glob>', 'Glob of files to include (repeatable)')
     .option('--exclude <glob>', 'Glob of files to exclude (repeatable)')
     .option('--no-dead-code', 'Skip the dead-code (knip) analysis pass')
+    .option('--no-lint', 'Skip the lint passes (template/SFC/oxlint)')
     .option('--threshold <n>', 'Minimum passing score (0-100)')
     .option('--score', 'Output only the numeric score (for piping)')
     .option('--annotations', 'Emit GitHub Actions ::error::/::warning:: lines')
@@ -189,6 +191,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           failOn: merged.failOn,
           threshold: merged.threshold,
           deadCode: flags.deadCode,
+          lint: flags.lint,
           scopeFiles,
         });
         if (flags.score) {

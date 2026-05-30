@@ -449,6 +449,22 @@ describe('run', () => {
     expect(stdout.join('')).toContain('SCORE:');
   });
 
+  it('skips lint passes with --no-lint and reports clean', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-lint',
+      '--no-dead-code',
+      '--json',
+      violationDir,
+    ]);
+
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join(''));
+    expect(report.diagnostics).toEqual([]);
+    expect(report.score.value).toBe(100);
+  });
+
   it('exits 2 when --diff and --staged are combined', async () => {
     const code = await run([
       'node',

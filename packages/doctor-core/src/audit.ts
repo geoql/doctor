@@ -34,37 +34,38 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
   const exclude = config.exclude ?? DEFAULT_EXCLUDE;
   const failOn = config.failOn ?? 'error';
   const threshold = config.threshold ?? 0;
+  const lintEnabled = config.lint !== false;
 
   const files = await listSourceFiles({ rootDir, include, exclude });
 
   const start = performance.now();
 
-  const templateDiagnostics = await runTemplatePass({
-    files,
-    ruleOverrides: config.rules,
-  });
+  const templateDiagnostics = lintEnabled
+    ? await runTemplatePass({ files, ruleOverrides: config.rules })
+    : [];
 
-  const sfcDiagnostics = await runSfcPass({
-    files,
-    ruleOverrides: config.rules,
-  });
+  const sfcDiagnostics = lintEnabled
+    ? await runSfcPass({ files, ruleOverrides: config.rules })
+    : [];
 
   let scriptDiagnostics: Diagnostic[] = [];
   let oxlintStderr = '';
-  try {
-    const result = await runScriptPass({
-      rootDir,
-      targetPath: rootDir,
-      ruleOverrides: config.rules,
-    });
-    scriptDiagnostics = result.diagnostics;
-    oxlintStderr = result.stderr;
-  } catch (err) {
-    oxlintStderr = err instanceof Error ? err.message : String(err);
-    if (process.env.DOCTOR_DEBUG) {
-      process.stderr.write(
-        `[doctor-core] script pass failed: ${oxlintStderr}\n`,
-      );
+  if (lintEnabled) {
+    try {
+      const result = await runScriptPass({
+        rootDir,
+        targetPath: rootDir,
+        ruleOverrides: config.rules,
+      });
+      scriptDiagnostics = result.diagnostics;
+      oxlintStderr = result.stderr;
+    } catch (err) {
+      oxlintStderr = err instanceof Error ? err.message : String(err);
+      if (process.env.DOCTOR_DEBUG) {
+        process.stderr.write(
+          `[doctor-core] script pass failed: ${oxlintStderr}\n`,
+        );
+      }
     }
   }
 

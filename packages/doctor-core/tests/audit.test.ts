@@ -173,4 +173,17 @@ describe('audit', () => {
     expect(report.diagnostics).toEqual([]);
     expect(report.score).toBe(100);
   });
+
+  it('skips the lint passes when lint is false', async () => {
+    const dir = await fixture({
+      'Bad.vue': '<template><li v-for="i in items">{{ i }}</li></template>\n',
+    });
+    const full = await audit({ rootDir: dir, deadCode: false });
+    expect(full.diagnostics.length).toBeGreaterThan(0);
+
+    const noLint = await audit({ rootDir: dir, deadCode: false, lint: false });
+    expect(noLint.diagnostics).toEqual([]);
+    expect(noLint.score).toBe(100);
+    expect(noLint.exitCode).toBe(0);
+  });
 });
