@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { checkDeadCode } from './check-dead-code.js';
 import { dedupeDeadCodeAgainstLint } from './dead-code/dedupe.js';
+import { applyInlineDisables } from './disables/index.js';
 import { attachCodeSnippets } from './code-snippet.js';
 import { detectProject } from './detect-project.js';
 import { listSourceFiles } from './file-scan.js';
@@ -97,17 +98,22 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
 
   const elapsedMs = performance.now() - start;
 
-  let merged = mergeDiagnostics(
+  const merged = mergeDiagnostics(
     templateDiagnostics,
     sfcDiagnostics,
     scriptDiagnostics,
     deadCodeDiagnostics,
   );
+  let afterDisables = applyInlineDisables(merged, {
+    respect: config.respectInlineDisables !== false,
+  });
   if (config.scopeFiles) {
     const scope = new Set(config.scopeFiles.map((f) => resolve(rootDir, f)));
-    merged = merged.filter((d) => scope.has(resolve(rootDir, d.file)));
+    afterDisables = afterDisables.filter((d) =>
+      scope.has(resolve(rootDir, d.file)),
+    );
   }
-  const diagnostics = await attachCodeSnippets(merged);
+  const diagnostics = await attachCodeSnippets(afterDisables);
   const scored = scoreDiagnostics(diagnostics, { threshold });
 
   const projectInfo: ProjectInfoLite = {

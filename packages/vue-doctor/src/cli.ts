@@ -41,6 +41,7 @@ interface CliFlags {
   exclude?: string | string[];
   deadCode?: boolean;
   lint?: boolean;
+  respectInlineDisables?: boolean;
   threshold?: string;
   score?: boolean;
   annotations?: boolean;
@@ -137,6 +138,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--exclude <glob>', 'Glob of files to exclude (repeatable)')
     .option('--no-dead-code', 'Skip the dead-code (knip) analysis pass')
     .option('--no-lint', 'Skip the lint passes (template/SFC/oxlint)')
+    .option(
+      '--no-respect-inline-disables',
+      'Surface findings even inside doctor-disable comments',
+    )
     .option('--threshold <n>', 'Minimum passing score (0-100)')
     .option('--score', 'Output only the numeric score (for piping)')
     .option('--annotations', 'Emit GitHub Actions ::error::/::warning:: lines')
@@ -194,6 +199,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           threshold: merged.threshold,
           deadCode: flags.deadCode,
           lint: flags.lint,
+          respectInlineDisables: flags.respectInlineDisables,
           scopeFiles,
         });
         if (flags.score) {

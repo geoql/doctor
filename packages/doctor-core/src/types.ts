@@ -29,6 +29,7 @@ export interface AuditConfig {
   lint?: boolean;
   threshold?: number;
   scopeFiles?: string[];
+  respectInlineDisables?: boolean;
 }
 
 export interface AuditReport {

@@ -23,6 +23,14 @@ export type {
   ResolvedDoctorConfig,
 } from './config/index.js';
 export { detectProject } from './detect-project.js';
+export {
+  applyInlineDisables,
+  parseDirectives,
+  type ApplyInlineDisablesOptions,
+  type DirectiveLine,
+  type DirectiveRange,
+  type DirectiveSet,
+} from './disables/index.js';
 export { listChangedFiles, type GitScopeMode } from './git-scope.js';
 export { OxlintOutputTooLarge, OxlintSpawnFailed } from './oxlint/errors.js';
 export { agentReport } from './reporters/agent.js';

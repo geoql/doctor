@@ -16,6 +16,7 @@ import { run } from '../src/cli.js';
 const here = dirname(fileURLToPath(import.meta.url));
 const cleanDir = resolve(here, 'fixtures/clean');
 const violationDir = resolve(here, 'fixtures/violation');
+const disabledDir = resolve(here, 'fixtures/disabled');
 const badConfig = resolve(here, 'fixtures/bad-config/doctor.config.ts');
 
 const ANSI = new RegExp(`${String.fromCharCode(27)}\\[`);
@@ -447,6 +448,37 @@ describe('run', () => {
 
     expect(code).toBe(0);
     expect(stdout.join('')).toContain('SCORE:');
+  });
+
+  it('honors an inline doctor-disable directive by default and scores 100', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-dead-code',
+      '--json',
+      disabledDir,
+    ]);
+
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join(''));
+    expect(report.diagnostics).toEqual([]);
+    expect(report.score.value).toBe(100);
+  });
+
+  it('surfaces directive-suppressed findings with --no-respect-inline-disables', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-respect-inline-disables',
+      '--no-dead-code',
+      '--json',
+      disabledDir,
+    ]);
+
+    expect(code).toBe(1);
+    const report = JSON.parse(stdout.join(''));
+    const ruleIds = report.diagnostics.map((d: { ruleId: string }) => d.ruleId);
+    expect(ruleIds).toContain('vue-doctor/template/v-for-has-key');
   });
 
   it('skips lint passes with --no-lint and reports clean', async () => {
