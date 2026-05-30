@@ -1,5 +1,13 @@
-import { readFileSync, rmSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import {
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -439,5 +447,99 @@ describe('run', () => {
 
     expect(code).toBe(0);
     expect(stdout.join('')).toContain('SCORE:');
+  });
+
+  it('exits 2 when --diff and --staged are combined', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--diff',
+      '--staged',
+      cleanDir,
+    ]);
+
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('mutually exclusive');
+  });
+
+  it('scopes findings to changed files with --diff in a git repo', async () => {
+    const gitDir = mkdtempSync(join(tmpdir(), 'cli-diff-'));
+    const sh = (...args: string[]) =>
+      execFileSync('git', args, { cwd: gitDir, stdio: 'ignore' });
+    try {
+      sh('init');
+      sh('config', 'user.email', 't@e.com');
+      sh('config', 'user.name', 'T');
+      mkdirSync(join(gitDir, 'src'), { recursive: true });
+      writeFileSync(join(gitDir, 'package.json'), '{"name":"x"}\n');
+      writeFileSync(
+        join(gitDir, 'src', 'Committed.vue'),
+        '<template><ul><li v-for="i in items">{{ i }}</li></ul></template>\n',
+      );
+      sh('add', '.');
+      sh('commit', '-m', 'base');
+      writeFileSync(
+        join(gitDir, 'src', 'Changed.vue'),
+        '<template><ul><li v-for="j in items">{{ j }}</li></ul></template>\n',
+      );
+
+      const code = await run([
+        'node',
+        'vue-doctor',
+        '--diff',
+        '--json',
+        gitDir,
+      ]);
+      expect(code).toBe(1);
+      const report = JSON.parse(stdout.join(''));
+      const files = report.diagnostics.map((d: { file: string }) => d.file);
+      expect(files.length).toBeGreaterThan(0);
+      expect(files.every((f: string) => f.endsWith('Changed.vue'))).toBe(true);
+    } finally {
+      rmSync(gitDir, { recursive: true, force: true });
+    }
+  });
+
+  it('scopes findings to staged files with --staged in a git repo', async () => {
+    const gitDir = mkdtempSync(join(tmpdir(), 'cli-staged-'));
+    const sh = (...args: string[]) =>
+      execFileSync('git', args, { cwd: gitDir, stdio: 'ignore' });
+    try {
+      sh('init');
+      sh('config', 'user.email', 't@e.com');
+      sh('config', 'user.name', 'T');
+      mkdirSync(join(gitDir, 'src'), { recursive: true });
+      writeFileSync(join(gitDir, 'package.json'), '{"name":"x"}\n');
+      writeFileSync(
+        join(gitDir, 'src', 'Base.vue'),
+        '<template><div /></template>\n',
+      );
+      sh('add', '.');
+      sh('commit', '-m', 'base');
+      writeFileSync(
+        join(gitDir, 'src', 'Staged.vue'),
+        '<template><ul><li v-for="i in items">{{ i }}</li></ul></template>\n',
+      );
+      writeFileSync(
+        join(gitDir, 'src', 'Unstaged.vue'),
+        '<template><ul><li v-for="j in items">{{ j }}</li></ul></template>\n',
+      );
+      sh('add', 'src/Staged.vue');
+
+      const code = await run([
+        'node',
+        'vue-doctor',
+        '--staged',
+        '--json',
+        gitDir,
+      ]);
+      expect(code).toBe(1);
+      const report = JSON.parse(stdout.join(''));
+      const files = report.diagnostics.map((d: { file: string }) => d.file);
+      expect(files.length).toBeGreaterThan(0);
+      expect(files.every((f: string) => f.endsWith('Staged.vue'))).toBe(true);
+    } finally {
+      rmSync(gitDir, { recursive: true, force: true });
+    }
   });
 });

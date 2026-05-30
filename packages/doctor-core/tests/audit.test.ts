@@ -1,7 +1,7 @@
 import { realpathSync } from 'node:fs';
 import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { audit } from '../src/audit.js';
 
@@ -139,6 +139,38 @@ describe('audit', () => {
       new Error('knip failed'),
     );
     const report = await audit({ rootDir: dir });
+    expect(report.score).toBe(100);
+  });
+
+  it('restricts diagnostics to scopeFiles when provided', async () => {
+    const dir = await fixture({
+      'A.vue': '<template><li v-for="i in items">{{ i }}</li></template>\n',
+      'B.vue': '<template><li v-for="j in items">{{ j }}</li></template>\n',
+    });
+    const full = await audit({ rootDir: dir, deadCode: false });
+    expect(full.diagnostics.length).toBeGreaterThanOrEqual(2);
+
+    const scoped = await audit({
+      rootDir: dir,
+      deadCode: false,
+      scopeFiles: [resolve(dir, 'A.vue')],
+    });
+    expect(scoped.diagnostics.length).toBeGreaterThan(0);
+    expect(scoped.diagnostics.every((d) => d.file.endsWith('A.vue'))).toBe(
+      true,
+    );
+  });
+
+  it('yields an empty diagnostic set when scopeFiles is empty', async () => {
+    const dir = await fixture({
+      'Bad.vue': '<template><li v-for="i in items">{{ i }}</li></template>\n',
+    });
+    const report = await audit({
+      rootDir: dir,
+      deadCode: false,
+      scopeFiles: [],
+    });
+    expect(report.diagnostics).toEqual([]);
     expect(report.score).toBe(100);
   });
 });

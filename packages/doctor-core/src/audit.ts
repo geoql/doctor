@@ -96,12 +96,16 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
 
   const elapsedMs = performance.now() - start;
 
-  const merged = mergeDiagnostics(
+  let merged = mergeDiagnostics(
     templateDiagnostics,
     sfcDiagnostics,
     scriptDiagnostics,
     deadCodeDiagnostics,
   );
+  if (config.scopeFiles) {
+    const scope = new Set(config.scopeFiles.map((f) => resolve(rootDir, f)));
+    merged = merged.filter((d) => scope.has(resolve(rootDir, d.file)));
+  }
   const diagnostics = await attachCodeSnippets(merged);
   const scored = scoreDiagnostics(diagnostics, { threshold });
 

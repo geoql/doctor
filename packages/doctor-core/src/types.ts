@@ -27,6 +27,7 @@ export interface AuditConfig {
   failOn?: 'error' | 'warn';
   deadCode?: boolean;
   threshold?: number;
+  scopeFiles?: string[];
 }
 
 export interface AuditReport {
