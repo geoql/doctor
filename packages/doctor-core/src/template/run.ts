@@ -21,6 +21,7 @@ export async function runTemplatePass(
       const { diagnostics } = rule.check({
         file,
         template: descriptor.template.ast,
+        script: descriptor.scriptSetup?.content ?? descriptor.script?.content,
       });
       for (const d of diagnostics) {
         all.push(override ? { ...d, severity: override } : d);

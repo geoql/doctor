@@ -17,6 +17,11 @@ const here = dirname(fileURLToPath(import.meta.url));
 const cleanDir = resolve(here, 'fixtures/clean');
 const violationDir = resolve(here, 'fixtures/violation');
 const disabledDir = resolve(here, 'fixtures/disabled');
+const vMemoLargeListDir = resolve(here, 'fixtures/v-memo-large-list');
+const noInlineObjectInListDir = resolve(
+  here,
+  'fixtures/no-inline-object-in-list',
+);
 const badConfig = resolve(here, 'fixtures/bad-config/doctor.config.ts');
 
 const ANSI = new RegExp(`${String.fromCharCode(27)}\\[`);
@@ -83,6 +88,40 @@ describe('run', () => {
     expect(report.score.bySeverity.error).toBe(1);
     const ruleIds = report.diagnostics.map((d: { ruleId: string }) => d.ruleId);
     expect(ruleIds).toContain('vue-doctor/template/v-for-has-key');
+  });
+
+  it('surfaces v-memo-on-large-list through the CLI on a real fixture', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      vMemoLargeListDir,
+      '--format',
+      'json',
+    ]);
+
+    expect(code).toBe(1);
+    expect(process.exitCode).toBe(1);
+    const report = JSON.parse(stdout.join(''));
+    const ruleIds = report.diagnostics.map((d: { ruleId: string }) => d.ruleId);
+    expect(ruleIds).toContain('vue-doctor/template/v-memo-on-large-list');
+  });
+
+  it('surfaces no-inline-object-prop-in-list through the CLI on a real fixture', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      noInlineObjectInListDir,
+      '--format',
+      'json',
+    ]);
+
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join(''));
+    const ruleIds = report.diagnostics.map((d: { ruleId: string }) => d.ruleId);
+    expect(ruleIds).toContain(
+      'vue-doctor/template/no-inline-object-prop-in-list',
+    );
+    expect(report.score.bySeverity.warn).toBeGreaterThan(0);
   });
 
   it('defaults to the agent reporter when no format flag is given', async () => {

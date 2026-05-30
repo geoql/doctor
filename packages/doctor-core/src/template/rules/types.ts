@@ -4,6 +4,7 @@ import type { Diagnostic } from '../../types.js';
 export interface TemplateRuleContext {
   file: string;
   template: RootNode;
+  script?: string;
 }
 
 export interface TemplateRuleResult {
