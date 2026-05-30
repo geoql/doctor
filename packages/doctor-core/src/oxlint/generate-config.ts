@@ -23,6 +23,7 @@ const DEFAULT_RULES: Record<string, Severity> = {
   'vue-doctor/no-destructure-reactive-without-to-refs': 'error',
   'vue-doctor/no-non-null-assertion-on-ref-value': 'warn',
   'vue-doctor/no-imports-from-vue-when-auto-imported': 'warn',
+  'vue-doctor/reactivity/watch-without-cleanup': 'warn',
 };
 
 function toOxlintSeverity(s: Severity): 'error' | 'warn' {

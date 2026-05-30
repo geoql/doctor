@@ -165,4 +165,38 @@ describe('reactivity/watch-without-cleanup', () => {
     );
     expect(reports).toEqual([]);
   });
+
+  it('does NOT fire for a NewExpression outside any watch', () => {
+    const reports = runRule(rule, `const o = new ResizeObserver(cb);`);
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire for a ReturnStatement outside any watch', () => {
+    const reports = runRule(rule, `function foo() { return () => {}; }`);
+    expect(reports).toEqual([]);
+  });
+
+  it('handles nested watches independently', () => {
+    const reports = runRule(
+      rule,
+      `watch(a, () => { window.addEventListener('resize', h); watch(b, () => { setInterval(tick, 1); }); return () => window.removeEventListener('resize', h); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('does NOT treat onCleanup as cleanup for plain watch', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => { window.addEventListener('resize', h); onCleanup(() => {}); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('does NOT treat onWatcherCleanup as cleanup for plain watch', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => { window.addEventListener('resize', h); onWatcherCleanup(() => {}); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
 });

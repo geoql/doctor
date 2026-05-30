@@ -20,27 +20,50 @@ export interface CapturedReport {
   column?: number;
 }
 
-const SKIP_KEYS = new Set(['type', 'loc', 'start', 'end', 'range', 'parent']);
+const WALK_SKIP = new Set(['type', 'loc', 'start', 'end', 'range', 'parent']);
 
-/**
- * Depth-first walk of an ESTree program, invoking a visitor keyed by node
- * `type` on enter. Mirrors how oxlint dispatches JS-plugin rule visitors.
- */
-function walk(node: AstNode, visit: (n: AstNode) => void): void {
-  visit(node);
+function attachParents(node: AstNode, parent: AstNode | null): void {
+  if (parent) (node as Record<string, unknown>)['parent'] = parent;
   for (const key of Object.keys(node)) {
-    if (SKIP_KEYS.has(key)) continue;
+    if (WALK_SKIP.has(key)) continue;
     const value = (node as Record<string, unknown>)[key];
     if (Array.isArray(value)) {
       for (const child of value) {
         if (child && typeof child === 'object' && 'type' in child) {
-          walk(child as AstNode, visit);
+          attachParents(child as AstNode, node);
         }
       }
     } else if (value && typeof value === 'object' && 'type' in value) {
-      walk(value as AstNode, visit);
+      attachParents(value as AstNode, node);
     }
   }
+}
+
+/**
+ * Depth-first walk of an ESTree program, dispatching enter and `:exit`
+ * visitors. Mirrors how oxlint dispatches JS-plugin rule visitors.
+ */
+function walk(
+  node: AstNode,
+  visitors: Record<string, (n: AstNode) => void>,
+): void {
+  const enter = visitors[node.type];
+  if (enter) enter(node);
+  for (const key of Object.keys(node)) {
+    if (WALK_SKIP.has(key)) continue;
+    const value = (node as Record<string, unknown>)[key];
+    if (Array.isArray(value)) {
+      for (const child of value) {
+        if (child && typeof child === 'object' && 'type' in child) {
+          walk(child as AstNode, visitors);
+        }
+      }
+    } else if (value && typeof value === 'object' && 'type' in value) {
+      walk(value as AstNode, visitors);
+    }
+  }
+  const exit = visitors[`${node.type}:exit`];
+  if (exit) exit(node);
 }
 
 /**
@@ -74,11 +97,10 @@ export function runRule(
     capabilities,
   };
 
+  const program = parsed.program as unknown as AstNode;
+  attachParents(program, null);
   const visitors = rule.create(context);
-  walk(parsed.program as unknown as AstNode, (node) => {
-    const visitor = visitors[node.type];
-    if (visitor) visitor(node);
-  });
+  walk(program, visitors);
 
   return reports;
 }

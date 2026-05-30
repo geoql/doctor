@@ -16,10 +16,12 @@ const OBSERVERS = new Set([
   'ResizeObserver',
 ]);
 const CLEANUP_CALLS = new Set(['onCleanup', 'onWatcherCleanup']);
-const SKIP_KEYS = new Set(['type', 'start', 'end']);
 
-function isNode(value: unknown): value is AstNode {
-  return typeof value === 'object' && value !== null;
+interface WatchFrame {
+  sourceCall: AstNode;
+  isEffect: boolean;
+  hasRegistration: boolean;
+  hasCleanup: boolean;
 }
 
 function calleeIdentifierName(node: AstNode): string | undefined {
@@ -45,62 +47,60 @@ function isFunction(node: AstNode | undefined): boolean {
   );
 }
 
-function isRegistration(node: AstNode): boolean {
-  if (node.type === 'NewExpression') {
-    const callee = node.callee as AstNode | undefined;
-    return (
-      callee?.type === 'Identifier' && OBSERVERS.has(callee.name as string)
-    );
-  }
-  if (node.type === 'CallExpression') {
-    const name = calledMethodName(node);
-    return name !== undefined && REGISTER_CALLS.has(name);
-  }
-  return false;
-}
-
-function returnsCleanup(node: AstNode): boolean {
-  return (
-    node.type === 'ReturnStatement' &&
-    isFunction(node.argument as AstNode | undefined)
-  );
-}
-
-function isCleanupCall(node: AstNode): boolean {
-  if (node.type !== 'CallExpression') return false;
-  const name = calledMethodName(node);
-  return name !== undefined && CLEANUP_CALLS.has(name);
-}
-
-function collect(node: AstNode, out: AstNode[]): void {
-  out.push(node);
-  for (const key of Object.keys(node)) {
-    if (SKIP_KEYS.has(key)) continue;
-    const value = (node as Record<string, unknown>)[key];
-    const children = Array.isArray(value) ? value : [value];
-    for (const child of children) {
-      if (isNode(child)) collect(child, out);
-    }
-  }
-}
-
 export const watchWithoutCleanup = defineRule({
   create(context: RuleContext) {
+    const watchStack: WatchFrame[] = [];
+
     return {
       CallExpression(node: AstNode) {
         const name = calleeIdentifierName(node);
-        if (name !== 'watch' && name !== 'watchEffect') return;
-        const isEffect = name === 'watchEffect';
-        const args = node.arguments as AstNode[];
-        const callback = args[isEffect ? 0 : 1];
-        if (!isFunction(callback)) return;
-        const nodes: AstNode[] = [];
-        collect(callback.body as AstNode, nodes);
-        if (!nodes.some(isRegistration)) return;
-        const hasCleanup =
-          nodes.some(returnsCleanup) || (isEffect && nodes.some(isCleanupCall));
-        if (hasCleanup) return;
-        context.report({ node, message: MESSAGE });
+        if (name === 'watch' || name === 'watchEffect') {
+          const isEffect = name === 'watchEffect';
+          const args = node.arguments as AstNode[];
+          const callback = args[isEffect ? 0 : 1];
+          if (!isFunction(callback)) return;
+          watchStack.push({
+            sourceCall: node,
+            isEffect,
+            hasRegistration: false,
+            hasCleanup: false,
+          });
+          return;
+        }
+        if (watchStack.length === 0) return;
+        const top = watchStack[watchStack.length - 1]!;
+        const method = calledMethodName(node);
+        if (method !== undefined && REGISTER_CALLS.has(method)) {
+          top.hasRegistration = true;
+        }
+        if (method !== undefined && CLEANUP_CALLS.has(method) && top.isEffect) {
+          top.hasCleanup = true;
+        }
+      },
+      NewExpression(node: AstNode) {
+        if (watchStack.length === 0) return;
+        const callee = node.callee as AstNode | undefined;
+        if (
+          callee?.type === 'Identifier' &&
+          OBSERVERS.has(callee.name as string)
+        ) {
+          watchStack[watchStack.length - 1]!.hasRegistration = true;
+        }
+      },
+      ReturnStatement(node: AstNode) {
+        if (watchStack.length === 0) return;
+        if (isFunction(node.argument as AstNode | undefined)) {
+          watchStack[watchStack.length - 1]!.hasCleanup = true;
+        }
+      },
+      'CallExpression:exit'(node: AstNode) {
+        if (watchStack.length === 0) return;
+        const top = watchStack[watchStack.length - 1]!;
+        if (top.sourceCall !== node) return;
+        watchStack.pop();
+        if (top.hasRegistration && !top.hasCleanup) {
+          context.report({ node, message: MESSAGE });
+        }
       },
     };
   },
