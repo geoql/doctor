@@ -129,6 +129,10 @@ describe('audit', () => {
       'package.json': JSON.stringify({
         name: 'test',
         dependencies: { vue: '^3.0.0' },
+        devDependencies: {
+          'vue-tsc': '^2.0.0',
+          'eslint-plugin-vue': '^9.0.0',
+        },
       }),
       'index.html': '<div id="app"></div>',
       'src/main.ts':
@@ -140,6 +144,48 @@ describe('audit', () => {
     );
     const report = await audit({ rootDir: dir });
     expect(report.score).toBe(100);
+  });
+
+  it('remaps a build-quality diagnostic severity via a rule override', async () => {
+    const dir = await fixture({
+      'package.json': JSON.stringify({
+        name: 'test',
+        dependencies: { vue: '^3.0.0' },
+        devDependencies: { 'eslint-plugin-vue': '^9.0.0' },
+      }),
+    });
+    const report = await audit({
+      rootDir: dir,
+      deadCode: false,
+      rules: { 'vue-doctor/build-quality/vue-tsc-in-devDeps': 'error' },
+    });
+    const diag = report.diagnostics.find(
+      (d) => d.ruleId === 'vue-doctor/build-quality/vue-tsc-in-devDeps',
+    );
+    expect(diag).toBeDefined();
+    expect(diag?.severity).toBe('error');
+    expect(diag?.source).toBe('project');
+    expect(report.exitCode).toBe(1);
+  });
+
+  it('disables a build-quality diagnostic via an off rule override', async () => {
+    const dir = await fixture({
+      'package.json': JSON.stringify({
+        name: 'test',
+        dependencies: { vue: '^3.0.0' },
+        devDependencies: { 'eslint-plugin-vue': '^9.0.0' },
+      }),
+    });
+    const report = await audit({
+      rootDir: dir,
+      deadCode: false,
+      rules: { 'vue-doctor/build-quality/vue-tsc-in-devDeps': 'off' },
+    });
+    expect(
+      report.diagnostics.some(
+        (d) => d.ruleId === 'vue-doctor/build-quality/vue-tsc-in-devDeps',
+      ),
+    ).toBe(false);
   });
 
   it('restricts diagnostics to scopeFiles when provided', async () => {

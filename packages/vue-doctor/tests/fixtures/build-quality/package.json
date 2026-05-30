@@ -1,0 +1,9 @@
+{
+  "name": "build-quality-fixture",
+  "dependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

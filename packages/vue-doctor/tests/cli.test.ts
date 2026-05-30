@@ -30,6 +30,7 @@ const deepVBindSpreadInListDir = resolve(
   here,
   'fixtures/deep-v-bind-spread-in-list',
 );
+const buildQualityDir = resolve(here, 'fixtures/build-quality');
 const badConfig = resolve(here, 'fixtures/bad-config/doctor.config.ts');
 
 const ANSI = new RegExp(`${String.fromCharCode(27)}\\[`);
@@ -166,6 +167,32 @@ describe('run', () => {
       'vue-doctor/template/avoid-deep-v-bind-spread-in-list',
     );
     expect(report.score.bySeverity.info).toBeGreaterThan(0);
+  });
+
+  it('surfaces multiple build-quality project checks through the CLI on a real fixture', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      buildQualityDir,
+      '--no-dead-code',
+      '--format',
+      'json',
+    ]);
+
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join(''));
+    const projectDiags = report.diagnostics.filter(
+      (d: { source: string }) => d.source === 'project',
+    );
+    const ruleIds = projectDiags.map((d: { ruleId: string }) => d.ruleId);
+    expect(ruleIds).toContain(
+      'vue-doctor/build-quality/tsconfig-strict-required',
+    );
+    expect(ruleIds).toContain('vue-doctor/build-quality/vue-tsc-in-devDeps');
+    expect(ruleIds).toContain(
+      'vue-doctor/build-quality/eslint-plugin-vue-installed',
+    );
+    expect(projectDiags.length).toBeGreaterThanOrEqual(3);
   });
 
   it('defaults to the agent reporter when no format flag is given', async () => {

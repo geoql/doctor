@@ -3,7 +3,12 @@ import type { ProjectInfoLite } from './reporters/types.js';
 
 export type Severity = 'error' | 'warn' | 'info';
 
-export type DiagnosticSource = 'template' | 'oxlint' | 'sfc' | 'dead-code';
+export type DiagnosticSource =
+  | 'template'
+  | 'oxlint'
+  | 'sfc'
+  | 'dead-code'
+  | 'project';
 
 export interface Diagnostic {
   file: string;
