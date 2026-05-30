@@ -516,6 +516,55 @@ describe('run', () => {
     }
   });
 
+  it('--full forces a complete scan, overriding --diff', async () => {
+    const gitDir = mkdtempSync(join(tmpdir(), 'cli-full-'));
+    const sh = (...args: string[]) =>
+      execFileSync('git', args, { cwd: gitDir, stdio: 'ignore' });
+    try {
+      sh('init');
+      sh('config', 'user.email', 't@e.com');
+      sh('config', 'user.name', 'T');
+      mkdirSync(join(gitDir, 'src'), { recursive: true });
+      writeFileSync(join(gitDir, 'package.json'), '{"name":"x"}\n');
+      writeFileSync(
+        join(gitDir, 'src', 'Committed.vue'),
+        '<template><ul><li v-for="i in items">{{ i }}</li></ul></template>\n',
+      );
+      sh('add', '.');
+      sh('commit', '-m', 'base');
+      // No working-tree changes: --diff alone would find nothing.
+      const diffCode = await run([
+        'node',
+        'vue-doctor',
+        '--diff',
+        '--no-dead-code',
+        '--json',
+        gitDir,
+      ]);
+      expect(diffCode).toBe(0);
+      expect(JSON.parse(stdout.join('')).diagnostics).toEqual([]);
+      stdout.length = 0;
+
+      // --full ignores --diff and scans the committed (unchanged) file.
+      const fullCode = await run([
+        'node',
+        'vue-doctor',
+        '--diff',
+        '--full',
+        '--no-dead-code',
+        '--json',
+        gitDir,
+      ]);
+      expect(fullCode).toBe(1);
+      const files = JSON.parse(stdout.join('')).diagnostics.map(
+        (d: { file: string }) => d.file,
+      );
+      expect(files.some((f: string) => f.endsWith('Committed.vue'))).toBe(true);
+    } finally {
+      rmSync(gitDir, { recursive: true, force: true });
+    }
+  });
+
   it('scopes findings to staged files with --staged in a git repo', async () => {
     const gitDir = mkdtempSync(join(tmpdir(), 'cli-staged-'));
     const sh = (...args: string[]) =>

@@ -46,6 +46,7 @@ interface CliFlags {
   annotations?: boolean;
   diff?: boolean;
   staged?: boolean;
+  full?: boolean;
 }
 
 function toArray(value: string | string[] | undefined): string[] | undefined {
@@ -141,6 +142,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--annotations', 'Emit GitHub Actions ::error::/::warning:: lines')
     .option('--diff', 'Only report findings in files changed vs HEAD')
     .option('--staged', 'Only report findings in staged files')
+    .option('--full', 'Force a complete scan (overrides --diff/--staged)')
     .option('--output <file>', 'Write the report to a file instead of stdout')
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
@@ -169,7 +171,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           throw new Error('--diff and --staged are mutually exclusive.');
         }
         let scopeFiles: string[] | undefined;
-        if (flags.diff || flags.staged) {
+        if (!flags.full && (flags.diff || flags.staged)) {
           scopeFiles = await listChangedFiles({
             rootDir,
             mode: flags.staged ? 'staged' : 'diff',
