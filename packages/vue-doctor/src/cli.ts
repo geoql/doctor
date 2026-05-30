@@ -4,6 +4,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import {
   audit,
+  encodeAnnotations,
   format,
   loadDoctorConfig,
   mergeCliOverrides,
@@ -41,6 +42,7 @@ interface CliFlags {
   deadCode?: boolean;
   threshold?: string;
   score?: boolean;
+  annotations?: boolean;
 }
 
 function toArray(value: string | string[] | undefined): string[] | undefined {
@@ -133,6 +135,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--no-dead-code', 'Skip the dead-code (knip) analysis pass')
     .option('--threshold <n>', 'Minimum passing score (0-100)')
     .option('--score', 'Output only the numeric score (for piping)')
+    .option('--annotations', 'Emit GitHub Actions ::error::/::warning:: lines')
     .option('--output <file>', 'Write the report to a file instead of stdout')
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
@@ -149,8 +152,13 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         const ruleOverrides = parseRuleOverrides(toArray(flags.rule));
         const threshold =
           flags.threshold === undefined ? undefined : Number(flags.threshold);
-        if (threshold !== undefined && Number.isNaN(threshold)) {
-          throw new Error(`Invalid --threshold "${flags.threshold}".`);
+        if (
+          threshold !== undefined &&
+          (!Number.isInteger(threshold) || threshold < 0 || threshold > 100)
+        ) {
+          throw new Error(
+            `--threshold must be an integer 0-100, got "${flags.threshold}".`,
+          );
         }
         const resolved = await loadDoctorConfig(
           rootDir,
@@ -196,6 +204,14 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           writeFileSync(resolve(flags.output), out);
         } else {
           process.stdout.write(out);
+        }
+        if (
+          flags.annotations &&
+          reporter !== 'json' &&
+          reporter !== 'json-compact' &&
+          report.diagnostics.length > 0
+        ) {
+          process.stdout.write(`${encodeAnnotations(report.diagnostics)}\n`);
         }
         process.exitCode = report.exitCode;
       } catch (err) {

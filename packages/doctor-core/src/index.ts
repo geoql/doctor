@@ -1,3 +1,4 @@
+export { encodeAnnotation, encodeAnnotations } from './annotations.js';
 export { audit } from './audit.js';
 export {
   checkDeadCode,

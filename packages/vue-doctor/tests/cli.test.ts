@@ -364,7 +364,48 @@ describe('run', () => {
     ]);
 
     expect(code).toBe(2);
-    expect(stderr.join('')).toContain('Invalid --threshold');
+    expect(stderr.join('')).toContain('--threshold must be an integer');
+  });
+
+  it('exits 2 on an out-of-range --threshold', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--threshold',
+      '150',
+      cleanDir,
+    ]);
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('0-100');
+  });
+
+  it('emits GitHub Actions annotations with --annotations on findings', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--annotations',
+      violationDir,
+    ]);
+    expect(code).toBe(1);
+    expect(stdout.join('')).toMatch(/::error file=/);
+  });
+
+  it('does not emit annotations on a clean project', async () => {
+    const code = await run(['node', 'vue-doctor', '--annotations', cleanDir]);
+    expect(code).toBe(0);
+    expect(stdout.join('')).not.toContain('::error');
+  });
+
+  it('suppresses annotations under --json to keep output parseable', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--annotations',
+      '--json',
+      violationDir,
+    ]);
+    expect(code).toBe(1);
+    expect(() => JSON.parse(stdout.join(''))).not.toThrow();
   });
 
   it('outputs only the integer score with --score', async () => {
