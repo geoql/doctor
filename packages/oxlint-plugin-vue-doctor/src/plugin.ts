@@ -9,6 +9,7 @@ import { noNonNullAssertionOnRefValue } from './rules/ai-slop/no-non-null-assert
 import { preferReadonlyForInjected } from './rules/reactivity/prefer-readonly-for-injected.js';
 import { preferShallowRefForLargeData } from './rules/reactivity/prefer-shallowRef-for-large-data.js';
 import { watchWithoutCleanup } from './rules/reactivity/watch-without-cleanup.js';
+import { preferDefineAsyncComponentOnRoute } from './rules/performance/prefer-defineAsyncComponent-on-route.js';
 
 export const plugin: Plugin = {
   meta: { name: 'vue-doctor' },
@@ -25,5 +26,7 @@ export const plugin: Plugin = {
     'composition/prefer-script-setup-for-new-files':
       preferScriptSetupForNewFiles,
     'composition/defineProps-typed': definePropsTyped,
+    'performance/prefer-defineAsyncComponent-on-route':
+      preferDefineAsyncComponentOnRoute,
   },
 };

@@ -6,7 +6,7 @@ describe('plugin index', () => {
     expect(plugin.meta.name).toBe('vue-doctor');
   });
 
-  it('registers all ten rules', () => {
+  it('registers all eleven rules', () => {
     expect(Object.keys(plugin.rules).sort()).toEqual(
       [
         'no-destructure-props-without-to-refs',
@@ -19,6 +19,7 @@ describe('plugin index', () => {
         'reactivity/prefer-readonly-for-injected',
         'composition/prefer-script-setup-for-new-files',
         'composition/defineProps-typed',
+        'performance/prefer-defineAsyncComponent-on-route',
       ].sort(),
     );
   });

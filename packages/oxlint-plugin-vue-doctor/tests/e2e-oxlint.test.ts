@@ -90,4 +90,15 @@ describe('e2e: real oxlint integration', () => {
       'vue-doctor(composition/defineProps-typed)',
     );
   });
+
+  it('performance/prefer-defineAsyncComponent-on-route fires on a bare component reference', () => {
+    const result = runOxlint(
+      'performance/prefer-defineAsyncComponent-on-route',
+      `const routes = [{ path: '/', component: Home }];`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).toContain(
+      'vue-doctor(performance/prefer-defineAsyncComponent-on-route)',
+    );
+  });
 });
