@@ -47,7 +47,7 @@
     "format": "vp fmt",
     "format:check": "vp fmt --check",
     "build": "vp pack",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

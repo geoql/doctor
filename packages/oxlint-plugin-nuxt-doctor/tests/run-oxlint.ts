@@ -1,0 +1,82 @@
+import { execFileSync, execSync } from 'node:child_process';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+export interface OxlintDiagnostic {
+  code?: string;
+  msg?: string;
+  severity?: string;
+}
+
+export interface OxlintResult {
+  diagnostics: OxlintDiagnostic[];
+}
+
+const PLUGIN_DIST = resolve(import.meta.dirname, '../dist/index.js');
+
+const OXLINT_BIN = (() => {
+  const rootDir = resolve(import.meta.dirname, '../../..');
+  const found = execSync(
+    `find ${rootDir}/node_modules/.pnpm -path '*oxlint@1.67.0*/node_modules/oxlint/bin/oxlint' | head -1`,
+    { encoding: 'utf-8' },
+  ).trim();
+  if (!found) {
+    throw new Error(
+      'Real oxlint 1.67 binary not found. E2E tests require the actual oxlint runtime.',
+    );
+  }
+  return found;
+})();
+
+export function runOxlint(
+  ruleId: string,
+  fixture: string,
+  fixtureExt = '.ts',
+): OxlintResult {
+  const tmpDir = resolve(import.meta.dirname, '.e2e-tmp');
+  mkdirSync(tmpDir, { recursive: true });
+  const configPath = resolve(tmpDir, '.oxlintrc.json');
+  const fixturePath = resolve(tmpDir, `fixture${fixtureExt}`);
+  let stdout = '';
+  try {
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        jsPlugins: [PLUGIN_DIST],
+        rules: { [`nuxt-doctor/${ruleId}`]: 'warn' },
+      }),
+    );
+    writeFileSync(fixturePath, fixture);
+    stdout = execFileSync(
+      OXLINT_BIN,
+      ['--format', 'json', '-c', configPath, fixturePath],
+      { encoding: 'utf-8', timeout: 30_000 },
+    );
+  } catch (err: unknown) {
+    const error = err as { stdout?: string; stderr?: string };
+    if (error.stdout) {
+      stdout = error.stdout;
+    } else {
+      throw new Error(
+        `oxlint failed with no output: ${error.stderr ?? String(err)}`,
+      );
+    }
+  } finally {
+    rmSync(tmpDir, { recursive: true, force: true });
+  }
+  return JSON.parse(stdout) as OxlintResult;
+}
+
+export function firedRuleIds(result: OxlintResult): string[] {
+  return result.diagnostics
+    .map((d) => d.code)
+    .filter((code): code is string => code !== undefined);
+}
+
+export function hasStackOverflow(result: OxlintResult): boolean {
+  return result.diagnostics.some(
+    (d) =>
+      (d.msg?.includes('call stack') ?? false) ||
+      (d.msg?.includes('JS plugin') ?? false),
+  );
+}

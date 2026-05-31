@@ -3,6 +3,9 @@ import {
   audit,
   defineConfig,
   format,
+  isNuxtLayoutFile,
+  isNuxtPageFile,
+  isNuxtServerFile,
   loadDoctorConfig,
   OxlintOutputTooLarge,
   OxlintSpawnFailed,
@@ -14,6 +17,12 @@ describe('package index re-exports', () => {
     expect(typeof loadDoctorConfig).toBe('function');
     expect(typeof defineConfig).toBe('function');
     expect(typeof format).toBe('function');
+  });
+
+  it('exposes the nuxt file-role classifiers from the package index', () => {
+    expect(isNuxtPageFile('app/pages/index.vue')).toBe(true);
+    expect(isNuxtServerFile('server/api/x.ts')).toBe(true);
+    expect(isNuxtLayoutFile('layouts/default.vue')).toBe(true);
   });
 
   it('exposes the oxlint spawn error classes', () => {

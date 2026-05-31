@@ -91,12 +91,17 @@ describe('detectProject', () => {
     expect(info.nuxtCompatibilityVersion).toBe(4);
     expect(info.nitroPreset).toBe('cloudflare-pages');
     expect(info.hasVueRouter).toBe(false);
+    expect(info.nuxtConfigPath).toBe(join(dir, 'nuxt.config.ts'));
+    expect(info.hasWranglerConfig).toBe(true);
     expect(caps(info.capabilities)).toEqual([
       'auto-imports:vue',
       'cf-pages:enabled',
       'components:auto',
+      'nuxt-config',
+      'nuxt4',
       'nuxt:4',
       'pinia',
+      'wrangler',
     ]);
   });
 
@@ -113,6 +118,8 @@ describe('detectProject', () => {
       'auto-imports:vue',
       'components:auto',
       'nitro:node-server',
+      'nuxt-config',
+      'nuxt4',
       'nuxt:4',
       'nuxt:4.4',
     ]);
@@ -128,6 +135,7 @@ describe('detectProject', () => {
     expect(info.nuxtCompatibilityVersion).toBe(4);
     expect(info.capabilities.has('nuxt:4')).toBe(true);
     expect(info.capabilities.has('nuxt:4.4')).toBe(false);
+    expect(info.capabilities.has('nuxt4')).toBe(false);
   });
 
   it('reports compatibilityVersion 3 from the nuxt config', async () => {
@@ -174,6 +182,10 @@ describe('detectProject', () => {
     });
     const info = await detectProject(dir);
     expect(info.capabilities.has('cf-pages:enabled')).toBe(true);
+    expect(info.hasWranglerConfig).toBe(true);
+    expect(info.capabilities.has('wrangler')).toBe(true);
+    expect(info.nuxtConfigPath).toBeNull();
+    expect(info.hasAppDir).toBe(false);
   });
 
   it('detects cloudflare pages from the nitro preset without wrangler files', async () => {
@@ -315,6 +327,97 @@ describe('detectProject', () => {
     const info = await detectProject(dir);
     expect(info.framework).toBe('vue');
     expect(info.vueVersion).toBe('2.7.0');
+    expect(caps(info.capabilities)).toEqual([]);
+  });
+
+  it('reports null/false structure fields for a bare project', async () => {
+    const dir = await tmp();
+    const info = await detectProject(dir);
+    expect(info.nuxtConfigPath).toBeNull();
+    expect(info.hasAppDir).toBe(false);
+    expect(info.appDirPath).toBeNull();
+    expect(info.hasServerDir).toBe(false);
+    expect(info.hasPagesDir).toBe(false);
+    expect(info.hasWranglerConfig).toBe(false);
+  });
+
+  it('resolves a .js nuxt config path and emits the nuxt-config capability', async () => {
+    const dir = await scaffold({
+      'package.json': JSON.stringify({ dependencies: { nuxt: '^4.0.0' } }),
+      'nuxt.config.js': `export default defineNuxtConfig({});`,
+    });
+    const info = await detectProject(dir);
+    expect(info.nuxtConfigPath).toBe(join(dir, 'nuxt.config.js'));
+    expect(info.capabilities.has('nuxt-config')).toBe(true);
+  });
+
+  it('detects the Nuxt 4 app directory and its capability', async () => {
+    const dir = await scaffold({
+      'package.json': JSON.stringify({ dependencies: { nuxt: '^4.0.0' } }),
+      'app/app.vue': '<template><div /></template>',
+    });
+    const info = await detectProject(dir);
+    expect(info.hasAppDir).toBe(true);
+    expect(info.appDirPath).toBe(join(dir, 'app'));
+    expect(info.capabilities.has('app-dir')).toBe(true);
+  });
+
+  it('detects the server directory and its capability', async () => {
+    const dir = await scaffold({
+      'package.json': JSON.stringify({ dependencies: { nuxt: '^4.0.0' } }),
+      'server/api/ping.ts': 'export default defineEventHandler(() => "ok");',
+    });
+    const info = await detectProject(dir);
+    expect(info.hasServerDir).toBe(true);
+    expect(info.capabilities.has('server-dir')).toBe(true);
+  });
+
+  it('detects a Nuxt 4 app/pages directory as a pages directory', async () => {
+    const dir = await scaffold({
+      'package.json': JSON.stringify({ dependencies: { nuxt: '^4.0.0' } }),
+      'app/pages/index.vue': '<template><div /></template>',
+    });
+    const info = await detectProject(dir);
+    expect(info.hasAppDir).toBe(true);
+    expect(info.hasPagesDir).toBe(true);
+    expect(info.capabilities.has('pages-dir')).toBe(true);
+  });
+
+  it('detects a flat pages directory as a pages directory', async () => {
+    const dir = await scaffold({
+      'package.json': JSON.stringify({ dependencies: { nuxt: '^4.0.0' } }),
+      'pages/index.vue': '<template><div /></template>',
+    });
+    const info = await detectProject(dir);
+    expect(info.hasAppDir).toBe(false);
+    expect(info.hasPagesDir).toBe(true);
+    expect(info.capabilities.has('pages-dir')).toBe(true);
+  });
+
+  it('emits the nuxt4 capability when the nuxt major is 4 or newer', async () => {
+    const dir = await scaffold({
+      'package.json': JSON.stringify({ dependencies: { nuxt: '^4.0.0' } }),
+    });
+    const info = await detectProject(dir);
+    expect(info.capabilities.has('nuxt4')).toBe(true);
+  });
+
+  it('omits structure capabilities for a non-framework project even when the dirs exist', async () => {
+    const dir = await scaffold({
+      'package.json': JSON.stringify({ dependencies: { express: '^4.19.0' } }),
+      'app/index.ts': 'export const x = 1;',
+      'server/index.ts': 'export const y = 2;',
+      'pages/index.vue': '<template><div /></template>',
+      'wrangler.toml': 'name = "app"\n',
+      'nuxt.config.ts': 'export default {};',
+    });
+    const info = await detectProject(dir);
+    expect(info.framework).toBe('unknown');
+    expect(info.hasAppDir).toBe(true);
+    expect(info.hasServerDir).toBe(true);
+    expect(info.hasPagesDir).toBe(true);
+    expect(info.hasWranglerConfig).toBe(true);
+    expect(info.nuxtConfigPath).toBe(join(dir, 'nuxt.config.ts'));
     expect(caps(info.capabilities)).toEqual([]);
   });
 });

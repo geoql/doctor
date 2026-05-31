@@ -2,7 +2,7 @@ import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
   lint: {
-    plugins: ['typescript', 'import'],
+    plugins: ['typescript', 'vue', 'import'],
     ignorePatterns: [
       '.nuxt',
       '.output',
@@ -13,6 +13,7 @@ export default defineConfig({
       '*.min.js',
       '*.min.css',
       'packages/*/dist',
+      '**/tests/fixtures/**',
     ],
   },
   fmt: {

@@ -1,5 +1,9 @@
 import { join } from 'node:path';
 import { gte, major, minor } from 'semver';
+import {
+  directoryExists,
+  resolveExistingFile,
+} from './project-info/fs-checks.js';
 import { findMonorepoRoot } from './project-info/find-monorepo-root.js';
 import { parseNuxtConfig } from './project-info/parse-nuxt-config.js';
 import { parseNuxtVersion } from './project-info/parse-nuxt-version.js';
@@ -29,6 +33,11 @@ interface DetectionInput {
   nuxtCompatibilityVersion: 3 | 4 | null;
   monorepoKind: MonorepoKind;
   hasWrangler: boolean;
+  isNuxtMajor4: boolean;
+  hasNuxtConfig: boolean;
+  hasAppDir: boolean;
+  hasServerDir: boolean;
+  hasPagesDir: boolean;
 }
 
 function hasDependency(pkg: PackageJson | null, name: string): boolean {
@@ -64,6 +73,13 @@ function buildCapabilities(input: DetectionInput): Set<Capability> {
   if (input.nuxtCompatibilityVersion === 4) caps.add('nuxt:4');
   if (input.nuxtVersion && gte(input.nuxtVersion, '4.4.0'))
     caps.add('nuxt:4.4');
+  if (input.isNuxtMajor4) caps.add('nuxt4');
+
+  if (input.hasNuxtConfig) caps.add('nuxt-config');
+  if (input.hasAppDir) caps.add('app-dir');
+  if (input.hasServerDir) caps.add('server-dir');
+  if (input.hasPagesDir) caps.add('pages-dir');
+  if (input.hasWrangler) caps.add('wrangler');
 
   if (input.hasAutoImports) caps.add('auto-imports:vue');
   if (input.hasComponentsAutoImport) caps.add('components:auto');
@@ -129,9 +145,27 @@ export async function detectProject(
   const tsconfigExists = await pathExists(join(rootDirectory, 'tsconfig.json'));
   const hasTypescript = hasDependency(pkg, 'typescript') || tsconfigExists;
 
-  const hasWrangler =
-    (await pathExists(join(rootDirectory, 'wrangler.toml'))) ||
-    (await pathExists(join(rootDirectory, 'wrangler.jsonc')));
+  const wranglerConfigPath = resolveExistingFile(rootDirectory, [
+    'wrangler.toml',
+    'wrangler.jsonc',
+    'wrangler.json',
+  ]);
+  const hasWranglerConfig = wranglerConfigPath !== null;
+
+  const nuxtConfigPath = resolveExistingFile(rootDirectory, [
+    'nuxt.config.ts',
+    'nuxt.config.js',
+    'nuxt.config.mjs',
+  ]);
+
+  const appDirPath = join(rootDirectory, 'app');
+  const hasAppDir = directoryExists(appDirPath);
+  const hasServerDir = directoryExists(join(rootDirectory, 'server'));
+  const hasPagesDir =
+    (hasAppDir && directoryExists(join(appDirPath, 'pages'))) ||
+    directoryExists(join(rootDirectory, 'pages'));
+
+  const isNuxtMajor4 = nuxtVersion !== null && major(nuxtVersion) >= 4;
 
   const capabilities = buildCapabilities({
     framework,
@@ -146,7 +180,12 @@ export async function detectProject(
     nitroPreset,
     nuxtCompatibilityVersion,
     monorepoKind,
-    hasWrangler,
+    hasWrangler: hasWranglerConfig,
+    isNuxtMajor4,
+    hasNuxtConfig: nuxtConfigPath !== null,
+    hasAppDir,
+    hasServerDir,
+    hasPagesDir,
   });
 
   return {
@@ -163,6 +202,12 @@ export async function detectProject(
     nitroPreset,
     nuxtCompatibilityVersion,
     monorepoKind,
+    nuxtConfigPath,
+    hasAppDir,
+    appDirPath: hasAppDir ? appDirPath : null,
+    hasServerDir,
+    hasPagesDir,
+    hasWranglerConfig,
     capabilities,
   };
 }

@@ -18,5 +18,11 @@ export interface ProjectInfo {
   readonly nitroPreset: string | null;
   readonly nuxtCompatibilityVersion: 3 | 4 | null;
   readonly monorepoKind: MonorepoKind;
+  readonly nuxtConfigPath: string | null;
+  readonly hasAppDir: boolean;
+  readonly appDirPath: string | null;
+  readonly hasServerDir: boolean;
+  readonly hasPagesDir: boolean;
+  readonly hasWranglerConfig: boolean;
   readonly capabilities: ReadonlySet<Capability>;
 }

@@ -34,6 +34,11 @@ export {
   type DirectiveSet,
 } from './disables/index.js';
 export { listChangedFiles, type GitScopeMode } from './git-scope.js';
+export {
+  isNuxtLayoutFile,
+  isNuxtPageFile,
+  isNuxtServerFile,
+} from './nuxt/file-role.js';
 export { OxlintOutputTooLarge, OxlintSpawnFailed } from './oxlint/errors.js';
 export { agentReport } from './reporters/agent.js';
 export { docsUrl } from './reporters/docs-url.js';
