@@ -209,6 +209,14 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
   },
 
   {
+    id: 'vue-doctor/deps/vue-major-current',
+    severity: 'info',
+    category: 'deps',
+    source: 'doctor',
+    recommended: false,
+  },
+
+  {
     id: 'dead-code/unused-file',
     severity: 'warn',
     category: 'dead-code',
