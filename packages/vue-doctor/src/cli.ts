@@ -307,14 +307,20 @@ function resolveFormat(flags: CliFlags): ReporterFormat {
   if (flags.jsonCompact) return 'json-compact';
   if (flags.json) return 'json';
   const kind = flags.format;
-  if (
-    kind === 'agent' ||
+  const userPickedFormat =
     kind === 'pretty' ||
     kind === 'json' ||
     kind === 'json-compact' ||
-    kind === 'sarif'
-  ) {
+    kind === 'sarif' ||
+    kind === 'html';
+  if (userPickedFormat) {
     return kind;
+  }
+  if (
+    typeof flags.output === 'string' &&
+    flags.output.toLowerCase().endsWith('.html')
+  ) {
+    return 'html';
   }
   return 'agent';
 }
@@ -330,7 +336,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .command('[path]', 'Audit a Vue project')
     .option(
       '--format <kind>',
-      'Output format (agent|pretty|json|json-compact|sarif)',
+      'Output format (agent|pretty|json|json-compact|sarif|html)',
       {
         default: 'agent',
       },

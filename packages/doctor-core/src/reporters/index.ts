@@ -1,4 +1,5 @@
 import { agentReport } from './agent.js';
+import { htmlReport } from './html.js';
 import { jsonCompactReport } from './json-compact.js';
 import { jsonReport } from './json.js';
 import { prettyReport } from './pretty.js';
@@ -11,7 +12,8 @@ export type ReporterFormat =
   | 'pretty'
   | 'json'
   | 'json-compact'
-  | 'sarif';
+  | 'sarif'
+  | 'html';
 
 export { renderVerboseTrace, type VerboseTraceOptions };
 
@@ -24,5 +26,6 @@ export function format(
   if (kind === 'json') return jsonReport(input);
   if (kind === 'json-compact') return jsonCompactReport(input);
   if (kind === 'sarif') return sarifReport(input);
+  if (kind === 'html') return htmlReport(input);
   return agentReport(input, options);
 }

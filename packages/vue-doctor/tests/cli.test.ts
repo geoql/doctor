@@ -255,6 +255,62 @@ describe('run', () => {
     expect(() => JSON.parse(text)).toThrow();
   });
 
+  it('emits self-contained HTML with --format html', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-dead-code',
+      '--no-ci',
+      '--format',
+      'html',
+      violationDir,
+    ]);
+    expect(code).toBe(1);
+    const html = stdout.join('');
+    expect(html.startsWith('<!DOCTYPE html>')).toBe(true);
+    expect(html).toContain('<html lang="en">');
+    expect(html).toContain('<style>');
+    expect(html).not.toContain('<link rel="stylesheet"');
+    expect(html).not.toContain('<script src=');
+    expect(html).toContain('vue-doctor/template/v-for-has-key');
+  });
+
+  it('auto-detects html format when --output ends with .html', async () => {
+    const outFile = resolve(import.meta.dirname, '.cli-html-output.html');
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-dead-code',
+      '--no-ci',
+      '--output',
+      outFile,
+      violationDir,
+    ]);
+    expect(code).toBe(1);
+    const written = readFileSync(outFile, 'utf-8');
+    expect(written.startsWith('<!DOCTYPE html>')).toBe(true);
+    expect(written).toContain('vue-doctor/template/v-for-has-key');
+    rmSync(outFile, { force: true });
+  });
+
+  it('--output report.txt does NOT auto-detect html (uses agent reporter)', async () => {
+    const outFile = resolve(import.meta.dirname, '.cli-txt-output.txt');
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-dead-code',
+      '--no-ci',
+      '--output',
+      outFile,
+      violationDir,
+    ]);
+    expect(code).toBe(1);
+    const written = readFileSync(outFile, 'utf-8');
+    expect(written).not.toContain('<!DOCTYPE html>');
+    expect(written).toContain('SCORE:');
+    rmSync(outFile, { force: true });
+  });
+
   it('emits SARIF v2.1.0 with --format sarif', async () => {
     const code = await run([
       'node',

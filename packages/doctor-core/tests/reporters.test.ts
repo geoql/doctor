@@ -469,6 +469,13 @@ describe('format dispatch', () => {
     expect(parsed.version).toBe('2.1.0');
     expect(parsed.$schema).toContain('sarif-schema-2.1.0.json');
   });
+
+  it('routes to the html reporter', () => {
+    const out = format(makeInput(), 'html');
+    expect(out.startsWith('<!DOCTYPE html>')).toBe(true);
+    expect(out).toContain('<html lang="en">');
+    expect(out).toContain('@geoql/vue-doctor');
+  });
 });
 
 describe('renderVerboseTrace', () => {
