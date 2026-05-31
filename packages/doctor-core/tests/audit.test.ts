@@ -60,6 +60,19 @@ describe('audit', () => {
     }
   });
 
+  it('exits 0 with failOn=none even when errors are present', async () => {
+    const dir = await fixture({
+      'Bad.vue': '<template><li v-for="i in items">{{ i }}</li></template>\n',
+    });
+    const report = await audit({
+      rootDir: dir,
+      deadCode: false,
+      failOn: 'none',
+    });
+    expect(report.errorCount).toBeGreaterThan(0);
+    expect(report.exitCode).toBe(0);
+  });
+
   it('flags a mixed Options/Composition SFC via the sfc pass', async () => {
     const dir = await fixture({
       'mixed.vue':

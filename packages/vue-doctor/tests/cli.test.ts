@@ -348,7 +348,7 @@ describe('run', () => {
     expect(report.score.passed).toBe(true);
   });
 
-  it('falls back to error severity when --fail-on is an unknown value', async () => {
+  it('exits 2 on an unknown --fail-on value (no silent fallback)', async () => {
     const code = await run([
       'node',
       'vue-doctor',
@@ -358,13 +358,13 @@ describe('run', () => {
       '--fail-on',
       'bogus',
     ]);
-
-    expect(code).toBe(1);
-    const report = JSON.parse(stdout.join(''));
-    expect(report.score.bySeverity.error).toBe(1);
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain(
+      "--fail-on must be 'error', 'warn', or 'none'",
+    );
   });
 
-  it('falls back to error severity when --fail-on is empty (falsy)', async () => {
+  it('exits 2 on an empty --fail-on value (treated as invalid)', async () => {
     const code = await run([
       'node',
       'vue-doctor',
@@ -374,10 +374,10 @@ describe('run', () => {
       '--fail-on',
       '',
     ]);
-
-    expect(code).toBe(1);
-    const report = JSON.parse(stdout.join(''));
-    expect(report.score.bySeverity.error).toBe(1);
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain(
+      "--fail-on must be 'error', 'warn', or 'none'",
+    );
   });
 
   it('defaults the path to the current working directory when omitted', async () => {
@@ -571,6 +571,68 @@ describe('run', () => {
     ]);
     expect(code).toBe(1);
     expect(() => JSON.parse(stdout.join(''))).not.toThrow();
+  });
+
+  it('uses default failOn=error when --fail-on is not passed (coverage anchor)', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-dead-code',
+      '--no-ci',
+      cleanDir,
+    ]);
+    expect(code).toBe(0);
+  });
+
+  it('--fail-on=none exits 0 even with error-severity findings', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-dead-code',
+      '--fail-on',
+      'none',
+      violationDir,
+    ]);
+    expect(code).toBe(0);
+    expect(stdout.join('')).toContain('SCORE:');
+    expect(stdout.join('')).toContain('FINDINGS:');
+  });
+
+  it('default --fail-on=error exits 1 on errors (regression check)', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-dead-code',
+      violationDir,
+    ]);
+    expect(code).toBe(1);
+  });
+
+  it('--fail-on=warn exits 1 on warns (regression check)', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-dead-code',
+      '--fail-on',
+      'warn',
+      violationDir,
+    ]);
+    expect(code).toBe(1);
+  });
+
+  it('exits 2 on an unknown --fail-on level', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-dead-code',
+      '--fail-on',
+      'bogus',
+      violationDir,
+    ]);
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain(
+      "--fail-on must be 'error', 'warn', or 'none'",
+    );
   });
 
   it('--ci explicitly enables annotations even when CI env is unset', async () => {

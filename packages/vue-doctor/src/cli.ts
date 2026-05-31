@@ -319,8 +319,8 @@ function resolveFormat(flags: CliFlags): ReporterFormat {
   return 'agent';
 }
 
-function isSeverity(v: string): v is 'error' | 'warn' {
-  return v === 'error' || v === 'warn';
+function isFailOnLevel(v: string): v is 'error' | 'warn' | 'none' {
+  return v === 'error' || v === 'warn' || v === 'none';
 }
 
 export async function run(argv: string[] = process.argv): Promise<number> {
@@ -341,7 +341,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--preset <name>', 'Base preset: minimal|recommended|strict|all')
     .option(
       '--fail-on <level>',
-      'Exit non-zero on this severity or worse (error|warn)',
+      'Exit non-zero on this severity or worse (error|warn|none)',
       {
         default: 'error',
       },
@@ -372,8 +372,13 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--output <file>', 'Write the report to a file instead of stdout')
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
-      const failOn =
-        flags.failOn && isSeverity(flags.failOn) ? flags.failOn : 'error';
+      if (flags.failOn !== undefined && !isFailOnLevel(flags.failOn)) {
+        process.stderr.write(
+          `vue-doctor: --fail-on must be 'error', 'warn', or 'none', got '${flags.failOn}'\n`,
+        );
+        process.exitCode = 2;
+        return;
+      }
       const rootDir = resolve(path ?? '.');
 
       try {
@@ -411,7 +416,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           ...(flags.preset ? { presetOverride: flags.preset } : {}),
         });
         const merged = mergeCliOverrides(resolved, {
-          failOn,
+          failOn: flags.failOn as 'error' | 'warn' | 'none' | undefined,
           include: toArray(flags.include),
           exclude: toArray(flags.exclude),
           rules: ruleOverrides,

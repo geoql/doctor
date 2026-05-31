@@ -30,7 +30,7 @@ export interface AuditConfig {
   include?: string[];
   exclude?: string[];
   rules?: Record<string, Severity | 'off'>;
-  failOn?: 'error' | 'warn';
+  failOn?: 'error' | 'warn' | 'none';
   deadCode?: boolean;
   lint?: boolean;
   threshold?: number;

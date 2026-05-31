@@ -193,7 +193,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     oxlintStderr.includes('Failed')
   ) {
     exitCode = 2;
-  } else {
+  } else if (failOn !== 'none') {
     const tripping =
       failOn === 'warn'
         ? scored.errorCount + scored.warnCount

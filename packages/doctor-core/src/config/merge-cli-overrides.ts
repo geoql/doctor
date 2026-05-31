@@ -4,7 +4,7 @@ import type { Severity } from '../types.js';
 export interface CliOverrides {
   include?: string[];
   exclude?: string[];
-  failOn?: 'error' | 'warn';
+  failOn?: 'error' | 'warn' | 'none';
   threshold?: number;
   rules?: Record<string, Severity | 'off'>;
 }

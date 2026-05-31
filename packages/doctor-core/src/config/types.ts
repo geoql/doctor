@@ -13,7 +13,7 @@ export interface DoctorUserConfig {
   rootDir?: string;
   include?: string[];
   exclude?: string[];
-  failOn?: 'error' | 'warn';
+  failOn?: 'error' | 'warn' | 'none';
   threshold?: number;
   preset?: string;
   rules?: Record<string, Severity | 'off'>;
@@ -30,7 +30,7 @@ export interface ResolvedDoctorConfig {
   rootDir: string;
   include: string[];
   exclude: string[];
-  failOn: 'error' | 'warn';
+  failOn: 'error' | 'warn' | 'none';
   threshold: number;
   rules: Record<string, Severity>;
   preset: 'minimal' | 'recommended' | 'strict' | 'all';

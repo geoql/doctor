@@ -2,7 +2,7 @@ import { InvalidConfigError } from './errors.js';
 import { isPresetName } from './presets.js';
 
 const VALID_SEVERITIES = new Set(['error', 'warn', 'info', 'off']);
-const VALID_FAIL_ON = new Set(['error', 'warn']);
+const VALID_FAIL_ON = new Set(['error', 'warn', 'none']);
 
 export function validateConfig(raw: unknown): void {
   if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
@@ -38,7 +38,7 @@ export function validateConfig(raw: unknown): void {
     const failOn = config.failOn;
     if (typeof failOn !== 'string' || !VALID_FAIL_ON.has(failOn)) {
       throw new InvalidConfigError(
-        `failOn: must be 'error' or 'warn', got ${JSON.stringify(failOn)}`,
+        `failOn: must be 'error', 'warn', or 'none', got ${JSON.stringify(failOn)}`,
       );
     }
   }
