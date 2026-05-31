@@ -93,4 +93,19 @@ describe('data-fetching/useAsyncData-key-required-in-loop', () => {
     );
     expect(reports).toHaveLength(0);
   });
+
+  it('does NOT fire on a call whose callee is neither identifier nor member', () => {
+    const reports = runRule(rule, `(function () {})();`);
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT treat a computed ["map"] member call as a map loop', () => {
+    const reports = runRule(rule, `obj['map'](() => useFetch());`);
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on useFetch called with no arguments inside a loop', () => {
+    const reports = runRule(rule, `for (const id of ids) { useFetch(); }`);
+    expect(reports).toEqual([]);
+  });
 });

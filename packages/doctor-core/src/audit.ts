@@ -3,6 +3,7 @@ import { performance } from 'node:perf_hooks';
 import { checkBuildQuality } from './check-build-quality.js';
 import { checkDeadCode } from './check-dead-code.js';
 import { checkDeps } from './check-deps.js';
+import { checkNuxtProject } from './check-nuxt-project.js';
 import { dedupeDeadCodeAgainstLint } from './dead-code/dedupe.js';
 import { applyInlineDisables } from './disables/index.js';
 import { attachCodeSnippets } from './code-snippet.js';
@@ -146,6 +147,21 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     // deps pass failed — diagnostics remain empty for this pass
   }
 
+  let nuxtProjectDiagnostics: Diagnostic[] = [];
+  if (project.framework === 'nuxt') {
+    try {
+      const raw = await checkNuxtProject(project);
+      nuxtProjectDiagnostics = raw
+        .filter((d) => config.rules?.[d.ruleId] !== 'off')
+        .map((d) => {
+          const override = config.rules?.[d.ruleId];
+          return override ? { ...d, severity: override } : d;
+        });
+    } catch {
+      // nuxt-project pass failed — diagnostics remain empty for this pass
+    }
+  }
+
   const elapsedMs = performance.now() - overallStart;
 
   const timings: AuditTimings = {
@@ -163,6 +179,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     deadCodeDiagnostics,
     buildQualityDiagnostics,
     depsDiagnostics,
+    nuxtProjectDiagnostics,
   );
   let afterDisables = applyInlineDisables(merged, {
     respect: config.respectInlineDisables !== false,

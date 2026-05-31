@@ -111,4 +111,22 @@ describe('ai-slop/no-fetch-in-setup', () => {
     );
     expect(reports).toEqual([]);
   });
+
+  it('does NOT fire on top-level await of a non-call expression', () => {
+    const reports = runRule(rule, `const x = await something;`);
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on top-level await of a non-fetch call', () => {
+    const reports = runRule(rule, `const x = await loadData();`);
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on $fetch inside a nested FunctionExpression', () => {
+    const reports = runRule(
+      rule,
+      `const f = function () { const g = function () { return $fetch('/api'); }; };`,
+    );
+    expect(reports).toEqual([]);
+  });
 });

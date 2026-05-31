@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   audit,
+  checkNuxtProject,
   defineConfig,
   format,
   isNuxtLayoutFile,
@@ -17,6 +18,10 @@ describe('package index re-exports', () => {
     expect(typeof loadDoctorConfig).toBe('function');
     expect(typeof defineConfig).toBe('function');
     expect(typeof format).toBe('function');
+  });
+
+  it('exposes checkNuxtProject as a function', () => {
+    expect(typeof checkNuxtProject).toBe('function');
   });
 
   it('exposes the nuxt file-role classifiers from the package index', () => {

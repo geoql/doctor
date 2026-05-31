@@ -8,6 +8,7 @@ export {
   DeadCodeImportFailed,
   DeadCodeTimeoutError,
 } from './check-dead-code.js';
+export { checkNuxtProject } from './check-nuxt-project.js';
 export {
   BUILT_IN_RECOMMENDED,
   ConfigCycleError,

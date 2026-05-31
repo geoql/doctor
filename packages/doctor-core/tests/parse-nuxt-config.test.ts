@@ -175,4 +175,95 @@ describe('parseNuxtConfig', () => {
     );
     expect(await parseNuxtConfig(dir)).toEqual({});
   });
+
+  it('extracts a string compatibilityDate', async () => {
+    const dir = await tmp();
+    await writeFile(
+      join(dir, 'nuxt.config.ts'),
+      `export default defineNuxtConfig({ compatibilityDate: '2025-01-01' });`,
+    );
+    expect(await parseNuxtConfig(dir)).toEqual({
+      compatibilityDate: '2025-01-01',
+    });
+  });
+
+  it('ignores a non-string compatibilityDate', async () => {
+    const dir = await tmp();
+    await writeFile(
+      join(dir, 'nuxt.config.ts'),
+      `export default defineNuxtConfig({ compatibilityDate: 20250101 });`,
+    );
+    expect(await parseNuxtConfig(dir)).toEqual({});
+  });
+
+  it('flags hasRuntimeConfig when runtimeConfig key is present', async () => {
+    const dir = await tmp();
+    await writeFile(
+      join(dir, 'nuxt.config.ts'),
+      `export default defineNuxtConfig({ runtimeConfig: { apiSecret: '' } });`,
+    );
+    expect(await parseNuxtConfig(dir)).toEqual({ hasRuntimeConfig: true });
+  });
+
+  it('extracts htmlLang from app.head.htmlAttrs.lang', async () => {
+    const dir = await tmp();
+    await writeFile(
+      join(dir, 'nuxt.config.ts'),
+      `export default defineNuxtConfig({
+        app: { head: { htmlAttrs: { lang: 'en' } } },
+      });`,
+    );
+    expect(await parseNuxtConfig(dir)).toEqual({ htmlLang: 'en' });
+  });
+
+  it('ignores app when head/htmlAttrs/lang chain is incomplete', async () => {
+    const dir = await tmp();
+    await writeFile(
+      join(dir, 'nuxt.config.ts'),
+      `export default defineNuxtConfig({
+        app: { head: { title: 'x' } },
+      });`,
+    );
+    expect(await parseNuxtConfig(dir)).toEqual({});
+  });
+
+  it('ignores a non-object app value and non-string lang', async () => {
+    const dir = await tmp();
+    await writeFile(
+      join(dir, 'nuxt.config.ts'),
+      `export default defineNuxtConfig({
+        app: { head: { htmlAttrs: { lang: 42 } } },
+      });`,
+    );
+    expect(await parseNuxtConfig(dir)).toEqual({});
+  });
+
+  it('ignores an app value that is not an object', async () => {
+    const dir = await tmp();
+    await writeFile(
+      join(dir, 'nuxt.config.ts'),
+      `export default defineNuxtConfig({ app: 'broken' });`,
+    );
+    expect(await parseNuxtConfig(dir)).toEqual({});
+  });
+
+  it('ignores an app.head value that is not an object', async () => {
+    const dir = await tmp();
+    await writeFile(
+      join(dir, 'nuxt.config.ts'),
+      `export default defineNuxtConfig({ app: { head: 'broken' } });`,
+    );
+    expect(await parseNuxtConfig(dir)).toEqual({});
+  });
+
+  it('ignores app.head.htmlAttrs that omit the lang key', async () => {
+    const dir = await tmp();
+    await writeFile(
+      join(dir, 'nuxt.config.ts'),
+      `export default defineNuxtConfig({
+        app: { head: { htmlAttrs: { dir: 'ltr' } } },
+      });`,
+    );
+    expect(await parseNuxtConfig(dir)).toEqual({});
+  });
 });

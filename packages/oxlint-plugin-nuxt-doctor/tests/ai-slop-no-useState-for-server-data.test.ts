@@ -47,4 +47,12 @@ describe('ai-slop/no-useState-for-server-data', () => {
     const reports = runRule(rule, `const u = useState('u', null);`);
     expect(reports).toEqual([]);
   });
+
+  it('fires when initializer body has an array with a hole alongside a fetch', () => {
+    const reports = runRule(
+      rule,
+      `const u = useState('u', () => { const a = [, $fetch('/api')]; return a; });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
 });

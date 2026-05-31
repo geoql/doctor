@@ -65,4 +65,28 @@ describe('hydration/no-document-in-setup', () => {
     );
     expect(reports).toEqual([]);
   });
+
+  it('does NOT fire on document inside a nested arrow function', () => {
+    const reports = runRule(
+      rule,
+      `const f = () => { const g = () => { const t = document.title; }; };`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on window inside a nested function expression', () => {
+    const reports = runRule(
+      rule,
+      `const f = function () { const g = function () { return window; }; };`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on navigator inside a nested function declaration', () => {
+    const reports = runRule(
+      rule,
+      `function outer() { function inner() { return navigator.userAgent; } }`,
+    );
+    expect(reports).toEqual([]);
+  });
 });

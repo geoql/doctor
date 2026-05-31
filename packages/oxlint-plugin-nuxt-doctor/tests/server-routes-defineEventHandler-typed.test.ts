@@ -97,4 +97,12 @@ describe('server-routes/defineEventHandler-typed', () => {
     );
     expect(reports).toEqual([]);
   });
+
+  it('does NOT fire on an unrelated identifier-callee call', () => {
+    const reports = runRule(
+      rule,
+      `defineComponent((event) => { return event; });`,
+    );
+    expect(reports).toEqual([]);
+  });
 });

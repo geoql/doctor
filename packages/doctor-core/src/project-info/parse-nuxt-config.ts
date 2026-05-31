@@ -4,9 +4,12 @@ import { parseSync } from 'oxc-parser';
 
 export interface NuxtConfigInfo {
   compatibilityVersion?: number;
+  compatibilityDate?: string;
   nitroPreset?: string;
   modules?: string[];
   importsAutoImport?: boolean;
+  hasRuntimeConfig?: boolean;
+  htmlLang?: string;
 }
 
 interface AstNode {
@@ -102,6 +105,16 @@ function readCompatibility(value: AstNode): number | undefined {
     : undefined;
 }
 
+function readHtmlLang(value: AstNode): string | undefined {
+  if (value.type !== 'ObjectExpression') return undefined;
+  const head = findEntry(value, 'head');
+  if (head?.type !== 'ObjectExpression') return undefined;
+  const htmlAttrs = findEntry(head, 'htmlAttrs');
+  if (htmlAttrs?.type !== 'ObjectExpression') return undefined;
+  const lang = findEntry(htmlAttrs, 'lang');
+  return lang ? stringLiteral(lang) : undefined;
+}
+
 export async function parseNuxtConfig(
   dir: string,
 ): Promise<NuxtConfigInfo | null> {
@@ -116,6 +129,9 @@ export async function parseNuxtConfig(
     if (key === 'compatibilityVersion') {
       const compat = readCompatibility(value);
       if (compat !== undefined) info.compatibilityVersion = compat;
+    } else if (key === 'compatibilityDate') {
+      const date = stringLiteral(value);
+      if (date !== undefined) info.compatibilityDate = date;
     } else if (key === 'nitro') {
       const preset = readNitroPreset(value);
       if (preset !== undefined) info.nitroPreset = preset;
@@ -125,6 +141,11 @@ export async function parseNuxtConfig(
     } else if (key === 'imports') {
       const autoImport = readImportsAutoImport(value);
       if (autoImport !== undefined) info.importsAutoImport = autoImport;
+    } else if (key === 'runtimeConfig') {
+      info.hasRuntimeConfig = true;
+    } else if (key === 'app') {
+      const lang = readHtmlLang(value);
+      if (lang !== undefined) info.htmlLang = lang;
     }
   }
   return info;

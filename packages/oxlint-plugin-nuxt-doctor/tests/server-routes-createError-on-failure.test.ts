@@ -83,4 +83,25 @@ describe('server-routes/createError-on-failure', () => {
     );
     expect(reports).toHaveLength(1);
   });
+
+  it('does NOT fire on a member-expression call (non-identifier callee)', () => {
+    const reports = runRule(rule, `api.register(() => { return 1; });`);
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on throw new member.Error() inside defineEventHandler', () => {
+    const reports = runRule(
+      rule,
+      `defineEventHandler(() => { throw new errors.AppError('x'); });`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on throw new TypeError() inside defineEventHandler', () => {
+    const reports = runRule(
+      rule,
+      `defineEventHandler(() => { throw new TypeError('x'); });`,
+    );
+    expect(reports).toEqual([]);
+  });
 });
