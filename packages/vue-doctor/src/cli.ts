@@ -156,6 +156,7 @@ function renderRulesTable(rules: RegisteredRule[]): string {
 interface CliFlags {
   format?: string;
   config?: string;
+  preset?: string;
   failOn?: string;
   json?: boolean;
   jsonCompact?: boolean;
@@ -249,6 +250,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--json', 'Shorthand for --format json')
     .option('--json-compact', 'Emit single-line JSON')
     .option('--config <path>', 'Path to doctor.config.ts')
+    .option('--preset <name>', 'Base preset: minimal|recommended|strict|all')
     .option(
       '--fail-on <level>',
       'Exit non-zero on this severity or worse (error|warn)',
@@ -314,7 +316,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
             mode: flags.staged ? 'staged' : 'diff',
           });
         }
-        const resolved = await loadDoctorConfig(rootDir, flags.config);
+        const resolved = await loadDoctorConfig(rootDir, {
+          ...(flags.config ? { explicitPath: flags.config } : {}),
+          ...(flags.preset ? { presetOverride: flags.preset } : {}),
+        });
         const merged = mergeCliOverrides(resolved, {
           failOn,
           include: toArray(flags.include),
@@ -334,6 +339,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           respectInlineDisables: flags.respectInlineDisables,
           scopeFiles,
         });
+        const allowedRuleIds = new Set(Object.keys(merged.rules));
+        report.diagnostics = report.diagnostics.filter((d) =>
+          allowedRuleIds.has(d.ruleId),
+        );
         if (flags.verbose) {
           const verboseOutput = renderVerboseTrace(report, {
             configSource: resolved.source,

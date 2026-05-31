@@ -15,9 +15,16 @@ export interface DoctorUserConfig {
   exclude?: string[];
   failOn?: 'error' | 'warn';
   threshold?: number;
+  preset?: string;
   rules?: Record<string, Severity | 'off'>;
   extends?: string[];
 }
+
+/**
+ * Resolved + normalized config that audit consumes.
+ * - `rules` is the merged effective severity map (preset base + user overrides - explicit offs).
+ * - `preset` is the preset name that was applied as the base.
+ */
 
 export interface ResolvedDoctorConfig {
   rootDir: string;
@@ -26,6 +33,7 @@ export interface ResolvedDoctorConfig {
   failOn: 'error' | 'warn';
   threshold: number;
   rules: Record<string, Severity>;
+  preset: 'minimal' | 'recommended' | 'strict' | 'all';
   source: ConfigSource;
   configFile?: string;
 }

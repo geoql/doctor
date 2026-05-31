@@ -2,7 +2,12 @@ import { existsSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { loadConfig } from 'c12';
 import { BUILT_IN_RECOMMENDED } from './built-in.js';
-import { ConfigCycleError, ConfigFileNotFoundError } from './errors.js';
+import {
+  ConfigCycleError,
+  ConfigFileNotFoundError,
+  InvalidConfigError,
+} from './errors.js';
+import { isPresetName, type PresetName, resolvePreset } from './presets.js';
 import type {
   ConfigSource,
   DoctorUserConfig,
@@ -18,10 +23,25 @@ const SOURCE_MAP: Record<string, ConfigSource> = {
   json: 'json',
 };
 
+export interface LoadDoctorConfigOptions {
+  readonly explicitPath?: string;
+  readonly presetOverride?: string;
+}
+
 export async function loadDoctorConfig(
   rootDir: string,
-  explicitPath?: string,
+  explicitPathOrOptions?: string | LoadDoctorConfigOptions,
 ): Promise<ResolvedDoctorConfig> {
+  const opts: LoadDoctorConfigOptions =
+    typeof explicitPathOrOptions === 'string'
+      ? { explicitPath: explicitPathOrOptions }
+      : (explicitPathOrOptions ?? {});
+  const explicitPath = opts.explicitPath;
+  if (opts.presetOverride !== undefined && !isPresetName(opts.presetOverride)) {
+    throw new InvalidConfigError(
+      `preset: must be one of 'minimal', 'recommended', 'strict', 'all', got ${JSON.stringify(opts.presetOverride)}`,
+    );
+  }
   if (explicitPath) {
     const absPath = resolve(rootDir, explicitPath);
     if (!existsSync(absPath)) {
@@ -71,14 +91,31 @@ export async function loadDoctorConfig(
     configFile = undefined;
   }
 
-  const rules: Record<string, Severity> = {};
+  // Resolve preset name: CLI override wins, then config file, default 'recommended'.
+  const presetName: PresetName = (opts.presetOverride ??
+    raw.preset ??
+    'recommended') as PresetName;
+  const presetRules = resolvePreset(presetName);
+
+  // User config: 'off' explicitly removes the rule from the base preset.
+  const userRules: Record<string, Severity> = {};
+  const userOff = new Set<string>();
   if (raw.rules && typeof raw.rules === 'object') {
     for (const [key, value] of Object.entries(raw.rules)) {
-      if (value !== 'off') {
-        rules[key] = value as Severity;
+      if (value === 'off') {
+        userOff.add(key);
+      } else {
+        userRules[key] = value as Severity;
       }
     }
   }
+
+  // Merge: preset base -> user rules on top -> user 'off' removes entries.
+  const mergedRules: Record<string, Severity> = {
+    ...presetRules,
+    ...userRules,
+  };
+  for (const key of userOff) delete mergedRules[key];
 
   return {
     rootDir,
@@ -86,7 +123,8 @@ export async function loadDoctorConfig(
     exclude: raw.exclude ?? BUILT_IN_RECOMMENDED.exclude,
     failOn: raw.failOn ?? BUILT_IN_RECOMMENDED.failOn,
     threshold: raw.threshold ?? BUILT_IN_RECOMMENDED.threshold,
-    rules: { ...BUILT_IN_RECOMMENDED.rules, ...rules },
+    rules: mergedRules,
+    preset: presetName,
     source,
     configFile,
   };

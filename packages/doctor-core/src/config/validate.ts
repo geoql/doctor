@@ -1,4 +1,5 @@
 import { InvalidConfigError } from './errors.js';
+import { isPresetName } from './presets.js';
 
 const VALID_SEVERITIES = new Set(['error', 'warn', 'info', 'off']);
 const VALID_FAIL_ON = new Set(['error', 'warn']);
@@ -20,6 +21,15 @@ export function validateConfig(raw: unknown): void {
     if (threshold < 0 || threshold > 100) {
       throw new InvalidConfigError(
         `threshold: must be 0..100, got ${threshold}`,
+      );
+    }
+  }
+
+  if ('preset' in config) {
+    const preset = config.preset;
+    if (typeof preset !== 'string' || !isPresetName(preset)) {
+      throw new InvalidConfigError(
+        `preset: must be one of 'minimal', 'recommended', 'strict', 'all', got ${JSON.stringify(preset)}`,
       );
     }
   }

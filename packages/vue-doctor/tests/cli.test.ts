@@ -156,6 +156,8 @@ describe('run', () => {
       'node',
       'vue-doctor',
       deepVBindSpreadInListDir,
+      '--preset',
+      'strict',
       '--format',
       'json',
     ]);
@@ -174,6 +176,8 @@ describe('run', () => {
       'node',
       'vue-doctor',
       buildQualityDir,
+      '--preset',
+      'strict',
       '--no-dead-code',
       '--format',
       'json',
@@ -823,6 +827,57 @@ describe('run', () => {
     expect(out).toContain('SCORE:');
     expect(out).not.toContain('FINDINGS:');
     expect(out).not.toContain('NEXT STEPS:');
+  });
+
+  it('--preset strict surfaces info-severity rules excluded from recommended', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--preset',
+      'strict',
+      '--no-dead-code',
+      '--format',
+      'json',
+      buildQualityDir,
+    ]);
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join(''));
+    const ruleIds = report.diagnostics.map((d: { ruleId: string }) => d.ruleId);
+    expect(ruleIds).toContain(
+      'vue-doctor/build-quality/eslint-plugin-vue-installed',
+    );
+  });
+
+  it('--preset minimal filters out info-severity rules', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--preset',
+      'minimal',
+      '--no-dead-code',
+      '--format',
+      'json',
+      buildQualityDir,
+    ]);
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join(''));
+    const infoDiags = report.diagnostics.filter(
+      (d: { severity: string }) => d.severity === 'info',
+    );
+    expect(infoDiags.length).toBe(0);
+  });
+
+  it('exits 2 on an unknown --preset', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--preset',
+      'bogus',
+      '--no-dead-code',
+      cleanDir,
+    ]);
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('preset: must be one of');
   });
 
   describe('list-rules subcommand', () => {

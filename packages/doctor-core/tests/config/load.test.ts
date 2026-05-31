@@ -43,7 +43,12 @@ describe('loadDoctorConfig', () => {
       '.output',
       'coverage',
     ]);
-    expect(result.rules).toEqual({});
+    expect(result.preset).toBe('recommended');
+    // recommended preset includes error + warn rules from RULE_REGISTRY
+    expect(Object.keys(result.rules).length).toBeGreaterThan(0);
+    for (const sev of Object.values(result.rules)) {
+      expect(sev === 'error' || sev === 'warn').toBe(true);
+    }
     expect(result.configFile).toBeUndefined();
   });
 
@@ -172,16 +177,54 @@ describe('loadDoctorConfig', () => {
     expect(result.threshold).toBe(99);
   });
 
-  it('drops off rules from resolved config', async () => {
+  it('throws InvalidConfigError when presetOverride is not a known preset name', async () => {
+    await expect(
+      loadDoctorConfig(tmp, { presetOverride: 'bogus' }),
+    ).rejects.toThrow(/preset: must be one of/);
+  });
+
+  it('throws InvalidConfigError when config file declares an unknown preset', async () => {
+    writeFileSync(
+      join(tmp, 'doctor.config.json'),
+      JSON.stringify({ preset: 'bogus' }),
+    );
+    await expect(loadDoctorConfig(tmp)).rejects.toThrow(
+      /preset: must be one of/,
+    );
+  });
+
+  it('config file preset is honored when no CLI override is given', async () => {
+    writeFileSync(
+      join(tmp, 'doctor.config.json'),
+      JSON.stringify({ preset: 'strict' }),
+    );
+    const result = await loadDoctorConfig(tmp);
+    expect(result.preset).toBe('strict');
+  });
+
+  it('CLI presetOverride wins over config file preset', async () => {
+    writeFileSync(
+      join(tmp, 'doctor.config.json'),
+      JSON.stringify({ preset: 'minimal' }),
+    );
+    const result = await loadDoctorConfig(tmp, { presetOverride: 'strict' });
+    expect(result.preset).toBe('strict');
+  });
+
+  it('user overrides merge on top of preset; off explicitly removes a rule', async () => {
+    // Pick a real rule from the registry that recommended preset includes.
+    const registeredErrorRule = 'vue-doctor/template/v-for-has-key';
     writeFileSync(
       join(tmp, 'doctor.config.json'),
       JSON.stringify({
-        rules: { 'foo/bar': 'error', 'baz/qux': 'off' },
+        rules: { 'foo/bar': 'error', [registeredErrorRule]: 'off' },
       }),
     );
     const result = await loadDoctorConfig(tmp);
-    expect(result.rules).toEqual({ 'foo/bar': 'error' });
-    expect(result.rules).not.toHaveProperty('baz/qux');
+    // User-added rule appears.
+    expect(result.rules['foo/bar']).toBe('error');
+    // User-off-ed rule is removed from the preset base.
+    expect(result.rules).not.toHaveProperty(registeredErrorRule);
   });
 
   it('merges user config over built-in defaults', async () => {
