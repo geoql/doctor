@@ -8,7 +8,8 @@ export type DiagnosticSource =
   | 'oxlint'
   | 'sfc'
   | 'dead-code'
-  | 'project';
+  | 'project'
+  | 'deps';
 
 export interface Diagnostic {
   file: string;

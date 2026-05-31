@@ -1,6 +1,7 @@
 export { encodeAnnotation, encodeAnnotations } from './annotations.js';
 export { audit } from './audit.js';
 export { checkBuildQuality } from './check-build-quality.js';
+export { checkDeps } from './check-deps.js';
 export {
   checkDeadCode,
   dedupeDeadCodeAgainstLint,

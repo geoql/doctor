@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { checkBuildQuality } from './check-build-quality.js';
 import { checkDeadCode } from './check-dead-code.js';
+import { checkDeps } from './check-deps.js';
 import { dedupeDeadCodeAgainstLint } from './dead-code/dedupe.js';
 import { applyInlineDisables } from './disables/index.js';
 import { attachCodeSnippets } from './code-snippet.js';
@@ -132,6 +133,19 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     // build-quality pass failed — diagnostics remain empty for this pass
   }
 
+  let depsDiagnostics: Diagnostic[] = [];
+  try {
+    const raw = await checkDeps(project);
+    depsDiagnostics = raw
+      .filter((d) => config.rules?.[d.ruleId] !== 'off')
+      .map((d) => {
+        const override = config.rules?.[d.ruleId];
+        return override ? { ...d, severity: override } : d;
+      });
+  } catch {
+    // deps pass failed — diagnostics remain empty for this pass
+  }
+
   const elapsedMs = performance.now() - overallStart;
 
   const timings: AuditTimings = {
@@ -148,6 +162,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     scriptDiagnostics,
     deadCodeDiagnostics,
     buildQualityDiagnostics,
+    depsDiagnostics,
   );
   let afterDisables = applyInlineDisables(merged, {
     respect: config.respectInlineDisables !== false,
