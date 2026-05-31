@@ -83,3 +83,72 @@ describe('nuxt-project wiring in audit', () => {
     ).toBe(false);
   });
 });
+
+const SHARED_KEY_RULE = 'nuxt-doctor/data-fetching/no-shared-key-across-pages';
+
+async function nuxtSharedKeyFixture(): Promise<string> {
+  const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-nuxt-cf-'));
+  const { mkdir } = await import('node:fs/promises');
+  await writeFile(
+    join(dir, 'package.json'),
+    JSON.stringify({ name: 'test', dependencies: { nuxt: '^4.4.0' } }),
+  );
+  await mkdir(join(dir, 'pages'), { recursive: true });
+  await writeFile(
+    join(dir, 'pages/a.vue'),
+    '<script setup lang="ts">const { data } = await useAsyncData("dup", () => $fetch("/a"));</script>\n<template><div /></template>',
+  );
+  await writeFile(
+    join(dir, 'pages/b.vue'),
+    '<script setup lang="ts">const { data } = await useFetch("dup");</script>\n<template><div /></template>',
+  );
+  return dir;
+}
+
+describe('cross-file wiring in audit', () => {
+  it('emits a cross-file diagnostic for shared keys across pages', async () => {
+    const dir = await nuxtSharedKeyFixture();
+    const report = await audit({ rootDir: dir, deadCode: false, lint: false });
+    const diag = report.diagnostics.find((d) => d.ruleId === SHARED_KEY_RULE);
+    expect(diag).toBeDefined();
+    expect(diag!.source).toBe('cross-file');
+  });
+
+  it('remaps a cross-file diagnostic severity via a rule override', async () => {
+    const dir = await nuxtSharedKeyFixture();
+    const report = await audit({
+      rootDir: dir,
+      deadCode: false,
+      lint: false,
+      rules: { [SHARED_KEY_RULE]: 'info' },
+    });
+    const diag = report.diagnostics.find((d) => d.ruleId === SHARED_KEY_RULE);
+    expect(diag).toBeDefined();
+    expect(diag!.severity).toBe('info');
+  });
+
+  it('filters out a cross-file diagnostic when the rule is off', async () => {
+    const dir = await nuxtSharedKeyFixture();
+    const report = await audit({
+      rootDir: dir,
+      deadCode: false,
+      lint: false,
+      rules: { [SHARED_KEY_RULE]: 'off' },
+    });
+    expect(report.diagnostics.some((d) => d.ruleId === SHARED_KEY_RULE)).toBe(
+      false,
+    );
+  });
+
+  it('survives a cross-file pass failure gracefully', async () => {
+    const dir = await nuxtSharedKeyFixture();
+    const mod = await import('../src/nuxt/cross-file/run.js');
+    vi.spyOn(mod, 'runCrossFilePass').mockRejectedValueOnce(
+      new Error('cross-file exploded'),
+    );
+    const report = await audit({ rootDir: dir, deadCode: false, lint: false });
+    expect(report.diagnostics.some((d) => d.ruleId === SHARED_KEY_RULE)).toBe(
+      false,
+    );
+  });
+});

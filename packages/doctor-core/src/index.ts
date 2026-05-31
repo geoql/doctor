@@ -40,6 +40,7 @@ export {
   isNuxtPageFile,
   isNuxtServerFile,
 } from './nuxt/file-role.js';
+export { runCrossFilePass } from './nuxt/cross-file/run.js';
 export { OxlintOutputTooLarge, OxlintSpawnFailed } from './oxlint/errors.js';
 export { agentReport } from './reporters/agent.js';
 export { docsUrl } from './reporters/docs-url.js';

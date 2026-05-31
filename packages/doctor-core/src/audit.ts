@@ -14,6 +14,7 @@ import { runScriptPass } from './oxlint/run.js';
 import type { ProjectInfoLite } from './reporters/types.js';
 import { scoreDiagnostics } from './score.js';
 import { runSfcPass } from './sfc/run.js';
+import { runCrossFilePass } from './nuxt/cross-file/run.js';
 import { runTemplatePass } from './template/run.js';
 import type {
   AuditConfig,
@@ -57,6 +58,8 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
 
   const overallStart = performance.now();
 
+  const project = await detectProject(rootDir);
+
   const templateStart = performance.now();
   const templateDiagnostics = lintEnabled
     ? await runTemplatePass({ files, ruleOverrides: config.rules })
@@ -65,7 +68,11 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
 
   const sfcStart = performance.now();
   const sfcDiagnostics = lintEnabled
-    ? await runSfcPass({ files, ruleOverrides: config.rules })
+    ? await runSfcPass({
+        files,
+        ruleOverrides: config.rules,
+        projectInfo: project,
+      })
     : [];
   const sfcElapsed = performance.now() - sfcStart;
 
@@ -91,8 +98,6 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     }
   }
   const scriptElapsed = performance.now() - scriptStart;
-
-  const project = await detectProject(rootDir);
 
   let deadCodeDiagnostics: Diagnostic[] = [];
   let deadCodeElapsed = 0;
@@ -162,6 +167,21 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     }
   }
 
+  let crossFileDiagnostics: Diagnostic[] = [];
+  if (project.framework === 'nuxt') {
+    try {
+      const raw = await runCrossFilePass({ files, projectInfo: project });
+      crossFileDiagnostics = raw
+        .filter((d) => config.rules?.[d.ruleId] !== 'off')
+        .map((d) => {
+          const override = config.rules?.[d.ruleId];
+          return override ? { ...d, severity: override } : d;
+        });
+    } catch {
+      // cross-file pass failed — diagnostics remain empty for this pass
+    }
+  }
+
   const elapsedMs = performance.now() - overallStart;
 
   const timings: AuditTimings = {
@@ -180,6 +200,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     buildQualityDiagnostics,
     depsDiagnostics,
     nuxtProjectDiagnostics,
+    crossFileDiagnostics,
   );
   let afterDisables = applyInlineDisables(merged, {
     respect: config.respectInlineDisables !== false,
