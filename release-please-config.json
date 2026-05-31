@@ -17,6 +17,22 @@
       "draft": false,
       "prerelease": false
     },
+    "packages/oxlint-plugin-nuxt-doctor": {
+      "release-type": "node",
+      "changelog-path": "CHANGELOG.md",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/nuxt-doctor": {
+      "release-type": "node",
+      "changelog-path": "CHANGELOG.md",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "draft": false,
+      "prerelease": false
+    },
     "packages/vue-doctor": {
       "release-type": "node",
       "changelog-path": "CHANGELOG.md",

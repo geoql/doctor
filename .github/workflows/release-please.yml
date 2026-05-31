@@ -55,7 +55,7 @@ jobs:
       - name: Pack tarballs (rewrites workspace:^ to real versions)
         run: |
           rm -rf .release && mkdir -p .release
-          for dir in packages/doctor-core packages/oxlint-plugin-vue-doctor packages/vue-doctor; do
+          for dir in packages/doctor-core packages/oxlint-plugin-vue-doctor packages/oxlint-plugin-nuxt-doctor packages/nuxt-doctor packages/vue-doctor; do
             (cd "$dir" && pnpm pack --pack-destination "$GITHUB_WORKSPACE/.release")
           done
 
@@ -78,6 +78,6 @@ jobs:
 
       - name: Publish to JSR
         run: |
-          for dir in packages/doctor-core packages/oxlint-plugin-vue-doctor packages/vue-doctor; do
+          for dir in packages/doctor-core packages/oxlint-plugin-vue-doctor packages/oxlint-plugin-nuxt-doctor packages/nuxt-doctor packages/vue-doctor; do
             (cd "$dir" && pnpm dlx jsr publish --allow-dirty --allow-slow-types)
           done

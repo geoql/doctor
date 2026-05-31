@@ -1,0 +1,16 @@
+{
+  "name": "@geoql/oxlint-plugin-nuxt-doctor",
+  "version": "0.1.0-alpha.0",
+  "description": "oxlint JS plugin for Nuxt 4 anti-patterns and AI-slop detection.",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publish": {
+    "include": [
+      "src",
+      "README.md",
+      "LICENSE"
+    ]
+  }
+}

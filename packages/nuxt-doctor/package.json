@@ -1,0 +1,69 @@
+{
+  "name": "@geoql/nuxt-doctor",
+  "version": "0.1.0-alpha.0",
+  "private": false,
+  "description": "CLI auditor for Nuxt 4 apps. Detects anti-patterns, AI-slop, and best-practice violations via @vue/compiler-sfc + oxlint. Run with `npx -y @geoql/nuxt-doctor`.",
+  "keywords": [
+    "audit",
+    "cli",
+    "doctor",
+    "geoql",
+    "lint",
+    "nuxt",
+    "nuxt4",
+    "oxlint"
+  ],
+  "homepage": "https://github.com/geoql/doctor#readme",
+  "bugs": {
+    "url": "https://github.com/geoql/doctor/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Vinayak Kulkarni",
+    "email": "inbox.vinayak@gmail.com",
+    "url": "https://vinayakkulkarni.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geoql/doctor.git",
+    "directory": "packages/nuxt-doctor"
+  },
+  "bin": {
+    "nuxt-doctor": "./bin/nuxt-doctor.mjs"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "vp lint src",
+    "lint:fix": "vp lint src --fix",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
+    "build": "vp pack",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@geoql/doctor-core": "workspace:^",
+    "@geoql/oxlint-plugin-nuxt-doctor": "workspace:*",
+    "@geoql/oxlint-plugin-vue-doctor": "workspace:*",
+    "cac": "^7.0.0",
+    "kolorist": "^1.8.0",
+    "oxlint": "^1.67.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

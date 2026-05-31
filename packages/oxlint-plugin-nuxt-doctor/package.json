@@ -1,0 +1,61 @@
+{
+  "name": "@geoql/oxlint-plugin-nuxt-doctor",
+  "version": "0.1.0-alpha.0",
+  "private": false,
+  "description": "oxlint JS plugin for Nuxt 4 anti-patterns and AI-slop detection. Pairs with oxlint's built-in vue plugin via jsPlugins. TypeScript, ESM.",
+  "keywords": [
+    "ai-slop",
+    "geoql",
+    "lint",
+    "nuxt",
+    "nuxt4",
+    "oxlint",
+    "oxlint-plugin"
+  ],
+  "homepage": "https://github.com/geoql/doctor#readme",
+  "bugs": {
+    "url": "https://github.com/geoql/doctor/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Vinayak Kulkarni",
+    "email": "inbox.vinayak@gmail.com",
+    "url": "https://vinayakkulkarni.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geoql/doctor.git",
+    "directory": "packages/oxlint-plugin-nuxt-doctor"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "vp lint src",
+    "lint:fix": "vp lint src --fix",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
+    "build": "vp pack",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "oxc-parser": "0.133.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  },
+  "peerDependencies": {
+    "oxlint": "^1.66.0"
+  }
+}
