@@ -231,6 +231,30 @@ describe('run', () => {
     expect(() => JSON.parse(text)).toThrow();
   });
 
+  it('emits SARIF v2.1.0 with --format sarif', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--no-dead-code',
+      '--format',
+      'sarif',
+      violationDir,
+    ]);
+    expect(code).toBe(1);
+    const parsed = JSON.parse(stdout.join('')) as {
+      $schema: string;
+      version: string;
+      runs: {
+        tool: { driver: { name: string } };
+        results: { ruleId: string }[];
+      }[];
+    };
+    expect(parsed.$schema).toContain('sarif-schema-2.1.0.json');
+    expect(parsed.version).toBe('2.1.0');
+    expect(parsed.runs[0]!.tool.driver.name).toBe('@geoql/vue-doctor');
+    expect(parsed.runs[0]!.results.length).toBeGreaterThan(0);
+  });
+
   it('honors --json as a shorthand for the json envelope', async () => {
     const code = await run(['node', 'vue-doctor', cleanDir, '--json']);
 

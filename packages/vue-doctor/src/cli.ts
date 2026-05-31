@@ -191,7 +191,8 @@ function resolveFormat(flags: CliFlags): ReporterFormat {
     kind === 'agent' ||
     kind === 'pretty' ||
     kind === 'json' ||
-    kind === 'json-compact'
+    kind === 'json-compact' ||
+    kind === 'sarif'
   ) {
     return kind;
   }
@@ -209,7 +210,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .command('[path]', 'Audit a Vue project')
     .option(
       '--format <kind>',
-      'Output format (agent|pretty|json|json-compact)',
+      'Output format (agent|pretty|json|json-compact|sarif)',
       {
         default: 'agent',
       },

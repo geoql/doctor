@@ -462,6 +462,13 @@ describe('format dispatch', () => {
     expect(out.endsWith('\n')).toBe(true);
     expect(JSON.parse(out).schemaVersion).toBe('1');
   });
+
+  it('routes to the sarif reporter', () => {
+    const out = format(makeInput(), 'sarif');
+    const parsed = JSON.parse(out) as { $schema: string; version: string };
+    expect(parsed.version).toBe('2.1.0');
+    expect(parsed.$schema).toContain('sarif-schema-2.1.0.json');
+  });
 });
 
 describe('renderVerboseTrace', () => {

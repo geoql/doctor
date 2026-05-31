@@ -37,6 +37,7 @@ export { listChangedFiles, type GitScopeMode } from './git-scope.js';
 export { OxlintOutputTooLarge, OxlintSpawnFailed } from './oxlint/errors.js';
 export { agentReport } from './reporters/agent.js';
 export { docsUrl } from './reporters/docs-url.js';
+export { sarifReport } from './reporters/sarif.js';
 export {
   format,
   renderVerboseTrace,
