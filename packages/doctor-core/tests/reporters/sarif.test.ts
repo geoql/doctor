@@ -239,4 +239,72 @@ describe('sarifReport', () => {
   it('emits trailing newline for stdout consumers', () => {
     expect(sarifReport(makeInput([])).endsWith('\n')).toBe(true);
   });
+
+  it('emits uriBaseId %SRCROOT% on artifactLocation (GitHub Code Scanning requirement)', () => {
+    const parsed = JSON.parse(sarifReport(makeInput([ERROR_DIAG]))) as {
+      runs: {
+        results: {
+          locations: {
+            physicalLocation: { artifactLocation: { uriBaseId: string } };
+          }[];
+        }[];
+      }[];
+    };
+    expect(
+      parsed.runs[0]!.results[0]!.locations[0]!.physicalLocation
+        .artifactLocation.uriBaseId,
+    ).toBe('%SRCROOT%');
+  });
+
+  it('emits partialFingerprints.primaryLocationLineHash for GitHub dedup', () => {
+    const parsed = JSON.parse(sarifReport(makeInput([ERROR_DIAG]))) as {
+      runs: {
+        results: { partialFingerprints: { primaryLocationLineHash: string } }[];
+      }[];
+    };
+    const fp =
+      parsed.runs[0]!.results[0]!.partialFingerprints.primaryLocationLineHash;
+    expect(fp).toBe('src/A.vue:3:vue-doctor/template/v-for-has-key');
+  });
+
+  it('partialFingerprints are stable across reruns for the same finding', () => {
+    const first = JSON.parse(sarifReport(makeInput([ERROR_DIAG]))) as {
+      runs: {
+        results: { partialFingerprints: { primaryLocationLineHash: string } }[];
+      }[];
+    };
+    const second = JSON.parse(sarifReport(makeInput([ERROR_DIAG]))) as {
+      runs: {
+        results: { partialFingerprints: { primaryLocationLineHash: string } }[];
+      }[];
+    };
+    expect(first.runs[0]!.results[0]!.partialFingerprints).toEqual(
+      second.runs[0]!.results[0]!.partialFingerprints,
+    );
+  });
+
+  it('partialFingerprints differ across files / lines / rules', () => {
+    const parsed = JSON.parse(
+      sarifReport(makeInput([ERROR_DIAG, WARN_DIAG, INFO_DIAG])),
+    ) as {
+      runs: {
+        results: { partialFingerprints: { primaryLocationLineHash: string } }[];
+      }[];
+    };
+    const hashes = parsed.runs[0]!.results.map(
+      (r) => r.partialFingerprints.primaryLocationLineHash,
+    );
+    expect(new Set(hashes).size).toBe(hashes.length);
+  });
+
+  it('emits helpUri on each rule descriptor pointing at docs.doctor.geoql.in', () => {
+    const parsed = JSON.parse(sarifReport(makeInput([ERROR_DIAG]))) as {
+      runs: {
+        tool: { driver: { rules: { id: string; helpUri: string }[] } };
+      }[];
+    };
+    const rule = parsed.runs[0]!.tool.driver.rules[0]!;
+    expect(rule.helpUri).toContain('docs.doctor.geoql.in');
+    expect(rule.helpUri).toContain('vue-doctor/template/v-for-has-key');
+  });
 });

@@ -1,5 +1,6 @@
 import { RULE_REGISTRY } from '../rule-registry.js';
 import type { Diagnostic, Severity } from '../types.js';
+import { docsUrl } from './docs-url.js';
 import type { ReporterInput } from './types.js';
 
 const SARIF_SCHEMA =
@@ -12,13 +13,14 @@ interface SarifReportingDescriptor {
   id: string;
   name: string;
   shortDescription: { text: string };
+  helpUri: string;
   defaultConfiguration: { level: SarifLevel };
   properties: { category: string };
 }
 
 interface SarifLocation {
   physicalLocation: {
-    artifactLocation: { uri: string };
+    artifactLocation: { uri: string; uriBaseId: '%SRCROOT%' };
     region: {
       startLine: number;
       startColumn: number;
@@ -33,6 +35,7 @@ interface SarifResult {
   level: SarifLevel;
   message: { text: string };
   locations: SarifLocation[];
+  partialFingerprints: { primaryLocationLineHash: string };
 }
 
 interface SarifLog {
@@ -76,6 +79,7 @@ function toSarifResult(diag: Diagnostic, rootDirectory: string): SarifResult {
   };
   if (diag.endLine !== undefined) region.endLine = diag.endLine;
   if (diag.endColumn !== undefined) region.endColumn = diag.endColumn;
+  const uri = toRelativeUri(diag.file, rootDirectory);
   return {
     ruleId: diag.ruleId,
     level: toSarifLevel(diag.severity),
@@ -83,13 +87,14 @@ function toSarifResult(diag: Diagnostic, rootDirectory: string): SarifResult {
     locations: [
       {
         physicalLocation: {
-          artifactLocation: {
-            uri: toRelativeUri(diag.file, rootDirectory),
-          },
+          artifactLocation: { uri, uriBaseId: '%SRCROOT%' },
           region,
         },
       },
     ],
+    partialFingerprints: {
+      primaryLocationLineHash: `${uri}:${diag.line}:${diag.ruleId}`,
+    },
   };
 }
 
@@ -110,6 +115,7 @@ function toRuleDescriptor(ruleId: string): SarifReportingDescriptor {
     id: ruleId,
     name,
     shortDescription: { text: ruleId },
+    helpUri: docsUrl(ruleId),
     defaultConfiguration: { level: toSarifLevel(severity) },
     properties: { category },
   };
