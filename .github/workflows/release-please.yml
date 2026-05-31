@@ -62,7 +62,15 @@ jobs:
       - name: Publish to npm with provenance
         run: |
           for tgz in .release/*.tgz; do
-            npm publish "$tgz" --provenance --access public --ignore-scripts
+            version=$(tar -xzOf "$tgz" package/package.json | grep '"version"' | head -1 | sed -E 's/.*"version" *: *"([^"]+)".*/\1/')
+            if [[ "$version" == *-* ]]; then
+              tag="${version#*-}"
+              tag="${tag%%.*}"
+            else
+              tag="latest"
+            fi
+            echo "Publishing $tgz (version=$version) under dist-tag: $tag"
+            npm publish "$tgz" --provenance --access public --ignore-scripts --tag "$tag"
           done
 
       - name: Sync JSR versions
