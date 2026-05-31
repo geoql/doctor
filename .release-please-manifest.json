@@ -1,5 +1,5 @@
 {
-  "packages/doctor-core": "0.1.0-alpha.0",
-  "packages/oxlint-plugin-vue-doctor": "0.1.0-alpha.0",
-  "packages/vue-doctor": "0.1.0-alpha.0"
+  "packages/doctor-core": "0.2.0-alpha.0",
+  "packages/oxlint-plugin-vue-doctor": "0.1.1-alpha.0",
+  "packages/vue-doctor": "0.2.0-alpha.0"
 }
