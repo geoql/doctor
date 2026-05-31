@@ -56,6 +56,14 @@ export type {
   ReporterInput,
   ReporterOptions,
 } from './reporters/types.js';
+export {
+  listRules,
+  RULE_REGISTRY,
+  type ListRulesFilter,
+  type RegisteredRule,
+  type RuleCategory,
+  type RuleSource,
+} from './rule-registry.js';
 export { scoreDiagnostics } from './score.js';
 export type { ScoreBreakdownEntry, ScoreConfig, ScoreResult } from './score.js';
 export type {

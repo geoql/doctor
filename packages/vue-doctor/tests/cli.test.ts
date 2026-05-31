@@ -800,4 +800,183 @@ describe('run', () => {
     expect(out).not.toContain('FINDINGS:');
     expect(out).not.toContain('NEXT STEPS:');
   });
+
+  describe('list-rules subcommand', () => {
+    it('prints the rule table with all rules by default', async () => {
+      const code = await run(['node', 'vue-doctor', 'list-rules']);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('@geoql/vue-doctor');
+      expect(out).toContain('vue-doctor/no-em-dash-in-string');
+      expect(out).toContain('[recommended]');
+    });
+
+    it('filters by --preset recommended', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--preset',
+        'recommended',
+      ]);
+      expect(code).toBe(0);
+      expect(stdout.join('')).not.toContain(
+        'vue-doctor/reactivity/prefer-shallowRef-for-large-data',
+      );
+      expect(stdout.join('')).toContain(
+        'vue-doctor/reactivity/watch-without-cleanup',
+      );
+    });
+
+    it('filters by --category', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--category',
+        'ai-slop',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('vue-doctor/no-em-dash-in-string');
+      expect(out).not.toContain('vue-doctor/template/v-for-has-key');
+    });
+
+    it('filters by --source', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--source',
+        'oxlint-builtin',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('vue/no-export-in-script-setup');
+      expect(out).not.toContain('vue-doctor/no-em-dash-in-string');
+    });
+
+    it('filters by --severity', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--severity',
+        'error',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('vue-doctor/template/v-for-has-key');
+      expect(out).not.toContain('vue-doctor/no-em-dash-in-string');
+    });
+
+    it('emits structured JSON with --json', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--category',
+        'composition',
+        '--json',
+      ]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(stdout.join('')) as {
+        count: number;
+        rules: { id: string }[];
+      };
+      expect(parsed.count).toBeGreaterThan(0);
+      expect(parsed.rules.every((r) => r.id.includes('composition'))).toBe(
+        true,
+      );
+    });
+
+    it('emits single-line JSON with --json-compact', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--json-compact',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).not.toContain('\n');
+      expect(JSON.parse(out)).toHaveProperty('count');
+    });
+
+    it('renders "No rules matched." when filters return empty', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--category',
+        'ai-slop',
+        '--severity',
+        'info',
+      ]);
+      expect(code).toBe(0);
+      expect(stdout.join('')).toContain('No rules matched.');
+    });
+
+    it('renders singular "1 rule" when filters yield exactly one match', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--category',
+        'sfc',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('1 rule');
+      expect(out).not.toContain('1 rules');
+    });
+
+    it('exits 2 on unknown --preset', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--preset',
+        'wrong',
+      ]);
+      expect(code).toBe(2);
+      expect(stderr.join('')).toContain('unknown --preset');
+    });
+
+    it('exits 2 on unknown --category', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--category',
+        'bogus',
+      ]);
+      expect(code).toBe(2);
+      expect(stderr.join('')).toContain('unknown --category');
+    });
+
+    it('exits 2 on unknown --source', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--source',
+        'bogus',
+      ]);
+      expect(code).toBe(2);
+      expect(stderr.join('')).toContain('unknown --source');
+    });
+
+    it('exits 2 on unknown --severity', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--severity',
+        'fatal',
+      ]);
+      expect(code).toBe(2);
+      expect(stderr.join('')).toContain('unknown --severity');
+    });
+  });
 });

@@ -7,11 +7,16 @@ import {
   encodeAnnotations,
   format,
   listChangedFiles,
+  listRules,
   loadDoctorConfig,
   mergeCliOverrides,
   renderVerboseTrace,
+  type ListRulesFilter,
+  type RegisteredRule,
   type ReporterFormat,
   type ReporterInput,
+  type RuleCategory,
+  type RuleSource,
   type Severity,
 } from '@geoql/doctor-core';
 import { cac } from 'cac';
@@ -26,6 +31,95 @@ function readVersion(): string {
   } catch {
     return '0.0.0';
   }
+}
+
+interface ListRulesCliFlags {
+  preset?: string;
+  category?: string;
+  source?: string;
+  severity?: string;
+  json?: boolean;
+  jsonCompact?: boolean;
+}
+
+const VALID_LIST_PRESETS = new Set(['recommended', 'all']);
+const VALID_CATEGORIES = new Set<RuleCategory>([
+  'ai-slop',
+  'reactivity',
+  'composition',
+  'performance',
+  'template',
+  'template-perf',
+  'build-quality',
+  'deps',
+  'dead-code',
+  'sfc',
+  'vue-builtin',
+]);
+const VALID_SOURCES = new Set<RuleSource>([
+  'doctor',
+  'oxlint-builtin',
+  'eslint-plugin-vue',
+]);
+
+function buildListRulesFilter(flags: ListRulesCliFlags): ListRulesFilter {
+  const out: {
+    preset?: 'recommended' | 'all';
+    category?: RuleCategory;
+    source?: RuleSource;
+    severity?: Severity;
+  } = {};
+  if (flags.preset !== undefined) {
+    if (!VALID_LIST_PRESETS.has(flags.preset)) {
+      throw new Error(
+        `unknown --preset '${flags.preset}' (expected: recommended | all)`,
+      );
+    }
+    out.preset = flags.preset as 'recommended' | 'all';
+  }
+  if (flags.category !== undefined) {
+    if (!VALID_CATEGORIES.has(flags.category as RuleCategory)) {
+      throw new Error(`unknown --category '${flags.category}'`);
+    }
+    out.category = flags.category as RuleCategory;
+  }
+  if (flags.source !== undefined) {
+    if (!VALID_SOURCES.has(flags.source as RuleSource)) {
+      throw new Error(`unknown --source '${flags.source}'`);
+    }
+    out.source = flags.source as RuleSource;
+  }
+  if (flags.severity !== undefined) {
+    if (
+      flags.severity !== 'error' &&
+      flags.severity !== 'warn' &&
+      flags.severity !== 'info'
+    ) {
+      throw new Error(
+        `unknown --severity '${flags.severity}' (expected: error | warn | info)`,
+      );
+    }
+    out.severity = flags.severity;
+  }
+  return out;
+}
+
+function renderRulesTable(rules: RegisteredRule[]): string {
+  if (rules.length === 0) return 'No rules matched.\n';
+  const lines: string[] = [
+    `@geoql/vue-doctor — ${rules.length} rule${rules.length === 1 ? '' : 's'}`,
+    '',
+  ];
+  const idWidth = Math.max(...rules.map((r) => r.id.length));
+  const sevWidth = Math.max(...rules.map((r) => r.severity.length));
+  const catWidth = Math.max(...rules.map((r) => r.category.length));
+  for (const r of rules) {
+    const tag = r.recommended ? '[recommended]' : '              ';
+    lines.push(
+      `  ${r.id.padEnd(idWidth)}  ${r.severity.padEnd(sevWidth)}  ${r.category.padEnd(catWidth)}  ${r.source}  ${tag}`,
+    );
+  }
+  return `${lines.join('\n')}\n`;
 }
 
 interface CliFlags {
@@ -250,6 +344,42 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         process.stderr.write(`vue-doctor: ${msg}\n`);
+        process.exitCode = 2;
+      }
+    });
+
+  cli
+    .command(
+      'list-rules',
+      'List every registered rule with id, severity, category, source, and preset membership',
+    )
+    .option('--preset <name>', 'Filter to: recommended | all')
+    .option('--category <name>', 'Filter by category')
+    .option(
+      '--source <name>',
+      'Filter by source: doctor | oxlint-builtin | eslint-plugin-vue',
+    )
+    .option('--severity <level>', 'Filter by: error | warn | info')
+    .option('--json', 'Emit JSON instead of formatted text')
+    .option('--json-compact', 'With --json, single-line output')
+    .action(async (flags: ListRulesCliFlags) => {
+      try {
+        const filter = buildListRulesFilter(flags);
+        const rules = listRules(filter);
+        if (flags.json || flags.jsonCompact) {
+          const payload = { count: rules.length, rules };
+          process.stdout.write(
+            flags.jsonCompact
+              ? JSON.stringify(payload)
+              : `${JSON.stringify(payload, null, 2)}\n`,
+          );
+        } else {
+          process.stdout.write(renderRulesTable(rules));
+        }
+        process.exitCode = 0;
+      } catch (err) {
+        const msg = (err as Error).message;
+        process.stderr.write(`vue-doctor list-rules: ${msg}\n`);
         process.exitCode = 2;
       }
     });
