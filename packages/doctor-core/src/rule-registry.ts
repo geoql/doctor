@@ -11,7 +11,15 @@ export type RuleCategory =
   | 'deps'
   | 'dead-code'
   | 'sfc'
-  | 'vue-builtin';
+  | 'vue-builtin'
+  | 'structure'
+  | 'modules-deps'
+  | 'nitro'
+  | 'seo'
+  | 'cloudflare'
+  | 'server-routes'
+  | 'hydration'
+  | 'data-fetching';
 
 export type RuleSource = 'doctor' | 'oxlint-builtin' | 'eslint-plugin-vue';
 
@@ -262,6 +270,196 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
     id: 'dead-code/duplicate-export',
     severity: 'warn',
     category: 'dead-code',
+    source: 'doctor',
+    recommended: true,
+  },
+
+  // ── Nuxt project post-checks ────────────────────────────────────────────────
+  {
+    id: 'nuxt-doctor/structure/uses-app-directory',
+    severity: 'warn',
+    category: 'structure',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/structure/nuxt-major-current',
+    severity: 'info',
+    category: 'structure',
+    source: 'doctor',
+    recommended: false,
+  },
+  {
+    id: 'nuxt-doctor/modules-deps/no-modules-incompatible-with-nuxt-4',
+    severity: 'warn',
+    category: 'modules-deps',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/modules-deps/recommended-modules-installed',
+    severity: 'info',
+    category: 'modules-deps',
+    source: 'doctor',
+    recommended: false,
+  },
+  {
+    id: 'nuxt-doctor/nitro/compatibilityDate-set',
+    severity: 'error',
+    category: 'nitro',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/nitro/preset-defined-for-deploy-target',
+    severity: 'warn',
+    category: 'nitro',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/nitro/runtime-config-typed',
+    severity: 'info',
+    category: 'nitro',
+    source: 'doctor',
+    recommended: false,
+  },
+  {
+    id: 'nuxt-doctor/seo/lang-on-html',
+    severity: 'warn',
+    category: 'seo',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/seo/useSeoMeta-on-public-page',
+    severity: 'warn',
+    category: 'seo',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/seo/og-image-defined',
+    severity: 'warn',
+    category: 'seo',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/cloudflare/nitro-cloudflare-preset',
+    severity: 'warn',
+    category: 'cloudflare',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/cloudflare/og-image-via-satori',
+    severity: 'info',
+    category: 'cloudflare',
+    source: 'doctor',
+    recommended: false,
+  },
+  {
+    id: 'nuxt-doctor/cloudflare/no-node-only-modules',
+    severity: 'warn',
+    category: 'cloudflare',
+    source: 'doctor',
+    recommended: true,
+  },
+
+  // ── Nuxt cross-file rules ────────────────────────────────────────────────────
+  {
+    id: 'nuxt-doctor/data-fetching/no-shared-key-across-pages',
+    severity: 'warn',
+    category: 'data-fetching',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/data-fetching/ssr-safe-onMounted-only-for-client',
+    severity: 'warn',
+    category: 'data-fetching',
+    source: 'doctor',
+    recommended: true,
+  },
+
+  // ── Nuxt SFC rules ──────────────────────────────────────────────────────────
+  {
+    id: 'nuxt-doctor/ai-slop/no-mixed-app-and-root-layout',
+    severity: 'warn',
+    category: 'ai-slop',
+    source: 'doctor',
+    recommended: true,
+  },
+
+  // ── Nuxt oxlint-plugin rules (source 'doctor') ──────────────────────────────
+  {
+    id: 'nuxt-doctor/ai-slop/no-process-client-server',
+    severity: 'error',
+    category: 'ai-slop',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/ai-slop/no-explicit-imports-of-auto-imported',
+    severity: 'warn',
+    category: 'ai-slop',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/ai-slop/no-useState-for-server-data',
+    severity: 'warn',
+    category: 'ai-slop',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/ai-slop/no-fetch-in-setup',
+    severity: 'warn',
+    category: 'ai-slop',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/data-fetching/useAsyncData-key-required-in-loop',
+    severity: 'error',
+    category: 'data-fetching',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/server-routes/defineEventHandler-typed',
+    severity: 'warn',
+    category: 'server-routes',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/server-routes/validate-body-with-h3-v2',
+    severity: 'warn',
+    category: 'server-routes',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/server-routes/createError-on-failure',
+    severity: 'warn',
+    category: 'server-routes',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/hydration/no-document-in-setup',
+    severity: 'error',
+    category: 'hydration',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/hydration/clientOnly-for-browser-apis',
+    severity: 'error',
+    category: 'hydration',
     source: 'doctor',
     recommended: true,
   },

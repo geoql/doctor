@@ -5,9 +5,10 @@ import { join } from 'node:path';
 import type { Severity } from '../types.js';
 
 export interface GenerateConfigInput {
-  pluginPath: string;
+  pluginPaths: string[];
   ruleOverrides?: Record<string, Severity | 'off'>;
   rootDir?: string;
+  framework?: 'vue' | 'nuxt';
 }
 
 export interface GeneratedConfig {
@@ -15,18 +16,58 @@ export interface GeneratedConfig {
   cleanup: () => Promise<void>;
 }
 
-const DEFAULT_RULES: Record<string, Severity> = {
+const VUE_DEFAULT_RULES: Record<string, Severity> = {
   'vue/no-export-in-script-setup': 'error',
   'vue/require-typed-ref': 'warn',
   'vue-doctor/no-em-dash-in-string': 'warn',
-  'vue-doctor/no-destructure-props-without-to-refs': 'error',
-  'vue-doctor/no-destructure-reactive-without-to-refs': 'error',
   'vue-doctor/no-non-null-assertion-on-ref-value': 'warn',
   'vue-doctor/no-imports-from-vue-when-auto-imported': 'warn',
   'vue-doctor/reactivity/watch-without-cleanup': 'warn',
   'vue-doctor/composition/prefer-script-setup-for-new-files': 'warn',
   'vue-doctor/composition/defineProps-typed': 'warn',
 };
+
+const NUXT_PLUGIN_RULES: Record<string, Severity> = {
+  'nuxt-doctor/ai-slop/no-process-client-server': 'error',
+  'nuxt-doctor/ai-slop/no-explicit-imports-of-auto-imported': 'warn',
+  'nuxt-doctor/ai-slop/no-useState-for-server-data': 'warn',
+  'nuxt-doctor/ai-slop/no-fetch-in-setup': 'warn',
+  'nuxt-doctor/data-fetching/useAsyncData-key-required-in-loop': 'error',
+  'nuxt-doctor/server-routes/defineEventHandler-typed': 'warn',
+  'nuxt-doctor/server-routes/validate-body-with-h3-v2': 'warn',
+  'nuxt-doctor/server-routes/createError-on-failure': 'warn',
+  'nuxt-doctor/hydration/no-document-in-setup': 'error',
+  'nuxt-doctor/hydration/clientOnly-for-browser-apis': 'error',
+};
+
+// Only these ids are real oxlint-plugin/built-in rules. Other doctor rules run
+// in separate passes; emitting their ids here makes oxlint exit non-zero
+// ("rule not found"), silently killing the whole script pass — so the rules
+// block is filtered to this allowlist.
+const VUE_OXLINT_RULE_IDS: ReadonlySet<string> = new Set([
+  'vue/no-export-in-script-setup',
+  'vue/require-typed-ref',
+  'vue-doctor/no-em-dash-in-string',
+  'vue-doctor/no-destructure-props-without-to-refs',
+  'vue-doctor/no-destructure-reactive-without-to-refs',
+  'vue-doctor/no-non-null-assertion-on-ref-value',
+  'vue-doctor/no-imports-from-vue-when-auto-imported',
+  'vue-doctor/reactivity/watch-without-cleanup',
+  'vue-doctor/reactivity/prefer-shallowRef-for-large-data',
+  'vue-doctor/reactivity/prefer-readonly-for-injected',
+  'vue-doctor/composition/prefer-script-setup-for-new-files',
+  'vue-doctor/composition/defineProps-typed',
+  'vue-doctor/performance/prefer-defineAsyncComponent-on-route',
+]);
+
+const NUXT_OXLINT_RULE_IDS: ReadonlySet<string> = new Set(
+  Object.keys(NUXT_PLUGIN_RULES),
+);
+
+function oxlintRuleAllowlist(framework: 'vue' | 'nuxt'): ReadonlySet<string> {
+  if (framework !== 'nuxt') return VUE_OXLINT_RULE_IDS;
+  return new Set([...VUE_OXLINT_RULE_IDS, ...NUXT_OXLINT_RULE_IDS]);
+}
 
 function toOxlintSeverity(s: Severity): 'error' | 'warn' {
   if (s === 'error') return 'error';
@@ -63,9 +104,19 @@ export async function generateOxlintConfig(
   input: GenerateConfigInput,
 ): Promise<GeneratedConfig> {
   const { dir, removeDir } = await resolveCacheDir(input.rootDir);
-  const merged: Record<string, Severity> = { ...DEFAULT_RULES };
+  const framework = input.framework === 'nuxt' ? 'nuxt' : 'vue';
+  const allowlist = oxlintRuleAllowlist(framework);
+  let defaults: Record<string, Severity> = { ...VUE_DEFAULT_RULES };
+  if (framework === 'nuxt') {
+    defaults = { ...defaults, ...NUXT_PLUGIN_RULES };
+  }
+  const merged: Record<string, Severity> = { ...defaults };
   if (input.ruleOverrides) {
     for (const [id, sev] of Object.entries(input.ruleOverrides)) {
+      // Only oxlint-plugin rule ids belong in the oxlint config. Overrides for
+      // rules handled by other doctor-core passes are ignored here (they are
+      // applied in their own pass), preventing oxlint "rule not found" exits.
+      if (!allowlist.has(id)) continue;
       if (sev === 'off') delete merged[id];
       else merged[id] = sev;
     }
@@ -80,7 +131,7 @@ export async function generateOxlintConfig(
       'https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json',
     ...(userConfig ? { extends: [userConfig] } : {}),
     plugins: ['vue'],
-    jsPlugins: [input.pluginPath],
+    jsPlugins: input.pluginPaths,
     rules,
   };
   const configPath = join(dir, '.oxlintrc.json');

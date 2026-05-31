@@ -71,6 +71,14 @@ describe('runOxlint', () => {
     expect(res.diagnostics.map((d) => d.message)).toEqual(['one', 'two']);
   });
 
+  it('skips blank lines in an NDJSON stream', async () => {
+    const bin = await fakeBin(
+      `printf '%s\\n\\n%s\\n' '{"filename":"a.vue","message":"first","severity":"error"}' '{"filename":"b.vue","message":"second","severity":"warning"}'`,
+    );
+    const res = await runOxlint(opts(bin));
+    expect(res.diagnostics.map((d) => d.message)).toEqual(['first', 'second']);
+  });
+
   it('skips NDJSON objects lacking a message field', async () => {
     const bin = await fakeBin(
       `printf '%s\\n%s\\n' '{"nomessage":1}' '{"message":"kept","filename":"c.vue","severity":"error"}'`,

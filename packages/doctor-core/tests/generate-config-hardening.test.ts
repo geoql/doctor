@@ -25,7 +25,7 @@ describe('generateOxlintConfig cache directory', () => {
     const rootDir = await projectDir();
     await mkdir(join(rootDir, 'node_modules'));
     const { configPath, cleanup } = await generateOxlintConfig({
-      pluginPath: '/p.js',
+      pluginPaths: ['/p.js'],
       rootDir,
     });
     expect(configPath).toContain(
@@ -38,7 +38,7 @@ describe('generateOxlintConfig cache directory', () => {
   it('falls back to the system tmpdir when node_modules is absent', async () => {
     const rootDir = await projectDir();
     const { configPath, cleanup } = await generateOxlintConfig({
-      pluginPath: '/p.js',
+      pluginPaths: ['/p.js'],
       rootDir,
     });
     expect(configPath.startsWith(rootDir)).toBe(false);
@@ -48,7 +48,7 @@ describe('generateOxlintConfig cache directory', () => {
 
   it('falls back to the system tmpdir when no rootDir is given', async () => {
     const { configPath, cleanup } = await generateOxlintConfig({
-      pluginPath: '/p.js',
+      pluginPaths: ['/p.js'],
     });
     expect(configPath.startsWith(tmpdir())).toBe(true);
     await cleanup();
@@ -61,7 +61,7 @@ describe('generateOxlintConfig user config extends', () => {
     const userConfig = join(rootDir, '.oxlintrc.json');
     await writeFile(userConfig, '{}');
     const { configPath, cleanup } = await generateOxlintConfig({
-      pluginPath: '/p.js',
+      pluginPaths: ['/p.js'],
       rootDir,
     });
     const cfg = await readConfig(configPath);
@@ -74,7 +74,7 @@ describe('generateOxlintConfig user config extends', () => {
     const userConfig = join(rootDir, '.oxlintrc');
     await writeFile(userConfig, '{}');
     const { configPath, cleanup } = await generateOxlintConfig({
-      pluginPath: '/p.js',
+      pluginPaths: ['/p.js'],
       rootDir,
     });
     const cfg = await readConfig(configPath);
@@ -85,7 +85,7 @@ describe('generateOxlintConfig user config extends', () => {
   it('omits extends when no user config is present', async () => {
     const rootDir = await projectDir();
     const { configPath, cleanup } = await generateOxlintConfig({
-      pluginPath: '/p.js',
+      pluginPaths: ['/p.js'],
       rootDir,
     });
     const cfg = await readConfig(configPath);
@@ -99,7 +99,7 @@ describe('generateOxlintConfig cleanup', () => {
     const rootDir = await projectDir();
     await mkdir(join(rootDir, 'node_modules'));
     const { configPath, cleanup } = await generateOxlintConfig({
-      pluginPath: '/p.js',
+      pluginPaths: ['/p.js'],
       rootDir,
     });
     expect(existsSync(configPath)).toBe(true);

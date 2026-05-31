@@ -2,6 +2,7 @@ import type { Diagnostic, Severity } from '../types.js';
 import { toCanonicalDiagnostics } from './diagnostic.js';
 import { generateOxlintConfig } from './generate-config.js';
 import {
+  resolveNuxtDoctorPluginPath,
   resolveOxlintBin,
   resolveVueDoctorPluginPath,
 } from './resolve-plugin.js';
@@ -12,6 +13,7 @@ export interface ScriptPassOptions {
   targetPath: string;
   ruleOverrides?: Record<string, Severity | 'off'>;
   timeoutMs?: number;
+  framework?: 'vue' | 'nuxt';
 }
 
 export interface ScriptPassResult {
@@ -23,12 +25,20 @@ export interface ScriptPassResult {
 export async function runScriptPass(
   opts: ScriptPassOptions,
 ): Promise<ScriptPassResult> {
-  const pluginPath = resolveVueDoctorPluginPath(opts.rootDir);
+  const vuePluginPath = resolveVueDoctorPluginPath(opts.rootDir);
   const oxlintBin = resolveOxlintBin(opts.rootDir);
+  let pluginPaths: string[];
+  if (opts.framework === 'nuxt') {
+    const nuxtPluginPath = resolveNuxtDoctorPluginPath(opts.rootDir);
+    pluginPaths = [nuxtPluginPath, vuePluginPath];
+  } else {
+    pluginPaths = [vuePluginPath];
+  }
   const { configPath, cleanup } = await generateOxlintConfig({
-    pluginPath,
+    pluginPaths,
     ruleOverrides: opts.ruleOverrides,
     rootDir: opts.rootDir,
+    framework: opts.framework,
   });
   try {
     const raw = await runOxlint({

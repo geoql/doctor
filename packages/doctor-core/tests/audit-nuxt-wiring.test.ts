@@ -1,4 +1,4 @@
-import { mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -150,5 +150,78 @@ describe('cross-file wiring in audit', () => {
     expect(report.diagnostics.some((d) => d.ruleId === SHARED_KEY_RULE)).toBe(
       false,
     );
+  });
+});
+
+describe('oxlint-plugin-nuxt-doctor wiring', () => {
+  it('surfaces a nuxt oxlint-plugin diagnostic for a Nuxt project via audit()', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-oxlint-nuxt-'));
+    await writeFile(
+      join(dir, 'package.json'),
+      JSON.stringify({ name: 'test', dependencies: { nuxt: '^4.4.0' } }),
+    );
+    await mkdir(join(dir, 'pages'), { recursive: true });
+    await writeFile(
+      join(dir, 'pages/index.vue'),
+      `<script setup lang="ts">
+if (process.client) { console.log('client'); }
+</script>
+<template><div /></template>`,
+    );
+    const report = await audit({ rootDir: dir, deadCode: false, lint: true });
+    const diag = report.diagnostics.find(
+      (d) => d.ruleId === 'nuxt-doctor/ai-slop/no-process-client-server',
+    );
+    expect(diag).toBeDefined();
+    expect(diag!.source).toBe('oxlint');
+    expect(diag!.severity).toBe('error');
+  });
+
+  it('remaps a nuxt oxlint-plugin diagnostic severity via a rule override', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-oxlint-nuxt-ov-'));
+    await writeFile(
+      join(dir, 'package.json'),
+      JSON.stringify({ name: 'test', dependencies: { nuxt: '^4.4.0' } }),
+    );
+    await mkdir(join(dir, 'pages'), { recursive: true });
+    await writeFile(
+      join(dir, 'pages/index.vue'),
+      `<script setup lang="ts">
+if (process.client) { console.log('client'); }
+</script>
+<template><div /></template>`,
+    );
+    const report = await audit({
+      rootDir: dir,
+      deadCode: false,
+      lint: true,
+      rules: { 'nuxt-doctor/ai-slop/no-process-client-server': 'warn' },
+    });
+    const diag = report.diagnostics.find(
+      (d) => d.ruleId === 'nuxt-doctor/ai-slop/no-process-client-server',
+    );
+    expect(diag).toBeDefined();
+    expect(diag!.severity).toBe('warn');
+  });
+
+  it('does not surface nuxt oxlint-plugin diagnostics for a non-nuxt project', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-oxlint-vue-'));
+    await writeFile(
+      join(dir, 'package.json'),
+      JSON.stringify({ name: 'test', dependencies: { vue: '^3.5.0' } }),
+    );
+    await writeFile(
+      join(dir, 'App.vue'),
+      `<script setup lang="ts">
+if (process.client) { console.log('client'); }
+</script>
+<template><div /></template>`,
+    );
+    const report = await audit({ rootDir: dir, deadCode: false, lint: true });
+    expect(
+      report.diagnostics.some(
+        (d) => d.ruleId === 'nuxt-doctor/ai-slop/no-process-client-server',
+      ),
+    ).toBe(false);
   });
 });

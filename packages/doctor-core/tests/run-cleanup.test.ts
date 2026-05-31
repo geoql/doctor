@@ -4,7 +4,8 @@ const cleanup = vi.fn(async () => {});
 const runOxlintMock = vi.fn();
 
 vi.mock('../src/oxlint/resolve-plugin.js', () => ({
-  resolveVueDoctorPluginPath: () => '/plugin.js',
+  resolveNuxtDoctorPluginPath: () => '/nuxt-plugin.js',
+  resolveVueDoctorPluginPath: () => '/vue-plugin.js',
   resolveOxlintBin: () => '/bin/oxlint',
 }));
 

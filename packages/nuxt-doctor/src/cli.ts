@@ -173,6 +173,14 @@ const VALID_CATEGORIES = new Set<RuleCategory>([
   'dead-code',
   'sfc',
   'vue-builtin',
+  'structure',
+  'modules-deps',
+  'nitro',
+  'seo',
+  'cloudflare',
+  'server-routes',
+  'hydration',
+  'data-fetching',
 ]);
 const VALID_SOURCES = new Set<RuleSource>([
   'doctor',

@@ -55,12 +55,32 @@ export function resolveVueDoctorPluginPath(fromDir: string): string {
   }
   const selfMain = resolveFromSelf('@geoql/oxlint-plugin-vue-doctor');
   if (selfMain) return selfMain;
-  return throwResolveError(fromDir);
+  return throwVueResolveError(fromDir);
 }
 
-function throwResolveError(fromDir: string): never {
+export function resolveNuxtDoctorPluginPath(fromDir: string): string {
+  const pkgJson = lookUpwards(
+    fromDir,
+    'node_modules/@geoql/oxlint-plugin-nuxt-doctor/package.json',
+  );
+  if (pkgJson) {
+    const main = readPkgMain(pkgJson) ?? './dist/index.js';
+    return resolvePath(dirname(pkgJson), main);
+  }
+  const selfMain = resolveFromSelf('@geoql/oxlint-plugin-nuxt-doctor');
+  if (selfMain) return selfMain;
+  return throwNuxtResolveError(fromDir);
+}
+
+function throwVueResolveError(fromDir: string): never {
   throw new Error(
     `Failed to resolve @geoql/oxlint-plugin-vue-doctor from ${fromDir}. Install it as a dependency of your project or use the bundled @geoql/vue-doctor CLI.`,
+  );
+}
+
+function throwNuxtResolveError(fromDir: string): never {
+  throw new Error(
+    `Failed to resolve @geoql/oxlint-plugin-nuxt-doctor from ${fromDir}. Install it as a dependency of your project or use the bundled @geoql/nuxt-doctor CLI.`,
   );
 }
 

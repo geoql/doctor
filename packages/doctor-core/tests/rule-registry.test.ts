@@ -73,6 +73,14 @@ describe('rule-registry', () => {
       'dead-code',
       'sfc',
       'vue-builtin',
+      'structure',
+      'modules-deps',
+      'nitro',
+      'seo',
+      'cloudflare',
+      'server-routes',
+      'hydration',
+      'data-fetching',
     ]);
     const validSrc = new Set(['doctor', 'oxlint-builtin', 'eslint-plugin-vue']);
     for (const rule of RULE_REGISTRY) {

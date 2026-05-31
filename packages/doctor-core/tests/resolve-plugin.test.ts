@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { describe, expect, it } from 'vitest';
 import {
+  resolveNuxtDoctorPluginPath,
   resolveOxlintBin,
   resolveVueDoctorPluginPath,
 } from '../src/oxlint/resolve-plugin.js';
@@ -14,6 +15,11 @@ describe('resolver fallback to bundled install', () => {
 
   it('resolves the vue-doctor plugin from a target dir without node_modules', () => {
     const pluginPath = resolveVueDoctorPluginPath(tmpdir());
+    expect(existsSync(pluginPath)).toBe(true);
+  });
+
+  it('resolves the nuxt-doctor plugin from a target dir without node_modules', () => {
+    const pluginPath = resolveNuxtDoctorPluginPath(tmpdir());
     expect(existsSync(pluginPath)).toBe(true);
   });
 });
