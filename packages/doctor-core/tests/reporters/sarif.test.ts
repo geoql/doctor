@@ -307,4 +307,33 @@ describe('sarifReport', () => {
     expect(rule.helpUri).toContain('docs.doctor.geoql.in');
     expect(rule.helpUri).toContain('vue-doctor/template/v-for-has-key');
   });
+
+  it('emits fullDescription on every rule descriptor sourced from loadRuleDoc', () => {
+    const parsed = JSON.parse(sarifReport(makeInput([ERROR_DIAG]))) as {
+      runs: {
+        tool: {
+          driver: {
+            rules: { id: string; fullDescription: { text: string } }[];
+          };
+        };
+      }[];
+    };
+    const rule = parsed.runs[0]!.tool.driver.rules[0]!;
+    expect(rule.fullDescription.text).toContain(
+      'vue-doctor/template/v-for-has-key',
+    );
+    expect(rule.fullDescription.text.length).toBeGreaterThan(rule.id.length);
+  });
+
+  it('falls back to bare ruleId in fullDescription for unknown rules', () => {
+    const unknownDiag = { ...WARN_DIAG, ruleId: 'unknown/rule' };
+    const parsed = JSON.parse(sarifReport(makeInput([unknownDiag]))) as {
+      runs: {
+        tool: { driver: { rules: { fullDescription: { text: string } }[] } };
+      }[];
+    };
+    expect(parsed.runs[0]!.tool.driver.rules[0]!.fullDescription.text).toBe(
+      'unknown/rule',
+    );
+  });
 });

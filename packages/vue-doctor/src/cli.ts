@@ -9,6 +9,7 @@ import {
   listChangedFiles,
   listRules,
   loadDoctorConfig,
+  loadRuleDoc,
   mergeCliOverrides,
   renderVerboseTrace,
   type ListRulesFilter,
@@ -40,6 +41,36 @@ interface ListRulesCliFlags {
   severity?: string;
   json?: boolean;
   jsonCompact?: boolean;
+}
+
+interface ExplainCliFlags {
+  json?: boolean;
+}
+
+interface ExplainableDoc {
+  id: string;
+  severity: string;
+  category: string;
+  source: string;
+  recommended: boolean;
+  helpUri: string;
+  description: string;
+  hasOverride: boolean;
+}
+
+function renderExplain(doc: ExplainableDoc): string {
+  const lines: string[] = [];
+  lines.push(`Rule:        ${doc.id}`);
+  lines.push(`Severity:    ${doc.severity}`);
+  lines.push(`Category:    ${doc.category}`);
+  lines.push(`Source:      ${doc.source}`);
+  lines.push(
+    `Recommended: ${doc.recommended ? 'yes' : 'no (off in `recommended` preset)'}`,
+  );
+  lines.push(`Help:        ${doc.helpUri}`);
+  lines.push('');
+  lines.push(doc.description);
+  return `${lines.join('\n')}\n`;
 }
 
 const VALID_LIST_PRESETS = new Set(['recommended', 'all']);
@@ -383,6 +414,29 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         process.stderr.write(`vue-doctor list-rules: ${msg}\n`);
         process.exitCode = 2;
       }
+    });
+
+  cli
+    .command(
+      'explain <ruleId>',
+      "Print the rule's severity, category, recommendation, and helpUri",
+    )
+    .option('--json', 'Emit structured JSON instead of formatted text')
+    .action(async (ruleId: string, flags: ExplainCliFlags) => {
+      const doc = loadRuleDoc(ruleId);
+      if (!doc) {
+        process.stderr.write(
+          `vue-doctor explain: unknown rule '${ruleId}'. Try \`vue-doctor list-rules\` to see registered rules.\n`,
+        );
+        process.exitCode = 2;
+        return;
+      }
+      if (flags.json) {
+        process.stdout.write(`${JSON.stringify(doc, null, 2)}\n`);
+      } else {
+        process.stdout.write(renderExplain(doc));
+      }
+      process.exitCode = 0;
     });
 
   cli.help();

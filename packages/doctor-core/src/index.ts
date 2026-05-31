@@ -58,6 +58,12 @@ export type {
   ReporterOptions,
 } from './reporters/types.js';
 export {
+  loadAllRuleDocs,
+  loadRuleDoc,
+  type LoadRuleDocOptions,
+  type RuleDoc,
+} from './rule-docs.js';
+export {
   listRules,
   RULE_REGISTRY,
   type ListRulesFilter,

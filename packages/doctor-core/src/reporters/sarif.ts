@@ -1,3 +1,4 @@
+import { loadRuleDoc } from '../rule-docs.js';
 import { RULE_REGISTRY } from '../rule-registry.js';
 import type { Diagnostic, Severity } from '../types.js';
 import { docsUrl } from './docs-url.js';
@@ -13,6 +14,7 @@ interface SarifReportingDescriptor {
   id: string;
   name: string;
   shortDescription: { text: string };
+  fullDescription: { text: string };
   helpUri: string;
   defaultConfiguration: { level: SarifLevel };
   properties: { category: string };
@@ -111,10 +113,13 @@ function toRuleDescriptor(ruleId: string): SarifReportingDescriptor {
   const name = ruleId.includes('/')
     ? ruleId.split('/').slice(1).join('/')
     : ruleId;
+  const doc = loadRuleDoc(ruleId);
+  const fullDescription = doc?.description ?? ruleId;
   return {
     id: ruleId,
     name,
     shortDescription: { text: ruleId },
+    fullDescription: { text: fullDescription },
     helpUri: docsUrl(ruleId),
     defaultConfiguration: { level: toSarifLevel(severity) },
     properties: { category },

@@ -1003,4 +1003,63 @@ describe('run', () => {
       expect(stderr.join('')).toContain('unknown --severity');
     });
   });
+
+  describe('explain subcommand', () => {
+    it('prints the rule metadata for a known rule', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'explain',
+        'vue-doctor/template/v-for-has-key',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('Rule:');
+      expect(out).toContain('vue-doctor/template/v-for-has-key');
+      expect(out).toContain('Severity:');
+      expect(out).toContain('error');
+      expect(out).toContain('docs.doctor.geoql.in');
+    });
+
+    it('marks off-by-default rules with the opt-in note', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'explain',
+        'vue-doctor/reactivity/prefer-shallowRef-for-large-data',
+      ]);
+      expect(code).toBe(0);
+      expect(stdout.join('')).toContain('off in `recommended`');
+    });
+
+    it('emits structured JSON with --json', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'explain',
+        'vue-doctor/no-em-dash-in-string',
+        '--json',
+      ]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(stdout.join('')) as {
+        id: string;
+        severity: string;
+        helpUri: string;
+      };
+      expect(parsed.id).toBe('vue-doctor/no-em-dash-in-string');
+      expect(parsed.severity).toBe('warn');
+      expect(parsed.helpUri).toContain('docs.doctor.geoql.in');
+    });
+
+    it('exits 2 on an unknown rule', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'explain',
+        'does/not/exist',
+      ]);
+      expect(code).toBe(2);
+      expect(stderr.join('')).toContain("unknown rule 'does/not/exist'");
+    });
+  });
 });
