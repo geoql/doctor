@@ -35,17 +35,33 @@ const badConfig = resolve(here, 'fixtures/bad-config/doctor.config.ts');
 
 const ANSI = new RegExp(`${String.fromCharCode(27)}\\[`);
 
+const CI_ENV_KEYS = [
+  'CI',
+  'GITHUB_ACTIONS',
+  'GITLAB_CI',
+  'CIRCLECI',
+  'TRAVIS',
+  'BUILDKITE',
+  'JENKINS_HOME',
+] as const;
+
 describe('run', () => {
   let stdout: string[];
   let stderr: string[];
   let originalExitCode: typeof process.exitCode;
   let originalCwd: string;
+  let savedCiEnv: Record<string, string | undefined>;
 
   beforeEach(() => {
     stdout = [];
     stderr = [];
     originalExitCode = process.exitCode;
     originalCwd = process.cwd();
+    savedCiEnv = {};
+    for (const k of CI_ENV_KEYS) {
+      savedCiEnv[k] = process.env[k];
+      delete process.env[k];
+    }
     vi.spyOn(process.stdout, 'write').mockImplementation((chunk: unknown) => {
       stdout.push(String(chunk));
       return true;
@@ -61,6 +77,10 @@ describe('run', () => {
     process.exitCode = originalExitCode;
     process.chdir(originalCwd);
     delete process.env.NO_COLOR;
+    for (const k of CI_ENV_KEYS) {
+      if (savedCiEnv[k] === undefined) delete process.env[k];
+      else process.env[k] = savedCiEnv[k];
+    }
   });
 
   it('audits a clean project as JSON envelope and exits 0', async () => {
@@ -551,6 +571,63 @@ describe('run', () => {
     ]);
     expect(code).toBe(1);
     expect(() => JSON.parse(stdout.join(''))).not.toThrow();
+  });
+
+  it('--ci explicitly enables annotations even when CI env is unset', async () => {
+    const ciSaved = process.env.CI;
+    const ghaSaved = process.env.GITHUB_ACTIONS;
+    delete process.env.CI;
+    delete process.env.GITHUB_ACTIONS;
+    try {
+      const code = await run(['node', 'vue-doctor', '--ci', violationDir]);
+      expect(code).toBe(1);
+      expect(stdout.join('')).toMatch(/::error file=/);
+    } finally {
+      if (ciSaved !== undefined) process.env.CI = ciSaved;
+      if (ghaSaved !== undefined) process.env.GITHUB_ACTIONS = ghaSaved;
+    }
+  });
+
+  it('auto-emits annotations when CI=true env is set (no flag needed)', async () => {
+    const ciSaved = process.env.CI;
+    process.env.CI = 'true';
+    try {
+      const code = await run(['node', 'vue-doctor', violationDir]);
+      expect(code).toBe(1);
+      expect(stdout.join('')).toMatch(/::error file=/);
+    } finally {
+      if (ciSaved === undefined) delete process.env.CI;
+      else process.env.CI = ciSaved;
+    }
+  });
+
+  it('--no-ci suppresses CI auto-detection even with CI=true', async () => {
+    const ciSaved = process.env.CI;
+    process.env.CI = 'true';
+    try {
+      const code = await run(['node', 'vue-doctor', '--no-ci', violationDir]);
+      expect(code).toBe(1);
+      expect(stdout.join('')).not.toContain('::error');
+    } finally {
+      if (ciSaved === undefined) delete process.env.CI;
+      else process.env.CI = ciSaved;
+    }
+  });
+
+  it('detects GITHUB_ACTIONS=true as a CI environment', async () => {
+    const ciSaved = process.env.CI;
+    const ghaSaved = process.env.GITHUB_ACTIONS;
+    delete process.env.CI;
+    process.env.GITHUB_ACTIONS = 'true';
+    try {
+      const code = await run(['node', 'vue-doctor', violationDir]);
+      expect(code).toBe(1);
+      expect(stdout.join('')).toMatch(/::error file=/);
+    } finally {
+      if (ciSaved !== undefined) process.env.CI = ciSaved;
+      if (ghaSaved === undefined) delete process.env.GITHUB_ACTIONS;
+      else process.env.GITHUB_ACTIONS = ghaSaved;
+    }
   });
 
   it('outputs only the integer score with --score', async () => {

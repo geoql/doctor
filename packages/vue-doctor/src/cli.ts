@@ -71,6 +71,20 @@ interface ProjectInfoJsonPayload {
   capabilities: string[];
 }
 
+function isCiEnvironment(): boolean {
+  const env = process.env;
+  return Boolean(
+    env.CI === 'true' ||
+    env.CI === '1' ||
+    env.GITHUB_ACTIONS === 'true' ||
+    env.GITLAB_CI === 'true' ||
+    env.CIRCLECI === 'true' ||
+    env.TRAVIS === 'true' ||
+    env.BUILDKITE === 'true' ||
+    env.JENKINS_HOME,
+  );
+}
+
 function projectInfoToJson(p: ProjectInfo): ProjectInfoJsonPayload {
   return {
     framework: p.framework,
@@ -246,6 +260,7 @@ interface CliFlags {
   threshold?: string;
   score?: boolean;
   annotations?: boolean;
+  ci?: boolean;
   diff?: boolean;
   staged?: boolean;
   full?: boolean;
@@ -349,6 +364,8 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--threshold <n>', 'Minimum passing score (0-100)')
     .option('--score', 'Output only the numeric score (for piping)')
     .option('--annotations', 'Emit GitHub Actions ::error::/::warning:: lines')
+    .option('--ci', 'Auto-enable CI behavior (--annotations on GitHub Actions)')
+    .option('--no-ci', 'Disable CI auto-detection even when CI env is set')
     .option('--diff', 'Only report findings in files changed vs HEAD')
     .option('--staged', 'Only report findings in staged files')
     .option('--full', 'Force a complete scan (overrides --diff/--staged)')
@@ -446,10 +463,17 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         } else {
           process.stdout.write(out);
         }
+        const ciExplicitOptOut = flags.ci === false;
+        const ciExplicitOptIn = flags.ci === true;
+        const ciAutoDetected = !ciExplicitOptOut && isCiEnvironment();
+        const wantsAnnotations =
+          flags.annotations === true || ciExplicitOptIn || ciAutoDetected;
+        const reporterCarriesAnnotations =
+          reporter === 'agent' || reporter === 'pretty';
         if (
-          flags.annotations &&
-          reporter !== 'json' &&
-          reporter !== 'json-compact' &&
+          wantsAnnotations &&
+          reporterCarriesAnnotations &&
+          !flags.quiet &&
           report.diagnostics.length > 0
         ) {
           process.stdout.write(`${encodeAnnotations(report.diagnostics)}\n`);
