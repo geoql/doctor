@@ -1117,4 +1117,93 @@ describe('run', () => {
       expect(stderr.join('')).toContain("unknown rule 'does/not/exist'");
     });
   });
+
+  describe('inspect subcommand', () => {
+    it('prints detected project capabilities for a real Vue project', async () => {
+      const code = await run(['node', 'vue-doctor', 'inspect', cleanDir]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('project capabilities');
+      expect(out).toContain('framework');
+      expect(out).toContain('project layout');
+      expect(out).toContain('capability tokens (used by rule gating)');
+      expect(out).toContain('rootDirectory:');
+    });
+
+    it('emits structured JSON with --json', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'inspect',
+        cleanDir,
+        '--json',
+      ]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(stdout.join('')) as {
+        framework: string;
+        rootDirectory: string;
+        capabilities: string[];
+      };
+      expect(typeof parsed.framework).toBe('string');
+      expect(typeof parsed.rootDirectory).toBe('string');
+      expect(Array.isArray(parsed.capabilities)).toBe(true);
+    });
+
+    it('emits single-line JSON with --json-compact', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'inspect',
+        cleanDir,
+        '--json-compact',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('').trim();
+      expect(out.split('\n').length).toBe(1);
+      const parsed = JSON.parse(out) as { framework: string };
+      expect(typeof parsed.framework).toBe('string');
+    });
+
+    it('defaults to current directory when no [dir] is given', async () => {
+      const cwdBefore = process.cwd();
+      process.chdir(cleanDir);
+      try {
+        const code = await run(['node', 'vue-doctor', 'inspect']);
+        expect(code).toBe(0);
+        expect(stdout.join('')).toContain('project capabilities');
+      } finally {
+        process.chdir(cwdBefore);
+      }
+    });
+
+    it('text renderer shows (none) for missing packageJsonPath / monorepoKind on a nonexistent path', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'inspect',
+        '/this/path/definitely/does/not/exist/anywhere',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('packageJsonPath: (none)');
+      expect(out).toContain('monorepoKind: (none)');
+    });
+
+    it('returns degraded capabilities (exit 0) on a nonexistent path', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'inspect',
+        '/this/path/definitely/does/not/exist/anywhere',
+        '--json',
+      ]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(stdout.join('')) as {
+        framework: string;
+        packageJsonPath: string | null;
+      };
+      expect(parsed.framework).toBe('unknown');
+      expect(parsed.packageJsonPath).toBeNull();
+    });
+  });
 });

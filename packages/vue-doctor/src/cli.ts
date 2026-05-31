@@ -4,6 +4,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import {
   audit,
+  detectProject,
   encodeAnnotations,
   format,
   listChangedFiles,
@@ -13,6 +14,7 @@ import {
   mergeCliOverrides,
   renderVerboseTrace,
   type ListRulesFilter,
+  type ProjectInfo,
   type RegisteredRule,
   type ReporterFormat,
   type ReporterInput,
@@ -45,6 +47,77 @@ interface ListRulesCliFlags {
 
 interface ExplainCliFlags {
   json?: boolean;
+}
+
+interface InspectCliFlags {
+  json?: boolean;
+  jsonCompact?: boolean;
+}
+
+interface ProjectInfoJsonPayload {
+  framework: string;
+  rootDirectory: string;
+  packageJsonPath: string | null;
+  vueVersion: string | null;
+  nuxtVersion: string | null;
+  nuxtCompatibilityVersion: 3 | 4 | null;
+  nitroPreset: string | null;
+  typescriptVersion: string | null;
+  monorepoKind: string | null;
+  hasAutoImports: boolean;
+  hasComponentsAutoImport: boolean;
+  hasPinia: boolean;
+  hasVueRouter: boolean;
+  capabilities: string[];
+}
+
+function projectInfoToJson(p: ProjectInfo): ProjectInfoJsonPayload {
+  return {
+    framework: p.framework,
+    rootDirectory: p.rootDirectory,
+    packageJsonPath: p.packageJsonPath,
+    vueVersion: p.vueVersion,
+    nuxtVersion: p.nuxtVersion,
+    nuxtCompatibilityVersion: p.nuxtCompatibilityVersion,
+    nitroPreset: p.nitroPreset,
+    typescriptVersion: p.typescriptVersion,
+    monorepoKind: p.monorepoKind,
+    hasAutoImports: p.hasAutoImports,
+    hasComponentsAutoImport: p.hasComponentsAutoImport,
+    hasPinia: p.hasPinia,
+    hasVueRouter: p.hasVueRouter,
+    capabilities: [...p.capabilities].sort(),
+  };
+}
+
+function renderInspect(p: ProjectInfo, rootDir: string): string {
+  const lines: string[] = [];
+  lines.push(`@geoql/vue-doctor v${readVersion()} — project capabilities`);
+  lines.push('');
+  lines.push('framework');
+  lines.push(`  ${p.framework}`);
+  lines.push(`  vue: ${p.vueVersion ?? '(none)'}`);
+  lines.push(`  typescript: ${p.typescriptVersion ?? '(none)'}`);
+  lines.push('');
+  lines.push('project layout');
+  lines.push(`  rootDirectory: ${rootDir}`);
+  lines.push(`  packageJsonPath: ${p.packageJsonPath ?? '(none)'}`);
+  lines.push(`  monorepoKind: ${p.monorepoKind ?? '(none)'}`);
+  lines.push('');
+  lines.push('ecosystem');
+  lines.push(`  hasAutoImports:          ${p.hasAutoImports}`);
+  lines.push(`  hasComponentsAutoImport: ${p.hasComponentsAutoImport}`);
+  lines.push(`  hasPinia:                ${p.hasPinia}`);
+  lines.push(`  hasVueRouter:            ${p.hasVueRouter}`);
+  lines.push('');
+  lines.push('capability tokens (used by rule gating)');
+  lines.push(`  ${[...p.capabilities].sort().join('\n  ')}`);
+  lines.push('');
+  lines.push("run 'vue-doctor inspect --json' for machine output");
+  lines.push(
+    "run 'vue-doctor list-rules' to see which rules these capabilities enable",
+  );
+  return `${lines.join('\n')}\n`;
 }
 
 interface ExplainableDoc {
@@ -444,6 +517,28 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         process.stdout.write(`${JSON.stringify(doc, null, 2)}\n`);
       } else {
         process.stdout.write(renderExplain(doc));
+      }
+      process.exitCode = 0;
+    });
+
+  cli
+    .command(
+      'inspect [dir]',
+      'Print the detected project capabilities doctor uses to gate rules',
+    )
+    .option('--json', 'Emit structured JSON instead of formatted text')
+    .option('--json-compact', 'With --json, emit a single-line payload')
+    .action(async (dir: string | undefined, flags: InspectCliFlags) => {
+      const rootDir = resolve(dir ?? '.');
+      const project = await detectProject(rootDir);
+      if (flags.json || flags.jsonCompact) {
+        const payload = projectInfoToJson(project);
+        const out = flags.jsonCompact
+          ? JSON.stringify(payload)
+          : JSON.stringify(payload, null, 2);
+        process.stdout.write(`${out}\n`);
+      } else {
+        process.stdout.write(renderInspect(project, rootDir));
       }
       process.exitCode = 0;
     });
