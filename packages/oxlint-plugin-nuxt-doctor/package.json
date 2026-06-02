@@ -1,6 +1,6 @@
 {
   "name": "@geoql/oxlint-plugin-nuxt-doctor",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0",
   "private": false,
   "description": "oxlint JS plugin for Nuxt 4 anti-patterns and AI-slop detection. Pairs with oxlint's built-in vue plugin via jsPlugins. TypeScript, ESM.",
   "keywords": [
