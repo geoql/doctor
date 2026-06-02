@@ -6,6 +6,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "imports": {
+    "@geoql/doctor-core": "jsr:@geoql/doctor-core@^0.1.0"
+  },
   "publish": {
     "include": [
       "src",
