@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.1](https://github.com/geoql/doctor/compare/doctor-core-v0.1.0...doctor-core-v0.1.1) (2026-06-02)
+
+
+### Documentation
+
+* rewrite all 5 package READMEs to match shipped v0.1.0 surface ([dd56904](https://github.com/geoql/doctor/commit/dd569046aea56ba794a4e0d44bca864c51983e96))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 0.1.1
+    * @geoql/oxlint-plugin-vue-doctor bumped to 0.1.1
+
 ## 0.1.0 (2026-06-02)
 
 

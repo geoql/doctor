@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/geoql/doctor/compare/oxlint-plugin-nuxt-doctor-v0.1.0...oxlint-plugin-nuxt-doctor-v0.1.1) (2026-06-02)
+
+
+### Documentation
+
+* rewrite all 5 package READMEs to match shipped v0.1.0 surface ([dd56904](https://github.com/geoql/doctor/commit/dd569046aea56ba794a4e0d44bca864c51983e96))
+
 ## 0.1.0 (2026-06-02)
 
 
