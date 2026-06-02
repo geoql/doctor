@@ -27,6 +27,10 @@ export type {
 } from './config/index.js';
 export { detectProject } from './detect-project.js';
 export {
+  findMonorepoRoot,
+  type MonorepoResult,
+} from './project-info/find-monorepo-root.js';
+export {
   applyInlineDisables,
   parseDirectives,
   type ApplyInlineDisablesOptions,
@@ -35,6 +39,10 @@ export {
   type DirectiveSet,
 } from './disables/index.js';
 export { listChangedFiles, type GitScopeMode } from './git-scope.js';
+export {
+  listWorkspacePackages,
+  type WorkspacePackage,
+} from './project-info/list-workspace-packages.js';
 export {
   isNuxtLayoutFile,
   isNuxtPageFile,

@@ -6,21 +6,28 @@ import {
   audit,
   detectProject,
   encodeAnnotations,
+  findMonorepoRoot,
   format,
   listChangedFiles,
   listRules,
+  listWorkspacePackages,
   loadDoctorConfig,
   loadRuleDoc,
   mergeCliOverrides,
   renderVerboseTrace,
+  scoreDiagnostics,
+  type AuditReport,
+  type ConfigSource,
   type ListRulesFilter,
   type ProjectInfo,
   type RegisteredRule,
   type ReporterFormat,
   type ReporterInput,
+  type ResolvedDoctorConfig,
   type RuleCategory,
   type RuleSource,
   type Severity,
+  type WorkspacePackage,
 } from '@geoql/doctor-core';
 import { cac } from 'cac';
 
@@ -272,6 +279,12 @@ interface CliFlags {
   diff?: boolean;
   staged?: boolean;
   full?: boolean;
+  project?: string;
+}
+
+interface PreparedOptions {
+  ruleOverrides: Record<string, Severity | 'off'> | undefined;
+  threshold: number | undefined;
 }
 
 function toArray(value: string | string[] | undefined): string[] | undefined {
@@ -337,6 +350,162 @@ function isFailOnLevel(v: string): v is 'error' | 'warn' | 'none' {
   return v === 'error' || v === 'warn' || v === 'none';
 }
 
+async function runSingleAudit(
+  rootDir: string,
+  flags: CliFlags,
+  prepared: PreparedOptions,
+): Promise<{ report: AuditReport; source: ConfigSource }> {
+  let scopeFiles: string[] | undefined;
+  if (!flags.full && (flags.diff || flags.staged)) {
+    scopeFiles = await listChangedFiles({
+      rootDir,
+      mode: flags.staged ? 'staged' : 'diff',
+    });
+  }
+  const resolved = await loadDoctorConfig(rootDir, {
+    ...(flags.config ? { explicitPath: flags.config } : {}),
+    ...(flags.preset ? { presetOverride: flags.preset } : {}),
+  });
+  const merged: ResolvedDoctorConfig = mergeCliOverrides(resolved, {
+    failOn: flags.failOn as 'error' | 'warn' | 'none' | undefined,
+    include: toArray(flags.include),
+    exclude: toArray(flags.exclude),
+    rules: prepared.ruleOverrides,
+    threshold: prepared.threshold,
+  });
+  const report = await audit({
+    rootDir: merged.rootDir,
+    include: merged.include,
+    exclude: merged.exclude,
+    rules: merged.rules,
+    failOn: merged.failOn,
+    threshold: merged.threshold,
+    deadCode: flags.deadCode,
+    lint: flags.lint,
+    respectInlineDisables: flags.respectInlineDisables,
+    scopeFiles,
+  });
+  const allowedRuleIds = new Set(Object.keys(merged.rules));
+  report.diagnostics = report.diagnostics.filter((d) =>
+    allowedRuleIds.has(d.ruleId),
+  );
+  return { report, source: resolved.source };
+}
+
+function aggregateReports(
+  reports: AuditReport[],
+  rootDirectory: string,
+): AuditReport {
+  const first = reports[0];
+  const diagnostics = reports.flatMap((r) => r.diagnostics);
+  let filesScanned = 0;
+  let elapsedMs = 0;
+  let exitCode: 0 | 1 | 2 = 0;
+  for (const r of reports) {
+    filesScanned += r.filesScanned;
+    elapsedMs += r.elapsedMs;
+    if (r.exitCode > exitCode) exitCode = r.exitCode;
+  }
+  const ruleCounts: Record<string, number> = {};
+  for (const d of diagnostics) {
+    ruleCounts[d.ruleId] = (ruleCounts[d.ruleId] ?? 0) + 1;
+  }
+  const scoreResult = scoreDiagnostics(diagnostics, {
+    threshold: first.scoreResult.threshold,
+  });
+  return {
+    rootDir: rootDirectory,
+    filesScanned,
+    diagnostics,
+    score: scoreResult.score,
+    errorCount: scoreResult.errorCount,
+    warnCount: scoreResult.warnCount,
+    infoCount: scoreResult.infoCount,
+    exitCode,
+    scoreResult,
+    projectInfo: { ...first.projectInfo, rootDirectory },
+    elapsedMs,
+    timings: first.timings,
+    ruleCounts,
+  };
+}
+
+function emitReport(
+  report: AuditReport,
+  reporter: ReporterFormat,
+  flags: CliFlags,
+): void {
+  const input: ReporterInput = {
+    toolName: '@geoql/nuxt-doctor',
+    toolVersion: readVersion(),
+    rootDirectory: report.rootDir,
+    analyzedFileCount: report.filesScanned,
+    elapsedMs: report.elapsedMs,
+    diagnostics: report.diagnostics,
+    score: report.scoreResult,
+    projectInfo: report.projectInfo,
+  };
+  const out = format(input, reporter, {
+    color: flags.color,
+    quiet: flags.quiet,
+  });
+  if (flags.output) {
+    writeFileSync(resolve(flags.output), out);
+  } else {
+    process.stdout.write(out);
+  }
+  const ciExplicitOptOut = flags.ci === false;
+  const ciExplicitOptIn = flags.ci === true;
+  const ciAutoDetected = !ciExplicitOptOut && isCiEnvironment();
+  const wantsAnnotations =
+    flags.annotations === true || ciExplicitOptIn || ciAutoDetected;
+  const reporterCarriesAnnotations =
+    reporter === 'agent' || reporter === 'pretty';
+  if (
+    wantsAnnotations &&
+    reporterCarriesAnnotations &&
+    !flags.quiet &&
+    report.diagnostics.length > 0
+  ) {
+    process.stdout.write(`${encodeAnnotations(report.diagnostics)}\n`);
+  }
+}
+
+async function runProjectAudits(
+  rootDir: string,
+  flags: CliFlags,
+  prepared: PreparedOptions,
+  packages: WorkspacePackage[],
+): Promise<{ report: AuditReport; source: ConfigSource } | null> {
+  const requested = flags
+    .project!.split(',')
+    .map((name) => name.trim())
+    .filter((name) => name.length > 0);
+  const byName = new Map(packages.map((p) => [p.name, p]));
+  const reports: AuditReport[] = [];
+  let source: ConfigSource = 'built-in';
+  for (const name of requested) {
+    const match = byName.get(name);
+    if (!match) {
+      process.stderr.write(
+        `nuxt-doctor: --project: unknown project "${name}" (skipped)\n`,
+      );
+      continue;
+    }
+    const single = await runSingleAudit(match.dir, flags, prepared);
+    reports.push(single.report);
+    source = single.source;
+  }
+  if (reports.length === 0) {
+    process.stderr.write(
+      'nuxt-doctor: --project: no matching workspace projects\n',
+    );
+    return null;
+  }
+  const { root } = await findMonorepoRoot(rootDir);
+  return { report: aggregateReports(reports, root), source };
+}
+
 export async function run(argv: string[] = process.argv): Promise<number> {
   const cli = cac('nuxt-doctor');
 
@@ -383,6 +552,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--diff', 'Only report findings in files changed vs HEAD')
     .option('--staged', 'Only report findings in staged files')
     .option('--full', 'Force a complete scan (overrides --diff/--staged)')
+    .option(
+      '--project <name>',
+      'Comma-separated workspace project names to audit (monorepo)',
+    )
     .option('--output <file>', 'Write the report to a file instead of stdout')
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
@@ -418,43 +591,41 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         if (flags.verbose && flags.quiet) {
           throw new Error('--verbose and --quiet are mutually exclusive.');
         }
-        let scopeFiles: string[] | undefined;
-        if (!flags.full && (flags.diff || flags.staged)) {
-          scopeFiles = await listChangedFiles({
-            rootDir,
-            mode: flags.staged ? 'staged' : 'diff',
-          });
+        const prepared: PreparedOptions = { ruleOverrides, threshold };
+
+        const workspacePackages = flags.project
+          ? await listWorkspacePackages(rootDir)
+          : [];
+        if (flags.project && workspacePackages.length === 0) {
+          process.stderr.write(
+            'nuxt-doctor: --project ignored: not a pnpm workspace\n',
+          );
         }
-        const resolved = await loadDoctorConfig(rootDir, {
-          ...(flags.config ? { explicitPath: flags.config } : {}),
-          ...(flags.preset ? { presetOverride: flags.preset } : {}),
-        });
-        const merged = mergeCliOverrides(resolved, {
-          failOn: flags.failOn as 'error' | 'warn' | 'none' | undefined,
-          include: toArray(flags.include),
-          exclude: toArray(flags.exclude),
-          rules: ruleOverrides,
-          threshold,
-        });
-        const report = await audit({
-          rootDir: merged.rootDir,
-          include: merged.include,
-          exclude: merged.exclude,
-          rules: merged.rules,
-          failOn: merged.failOn,
-          threshold: merged.threshold,
-          deadCode: flags.deadCode,
-          lint: flags.lint,
-          respectInlineDisables: flags.respectInlineDisables,
-          scopeFiles,
-        });
-        const allowedRuleIds = new Set(Object.keys(merged.rules));
-        report.diagnostics = report.diagnostics.filter((d) =>
-          allowedRuleIds.has(d.ruleId),
-        );
+
+        let report: AuditReport;
+        let configSource: ConfigSource;
+        if (flags.project && workspacePackages.length > 0) {
+          const aggregated = await runProjectAudits(
+            rootDir,
+            flags,
+            prepared,
+            workspacePackages,
+          );
+          if (!aggregated) {
+            process.exitCode = 2;
+            return;
+          }
+          report = aggregated.report;
+          configSource = aggregated.source;
+        } else {
+          const single = await runSingleAudit(rootDir, flags, prepared);
+          report = single.report;
+          configSource = single.source;
+        }
+
         if (flags.verbose) {
           const verboseOutput = renderVerboseTrace(report, {
-            configSource: resolved.source,
+            configSource,
           });
           process.stderr.write(`${verboseOutput}\n`);
         }
@@ -463,40 +634,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           process.exitCode = report.exitCode;
           return;
         }
-        const input: ReporterInput = {
-          toolName: '@geoql/nuxt-doctor',
-          toolVersion: readVersion(),
-          rootDirectory: report.rootDir,
-          analyzedFileCount: report.filesScanned,
-          elapsedMs: report.elapsedMs,
-          diagnostics: report.diagnostics,
-          score: report.scoreResult,
-          projectInfo: report.projectInfo,
-        };
-        const out = format(input, reporter, {
-          color: flags.color,
-          quiet: flags.quiet,
-        });
-        if (flags.output) {
-          writeFileSync(resolve(flags.output), out);
-        } else {
-          process.stdout.write(out);
-        }
-        const ciExplicitOptOut = flags.ci === false;
-        const ciExplicitOptIn = flags.ci === true;
-        const ciAutoDetected = !ciExplicitOptOut && isCiEnvironment();
-        const wantsAnnotations =
-          flags.annotations === true || ciExplicitOptIn || ciAutoDetected;
-        const reporterCarriesAnnotations =
-          reporter === 'agent' || reporter === 'pretty';
-        if (
-          wantsAnnotations &&
-          reporterCarriesAnnotations &&
-          !flags.quiet &&
-          report.diagnostics.length > 0
-        ) {
-          process.stdout.write(`${encodeAnnotations(report.diagnostics)}\n`);
-        }
+        emitReport(report, reporter, flags);
         process.exitCode = report.exitCode;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);

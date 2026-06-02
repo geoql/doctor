@@ -9,8 +9,6 @@ import type { ProjectInfo } from '../../../../src/types/project-info.js';
 
 const RULE_ID = 'nuxt-doctor/seo/useSeoMeta-on-public-page';
 
-let counter = 0;
-
 async function pageFixture(
   relPath: string,
   content: string,
