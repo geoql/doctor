@@ -61,7 +61,9 @@ jobs:
 
       - name: Publish to npm with provenance
         run: |
+          failed=""
           for tgz in .release/*.tgz; do
+            name=$(tar -xzOf "$tgz" package/package.json | grep '"name"' | head -1 | sed -E 's/.*"name" *: *"([^"]+)".*/\1/')
             version=$(tar -xzOf "$tgz" package/package.json | grep '"version"' | head -1 | sed -E 's/.*"version" *: *"([^"]+)".*/\1/')
             if [[ "$version" == *-* ]]; then
               tag="${version#*-}"
@@ -69,15 +71,40 @@ jobs:
             else
               tag="latest"
             fi
-            echo "Publishing $tgz (version=$version) under dist-tag: $tag"
-            npm publish "$tgz" --provenance --access public --ignore-scripts --tag "$tag"
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "Skipping $name@$version (already published)"
+              continue
+            fi
+            echo "Publishing $name@$version under dist-tag: $tag"
+            if ! npm publish "$tgz" --provenance --access public --ignore-scripts --tag "$tag"; then
+              echo "::error::npm publish failed for $name@$version"
+              failed="$failed $name@$version"
+            fi
           done
+          if [[ -n "$failed" ]]; then
+            echo "::error::npm publish failed for:$failed"
+            exit 1
+          fi
 
       - name: Sync JSR versions
         run: node scripts/bump-jsr-version.mjs
 
       - name: Publish to JSR
         run: |
+          failed=""
           for dir in packages/doctor-core packages/oxlint-plugin-vue-doctor packages/oxlint-plugin-nuxt-doctor packages/nuxt-doctor packages/vue-doctor; do
-            (cd "$dir" && pnpm dlx jsr publish --allow-dirty --allow-slow-types)
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            if curl -fsS "https://jsr.io/$name/$version/package.json" >/dev/null 2>&1; then
+              echo "Skipping $name@$version on JSR (already published)"
+              continue
+            fi
+            if ! (cd "$dir" && pnpm dlx jsr publish --allow-dirty --allow-slow-types); then
+              echo "::error::jsr publish failed for $name@$version"
+              failed="$failed $name@$version"
+            fi
           done
+          if [[ -n "$failed" ]]; then
+            echo "::error::jsr publish failed for:$failed"
+            exit 1
+          fi
