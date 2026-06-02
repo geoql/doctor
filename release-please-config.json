@@ -7,8 +7,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false,
-      "release-as": "0.1.0"
+      "prerelease": false
     },
     "packages/oxlint-plugin-vue-doctor": {
       "release-type": "node",
@@ -16,8 +15,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false,
-      "release-as": "0.1.0"
+      "prerelease": false
     },
     "packages/oxlint-plugin-nuxt-doctor": {
       "release-type": "node",
@@ -25,8 +23,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false,
-      "release-as": "0.1.0"
+      "prerelease": false
     },
     "packages/nuxt-doctor": {
       "release-type": "node",
@@ -34,8 +31,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false,
-      "release-as": "0.1.0"
+      "prerelease": false
     },
     "packages/vue-doctor": {
       "release-type": "node",
@@ -43,8 +39,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false,
-      "release-as": "0.1.0"
+      "prerelease": false
     }
   },
   "changelog-sections": [
