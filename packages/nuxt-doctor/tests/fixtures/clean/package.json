@@ -1,0 +1,14 @@
+{
+  "name": "clean-nuxt-fixture",
+  "private": true,
+  "dependencies": {
+    "@nuxt/fonts": "^0.10.0",
+    "@nuxt/image": "^1.8.0",
+    "@nuxtjs/seo": "^2.0.0",
+    "nuxt": "^4.4.0"
+  },
+  "devDependencies": {
+    "eslint-plugin-vue": "^9.30.0",
+    "vue-tsc": "^2.1.0"
+  }
+}

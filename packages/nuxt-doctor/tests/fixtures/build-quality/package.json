@@ -1,0 +1,6 @@
+{
+  "name": "build-quality-nuxt-fixture",
+  "dependencies": {
+    "nuxt": "^4.4.0"
+  }
+}
