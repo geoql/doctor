@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1-alpha.0](https://github.com/geoql/doctor/compare/vue-doctor-v0.2.0-alpha.0...vue-doctor-v0.2.1-alpha.0) (2026-06-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 0.1.0
+
 ## [0.2.0-alpha.0](https://github.com/geoql/doctor/compare/vue-doctor-v0.1.0-alpha.0...vue-doctor-v0.2.0-alpha.0) (2026-05-31)
 
 

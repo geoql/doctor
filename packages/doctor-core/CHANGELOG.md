@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.1.0](https://github.com/geoql/doctor/compare/doctor-core-v0.2.0-alpha.0...doctor-core-v0.1.0) (2026-06-02)
+
+
+### Features
+
+* **nuxt:** 11 doctor-core project rules + nuxt-plugin 100% coverage ([2986d0b](https://github.com/geoql/doctor/commit/2986d0be2110a240dd08c8011e3101d3b887828c))
+* **nuxt:** 3 SFC-pass + 2 cross-file nuxt rules (doctor-core) ([2d2a1aa](https://github.com/geoql/doctor/commit/2d2a1aa212c16197fec73a172bfcb079a706af1c))
+* **nuxt:** nuxt-4 detection + 10 oxlint-plugin script rules ([d61cb1f](https://github.com/geoql/doctor/commit/d61cb1f66bf7010373e06015e87ef18fa6805d7e))
+
+
+### Bug Fixes
+
+* **core:** wire nuxt rules + repair silently-broken oxlint script pass ([ec11f9c](https://github.com/geoql/doctor/commit/ec11f9c907b7bd46d192b5ae3d6b44b1c8f787f0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 0.1.0
+
 ## [0.2.0-alpha.0](https://github.com/geoql/doctor/compare/doctor-core-v0.1.0-alpha.0...doctor-core-v0.2.0-alpha.0) (2026-05-31)
 
 
