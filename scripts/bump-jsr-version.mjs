@@ -3,6 +3,8 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 const packages = [
   'packages/doctor-core',
   'packages/oxlint-plugin-vue-doctor',
+  'packages/oxlint-plugin-nuxt-doctor',
+  'packages/nuxt-doctor',
   'packages/vue-doctor',
 ];
 

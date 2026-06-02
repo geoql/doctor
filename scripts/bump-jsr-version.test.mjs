@@ -27,6 +27,8 @@ describe('bump-jsr-version', () => {
     for (const pkg of [
       'doctor-core',
       'oxlint-plugin-vue-doctor',
+      'oxlint-plugin-nuxt-doctor',
+      'nuxt-doctor',
       'vue-doctor',
     ]) {
       mkdirSync(join(dir, 'packages', pkg), { recursive: true });
@@ -73,6 +75,29 @@ describe('bump-jsr-version', () => {
     const jsr = JSON.parse(raw);
     expect(jsr.version).toBe('1.2.3');
     expect(jsr.exports).toBe('./src/index.ts');
+  });
+
+  it('bumps the nuxt-doctor packages too', () => {
+    for (const pkg of ['oxlint-plugin-nuxt-doctor', 'nuxt-doctor']) {
+      const base = join(dir, 'packages', pkg);
+      writeJson(join(base, 'package.json'), {
+        name: `@geoql/${pkg}`,
+        version: '0.1.0',
+      });
+      writeJson(join(base, 'jsr.json'), {
+        name: `@geoql/${pkg}`,
+        version: '0.1.0-alpha.0',
+      });
+    }
+
+    execFileSync('node', [scriptPath], { cwd: dir });
+
+    for (const pkg of ['oxlint-plugin-nuxt-doctor', 'nuxt-doctor']) {
+      const jsr = JSON.parse(
+        readFileSync(join(dir, 'packages', pkg, 'jsr.json'), 'utf-8'),
+      );
+      expect(jsr.version).toBe('0.1.0');
+    }
   });
 
   it('skips packages that have no jsr.json', () => {
