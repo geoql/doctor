@@ -7,7 +7,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false
+      "prerelease": false,
+      "release-as": "0.1.0"
     },
     "packages/oxlint-plugin-vue-doctor": {
       "release-type": "node",
@@ -15,7 +16,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false
+      "prerelease": false,
+      "release-as": "0.1.0"
     },
     "packages/oxlint-plugin-nuxt-doctor": {
       "release-type": "node",
@@ -23,7 +25,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false
+      "prerelease": false,
+      "release-as": "0.1.0"
     },
     "packages/nuxt-doctor": {
       "release-type": "node",
@@ -31,7 +34,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false
+      "prerelease": false,
+      "release-as": "0.1.0"
     },
     "packages/vue-doctor": {
       "release-type": "node",
@@ -39,22 +43,60 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false
+      "prerelease": false,
+      "release-as": "0.1.0"
     }
   },
   "changelog-sections": [
-    { "type": "feat", "section": "Features" },
-    { "type": "fix", "section": "Bug Fixes" },
-    { "type": "perf", "section": "Performance Improvements" },
-    { "type": "revert", "section": "Reverts" },
-    { "type": "docs", "section": "Documentation" },
-    { "type": "chore", "section": "Miscellaneous" },
-    { "type": "refactor", "section": "Code Refactoring" },
-    { "type": "test", "section": "Tests", "hidden": true },
-    { "type": "build", "section": "Build System", "hidden": true },
-    { "type": "ci", "section": "Continuous Integration", "hidden": true }
+    {
+      "type": "feat",
+      "section": "Features"
+    },
+    {
+      "type": "fix",
+      "section": "Bug Fixes"
+    },
+    {
+      "type": "perf",
+      "section": "Performance Improvements"
+    },
+    {
+      "type": "revert",
+      "section": "Reverts"
+    },
+    {
+      "type": "docs",
+      "section": "Documentation"
+    },
+    {
+      "type": "chore",
+      "section": "Miscellaneous"
+    },
+    {
+      "type": "refactor",
+      "section": "Code Refactoring"
+    },
+    {
+      "type": "test",
+      "section": "Tests",
+      "hidden": true
+    },
+    {
+      "type": "build",
+      "section": "Build System",
+      "hidden": true
+    },
+    {
+      "type": "ci",
+      "section": "Continuous Integration",
+      "hidden": true
+    }
   ],
-  "plugins": [{ "type": "node-workspace" }],
+  "plugins": [
+    {
+      "type": "node-workspace"
+    }
+  ],
   "include-component-in-tag": true,
   "separate-pull-requests": false
 }
