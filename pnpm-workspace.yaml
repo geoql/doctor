@@ -4,6 +4,7 @@ packages:
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true
+  unrs-resolver: true
 
 minimumReleaseAgeExclude:
   - vue-eslint-parser@10.4.1
