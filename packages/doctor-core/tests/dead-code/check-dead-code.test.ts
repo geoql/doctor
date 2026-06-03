@@ -11,6 +11,7 @@ import type { ResolvedDoctorConfig } from '../../src/config/types.js';
 vi.mock('node:fs/promises', () => ({
   readFile: vi.fn().mockRejectedValue(new Error('ENOENT')),
   writeFile: vi.fn().mockResolvedValue(undefined),
+  mkdir: vi.fn().mockResolvedValue(undefined),
   unlink: vi.fn().mockResolvedValue(undefined),
 }));
 
@@ -296,7 +297,11 @@ describe('checkDeadCode', () => {
     expect(result[0].ruleId).toBe('dead-code/unused-type-export');
   });
 
-  it('passes compilers option for nuxt framework', async () => {
+  it('writes compilers into the knip config for nuxt framework', async () => {
+    const fsp = await import('node:fs/promises');
+    const writeSpy = vi.mocked(fsp.writeFile);
+    writeSpy.mockClear();
+
     const mockRun = vi.fn().mockResolvedValue({
       results: { issues: mockKnipIssues },
     });
@@ -314,11 +319,18 @@ describe('checkDeadCode', () => {
       timeoutMs: 30_000,
     });
 
-    expect(mockCreateOptions).toHaveBeenCalledWith(
-      expect.objectContaining({
-        compilers: { nuxt: true },
-      }),
+    const args = mockCreateOptions.mock.calls[0]?.[0] as {
+      args?: { config?: string };
+    };
+    expect(args.args?.config).toContain('knip.json');
+
+    const written = writeSpy.mock.calls.find((c) =>
+      String(c[0]).endsWith('knip.json'),
     );
+    const json = JSON.parse(String(written![1])) as {
+      compilers?: { nuxt?: boolean };
+    };
+    expect(json.compilers).toEqual({ nuxt: true });
   });
 
   it('sorts diagnostics by line when file is same but line differs', async () => {

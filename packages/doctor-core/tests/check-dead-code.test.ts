@@ -12,6 +12,7 @@ vi.mock('node:fs/promises', () => ({
     throw new Error('ENOENT');
   }),
   writeFile: vi.fn(async () => {}),
+  mkdir: vi.fn(async () => undefined),
   unlink: vi.fn(async () => {}),
 }));
 
@@ -103,6 +104,50 @@ describe('checkDeadCode', () => {
       expect(fileDiag).toBeDefined();
       expect(fileDiag!.file).toBe(resolve('/project/vue-app', 'src/old.ts'));
       expect(fileDiag!.source).toBe('dead-code');
+    } finally {
+      mod._knipLoader.load = originalLoad;
+    }
+  });
+
+  it('writes a knip config file and passes its path via args.config', async () => {
+    const fsp = await import('node:fs/promises');
+    const writeSpy = vi.mocked(fsp.writeFile);
+    writeSpy.mockClear();
+
+    const mod = await import('../src/check-dead-code.js');
+    const originalLoad = mod._knipLoader.load;
+    let capturedOptions: Record<string, unknown> | undefined;
+    mod._knipLoader.load = async () => ({
+      createOptions: async (opts: Record<string, unknown>) => {
+        capturedOptions = opts;
+        return { cwd: '/project/vue-app' };
+      },
+      run: async () => mockKnipResult,
+    });
+
+    try {
+      await mod.checkDeadCode({
+        projectInfo: {
+          ...vueProjectInfo,
+          hasAutoImports: true,
+          hasComponentsAutoImport: true,
+          hasVueRouter: true,
+        },
+        doctorConfig: baseConfig,
+        enabled: true,
+      });
+
+      const args = capturedOptions?.args as { config?: string } | undefined;
+      expect(args?.config).toContain('knip.json');
+      expect(capturedOptions).not.toHaveProperty('entry');
+
+      const written = writeSpy.mock.calls.find((c) =>
+        String(c[0]).endsWith('knip.json'),
+      );
+      expect(written).toBeDefined();
+      const json = JSON.parse(String(written![1])) as { entry: string[] };
+      expect(json.entry).toContain('src/components/**/*.vue');
+      expect(json.entry).toContain('src/composables/**/*.ts');
     } finally {
       mod._knipLoader.load = originalLoad;
     }

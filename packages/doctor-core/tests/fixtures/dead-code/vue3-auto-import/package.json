@@ -1,0 +1,14 @@
+{
+  "name": "vue3-auto-import-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "vue": "^3.5.13",
+    "vue-router": "^4.4.0"
+  },
+  "devDependencies": {
+    "unplugin-auto-import": "^0.18.0",
+    "unplugin-vue-components": "^0.27.0"
+  }
+}

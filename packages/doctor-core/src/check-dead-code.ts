@@ -1,6 +1,8 @@
 import { join } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import type { Diagnostic } from './types.js';
+import type { KnipConfig } from './dead-code/build-knip-config.js';
 import type { ProjectInfo } from './types/project-info.js';
 import type { ResolvedDoctorConfig } from './config/types.js';
 import { buildKnipConfig } from './dead-code/build-knip-config.js';
@@ -116,6 +118,24 @@ export const _knipLoader = {
   },
 };
 
+async function writeKnipConfig(
+  rootDir: string,
+  config: KnipConfig,
+): Promise<string> {
+  const cacheDir = join(rootDir, 'node_modules', '.cache', 'doctor');
+  await mkdir(cacheDir, { recursive: true });
+  const configPath = join(cacheDir, 'knip.json');
+  const knipJson: Record<string, unknown> = {
+    entry: config.entry,
+    project: config.project,
+    ignore: config.ignoreFiles,
+    ignoreDependencies: config.ignoreDependencies,
+  };
+  if (config.compilers) knipJson.compilers = config.compilers;
+  await writeFile(configPath, JSON.stringify(knipJson, null, 2), 'utf8');
+  return configPath;
+}
+
 export async function checkDeadCode(
   options: CheckDeadCodeOptions,
 ): Promise<Diagnostic[]> {
@@ -138,13 +158,19 @@ export async function checkDeadCode(
     throw new DeadCodeImportFailed(err);
   }
 
+  // knip's createOptions IGNORES entry/project passed as options (its Options
+  // type has no such fields). The only programmatic way to inject them is via a
+  // config file referenced through args.config — so synthesize one on disk and
+  // point knip at it. Without this, knip falls back to its default entry globs
+  // ({index,cli,main}) and reports auto-imported/file-routed files as unused.
+  const configPath = await writeKnipConfig(
+    options.projectInfo.rootDirectory,
+    config,
+  );
+
   const knipOptions = await createOptions({
     cwd: options.projectInfo.rootDirectory,
-    entry: config.entry,
-    project: config.project,
-    ignoreFiles: config.ignoreFiles,
-    ignoreDependencies: config.ignoreDependencies,
-    ...(config.compilers ? { compilers: config.compilers } : {}),
+    args: { config: configPath },
   });
 
   const result = await Promise.race([
