@@ -101,7 +101,7 @@ Vue 3 only. For Nuxt 4 projects, use [`@geoql/nuxt-doctor`](../nuxt-doctor), whi
 
 ## Architecture
 
-See [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md).
+See [`docs/SPEC.md`](../../docs/SPEC.md) §10.
 
 ## License
 

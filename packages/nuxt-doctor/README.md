@@ -101,7 +101,7 @@ Nuxt 4 only: the `app/` directory layout with `compatibilityVersion: 4`. For a p
 
 ## Architecture
 
-See [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md).
+See [`docs/SPEC.md`](../../docs/SPEC.md) §10.
 
 ## License
 

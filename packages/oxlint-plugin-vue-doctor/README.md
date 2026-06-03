@@ -31,7 +31,7 @@ Vue 3 only. Severity levels are `error | warn | info`.
 
 ## Architecture
 
-See [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md) for how the JS plugin co-loads with oxlint's native `vue` plugin and why the script and template rules live in different passes.
+See [`docs/SPEC.md`](../../docs/SPEC.md) §10 for how the JS plugin co-loads with oxlint's native `vue` plugin and why the script and template rules live in different passes.
 
 ## License
 

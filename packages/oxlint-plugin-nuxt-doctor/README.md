@@ -31,7 +31,7 @@ Nuxt 4 only (the `app/` directory layout with `compatibilityVersion: 4`). Severi
 
 ## Architecture
 
-See [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md) for how the JS plugin co-loads with oxlint's native `vue` plugin and why script, template, and cross-file rules live in different passes.
+See [`docs/SPEC.md`](../../docs/SPEC.md) §10 for how the JS plugin co-loads with oxlint's native `vue` plugin and why script, template, and cross-file rules live in different passes.
 
 ## License
 

@@ -6,7 +6,7 @@ This is the library that does the work. The two CLIs are thin `cac` wrappers; ev
 
 ## What it does
 
-`doctor-core` runs a **hybrid two-pass scan** over a Vue 3 or Nuxt 4 project, as locked in [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md):
+`doctor-core` runs a **hybrid two-pass scan** over a Vue 3 or Nuxt 4 project, as locked in [`docs/SPEC.md`](../../docs/SPEC.md) §10:
 
 - **Pass 1 — template AST.** Parses `.vue` SFCs with `@vue/compiler-sfc` and walks the template AST in-process. This is the only pass that can see the template, so template-shaped rules (`v-for` missing `:key`, `v-if`/`v-for` on the same node, inline object props in lists) live here.
 - **Pass 2 — script ESTree.** Spawns `oxlint` as a subprocess against a generated `.oxlintrc.json` that turns on oxlint's native `vue` plugin plus the doctor JS plugins (`@geoql/oxlint-plugin-vue-doctor`, `@geoql/oxlint-plugin-nuxt-doctor`). oxlint only hands JS plugins the extracted `<script>`, so all script-level rules run here.
@@ -88,7 +88,7 @@ Vue 3 and Nuxt 4 only. Nuxt detection expects the `app/` directory layout with `
 
 ## Architecture
 
-See [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md) for the full two-pass design, the empirical oxlint findings that shaped it, and the canonical `Diagnostic` shape.
+See [`docs/SPEC.md`](../../docs/SPEC.md) §10 for the full two-pass design, the empirical oxlint findings that shaped it, and the canonical `Diagnostic` shape.
 
 ## License
 

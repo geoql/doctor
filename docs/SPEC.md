@@ -1,8 +1,8 @@
 # @geoql/doctor — Design Spec
 
-> **Note (2026-05-28):** This is the **original product spec**. It is preserved as-is for the rule catalog (§4), output format (§7), and advanced CLI flags (§10), which remain the long-term target. The **rule implementation architecture in §6 is superseded** by [`docs/ARCHITECTURE.md`](./ARCHITECTURE.md), which reflects the hybrid two-pass design locked after empirical validation of oxlint's native Vue support. Read `ARCHITECTURE.md` first.
+> **The single locked spec.** Goals, repo layout, CLI surface, output format, scoring, config, the full rule catalog, and the hybrid multi-pass engine design (§10) all live here. The code migrates to this spec — never the reverse. (The former `docs/ARCHITECTURE.md` alpha snapshot was folded into §10 and removed.)
 
-**Status:** Original draft (architecture sections superseded — see `ARCHITECTURE.md`)
+**Status:** Locked — single source of truth
 **Date:** 2026-05-28
 **Owner:** Vinayak Kulkarni
 **Repo:** [`geoql/doctor`](https://github.com/geoql/doctor)
@@ -659,6 +659,17 @@ This is exactly how `oxlint-plugin-react-doctor` works. Your 11 personal Vue rep
 | Reporters                                                 | `doctor-core`                                                           |
 | CLI flag parsing                                          | `vue-doctor` / `nuxt-doctor` packages (cac)                             |
 | Programmatic API                                          | `doctor-core` (`runDoctor()`) re-exported from CLI packages             |
+
+### Hybrid multi-pass engine (the implementation detail that shaped the design)
+
+`doctor-core` does **not** run a single pass. Empirically (oxlint `1.67.0` + `@vue/compiler-sfc` spike): **oxlint JS plugins only receive the `<script>`/`<script setup>` ESTree of a `.vue` file — never the template AST.** So template-level checks (`v-for` missing `:key`, `v-if`+`v-for` precedence, inline object props in lists, …) cannot live in an oxlint plugin. The engine therefore runs multiple passes and merges their diagnostics:
+
+1. **`runTemplatePass`** — `@vue/compiler-sfc.parse()` per `.vue`, walk the template AST, apply template rules in-process.
+2. **`runSfcPass`** — SFC-level rules that need both `<script>` and `<script setup>` blocks (e.g. mixed Options/Composition API) — runs whenever the SFC descriptor parses.
+3. **`runScriptPass`** — spawn `oxlint --format=json` as a subprocess with a generated `.oxlintrc.json` (`"plugins":["vue"]` for built-in Vue rules + `"jsPlugins":[…]` for `@geoql/oxlint-plugin-*-doctor`). Subprocess (not in-process) so doctor-core upgrades oxlint independently and never depends on internal Rust APIs (~50ms spin-up, acceptable for an audit tool).
+4. **dead-code pass** (knip), **project/deps post-checks** (cross-file, e.g. `deps/duplicate-vue-versions`), and **cross-file pass** (Nuxt only).
+
+All passes emit the canonical `Diagnostic` shape; `mergeDiagnostics` dedupes on `(file, line, column, ruleId)`, then the √-decay scorer (§7) produces the 0–100 score. This hybrid design is locked; the template/script split is the reason the rule set is partitioned across `doctor-core` (template + SFC + project) and the oxlint plugins (script).
 
 ---
 

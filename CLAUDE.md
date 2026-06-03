@@ -171,9 +171,9 @@ This is the **opposite** of the convention in the author's Vue/Nuxt app repos �
 - **JSR**: each package has a `jsr.json` synced by `scripts/bump-jsr-version.mjs` (covers all 5). Packages must be manually created + linked on jsr.io before first publish. The two CLI packages need an `imports` map (`"@geoql/doctor-core": "jsr:@geoql/doctor-core@^x"`) in `jsr.json`, plus doctor-core's static deps added as their `devDependencies` so deno's byonm resolver finds the transitive npm deps.
 - **Add postinstall-having deps to `pnpm-workspace.yaml` `allowBuilds`** (`@parcel/watcher`, `esbuild`, `unrs-resolver`) — frozen-install CI fails otherwise.
 
-### 🚨 Rule #12: SPEC.md and ARCHITECTURE.md Are Locked Specs
+### 🚨 Rule #12: SPEC.md Is the Locked Spec
 
-`docs/SPEC.md` is the locked product spec (rule IDs, severities, scoring, CLI flags, JSON shape). `docs/ARCHITECTURE.md` is the locked engine design. **Never normalize the SPEC down to match a shortcut.** Code migrates to the SPEC, not the reverse. When SPEC and code disagree, the SPEC wins until amended.
+`docs/SPEC.md` is the single locked spec (rule IDs, severities, scoring, CLI flags, JSON shape, AND the hybrid multi-pass engine design in §10). **Never normalize the SPEC down to match a shortcut.** Code migrates to the SPEC, not the reverse. When SPEC and code disagree, the SPEC wins until amended.
 
 ### 🚨 Rule #13: Dependency Hygiene
 
@@ -199,7 +199,7 @@ geoql/doctor/
 │   ├── nuxt-doctor/                        # @geoql/nuxt-doctor — CLI (bin/nuxt-doctor.mjs)
 │   └── benchmark/                          # perf workspace (excluded from coverage gate)
 ├── scripts/bump-jsr-version.mjs            # sync 5 × jsr.json from package.json
-├── docs/{SPEC.md,ARCHITECTURE.md}          # locked specs — do NOT normalize away
+├── docs/SPEC.md                           # the single locked spec — do NOT normalize away
 ├── .github/workflows/                      # OIDC publish + CI (SSH-only writes)
 ├── .husky/{commit-msg,pre-commit}
 ├── pnpm-workspace.yaml                     # packages/* + allowBuilds
@@ -255,7 +255,7 @@ Signed-off-by: Vinayak Kulkarni <19776877+vinayakkulkarni@users.noreply.github.c
 - [ ] Fixable rules use `defineRule`; per-rule state types co-located (Rule #9).
 - [ ] Project-level post-checks short-circuit on `packageJsonPath === null`.
 - [ ] Commit has no AI attribution, has `Signed-off-by`, follows Conventional Commits; no `bunx`.
-- [ ] `SPEC.md`/`ARCHITECTURE.md` not silently diverged; `allowBuilds` updated for new postinstall deps.
+- [ ] `SPEC.md` not silently diverged; `allowBuilds` updated for new postinstall deps.
 
 ---
 
