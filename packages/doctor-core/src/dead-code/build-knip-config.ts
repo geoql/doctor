@@ -16,6 +16,16 @@ export function buildKnipConfig(
 ): KnipConfig {
   const isNuxt = projectInfo.framework === 'nuxt';
 
+  // Files registered by build-time plugins (unplugin-auto-import,
+  // unplugin-vue-components, file-based routing/layouts) have no explicit import,
+  // so knip flags them as unused. Treat their convention dirs as entry points
+  // when the project actually uses those plugins, otherwise the dead-code pass
+  // reports hundreds of false positives (see issue #85).
+  const usesConventionResolution =
+    projectInfo.hasAutoImports ||
+    projectInfo.hasComponentsAutoImport ||
+    projectInfo.hasVueRouter;
+
   const entry = isNuxt
     ? [
         'app/**/*.vue',
@@ -23,7 +33,21 @@ export function buildKnipConfig(
         'server/**/*.ts',
         'nuxt.config.{ts,js,mjs}',
       ]
-    : ['src/main.{ts,js}', 'src/App.vue', 'index.html', 'vite.config.{ts,js}'];
+    : [
+        'src/main.{ts,js}',
+        'src/App.vue',
+        'index.html',
+        'vite.config.{ts,js}',
+        ...(usesConventionResolution
+          ? [
+              'src/pages/**/*.vue',
+              'src/layouts/**/*.vue',
+              'src/components/**/*.vue',
+              'src/composables/**/*.ts',
+              'src/stores/**/*.ts',
+            ]
+          : []),
+      ];
 
   const config: KnipConfig = {
     cwd: projectInfo.rootDirectory,

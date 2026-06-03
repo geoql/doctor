@@ -105,6 +105,36 @@ describe('buildKnipConfig', () => {
     ]);
   });
 
+  it('treats convention dirs as entry points for a Vue project with auto-imports', () => {
+    const autoImportVue: ProjectInfo = {
+      ...vueProjectInfo,
+      hasAutoImports: true,
+      hasComponentsAutoImport: true,
+      hasVueRouter: true,
+      capabilities: new Set([
+        'vue:3',
+        'vue:3.5',
+        'auto-imports:vue',
+        'components:auto',
+        'vue-router',
+        'typescript',
+      ]),
+    };
+    const config = buildKnipConfig(autoImportVue, baseConfig);
+    expect(config.entry).toContain('src/pages/**/*.vue');
+    expect(config.entry).toContain('src/layouts/**/*.vue');
+    expect(config.entry).toContain('src/components/**/*.vue');
+    expect(config.entry).toContain('src/composables/**/*.ts');
+    expect(config.entry).toContain('src/stores/**/*.ts');
+    expect(config.entry).toContain('src/main.{ts,js}');
+  });
+
+  it('does NOT add convention entries for a plain Vue project without auto-imports', () => {
+    const config = buildKnipConfig(vueProjectInfo, baseConfig);
+    expect(config.entry).not.toContain('src/components/**/*.vue');
+    expect(config.entry).not.toContain('src/composables/**/*.ts');
+  });
+
   it('handles unknown framework as vue (fallback)', () => {
     const unknownProject: ProjectInfo = {
       ...vueProjectInfo,
