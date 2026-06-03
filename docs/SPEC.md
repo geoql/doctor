@@ -26,7 +26,7 @@ Tagline: _"Your agent writes bad Vue/Nuxt. This catches it."_
 ## 2. Non-goals
 
 - ❌ Not a replacement for ESLint/oxlint — complements them with rules too expensive/contextual for general lint.
-- ❌ No remote scoring API (react-doctor's `react.doctor/api/score` is their SaaS moat). All scoring is **local + deterministic**.
+- ❌ The OSS CLI ships **no remote dependency** — all scoring is **local + deterministic** (same code in → same score out, fully offline). A hosted layer (`the-doctor.report`: score history, PR-trend graphs, team dashboards, CI baseline-gating) is a separate product built on top of this open core; it is out of scope for this repo and never required to run the CLI.
 - ❌ Not a fixer-first tool. `--fix` lands in Phase 5, after rules are stable.
 - ❌ Not Vue 2 / Nuxt 2 / Nuxt 3 compatible. **Vue 3 + Nuxt 4 only.** No backward-compat shims, no `compatibilityVersion: 3` detection — we assume the new `app/` directory layout, modern data-fetching defaults, and Nuxt 4 module APIs.
 
