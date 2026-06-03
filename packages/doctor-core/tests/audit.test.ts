@@ -43,6 +43,45 @@ describe('audit', () => {
     ).toBe(true);
   });
 
+  it('fires new vue builtin rules through the real oxlint script pass', async () => {
+    const dir = await fixture({
+      'Computed.vue': [
+        '<script>',
+        'export default {',
+        '  computed: {',
+        '    foo() {',
+        '      const x = 1;',
+        '    },',
+        '  },',
+        '};',
+        '</script>',
+        '',
+      ].join('\n'),
+      'Props.vue': [
+        '<script setup>',
+        'defineProps({',
+        "  x: { type: String, required: true, default: 'a' },",
+        '});',
+        '</script>',
+        '',
+      ].join('\n'),
+    });
+    const report = await audit({ rootDir: dir, deadCode: false });
+    const ruleIds = report.diagnostics.map((d) => d.ruleId);
+    expect(ruleIds).toContain('vue/return-in-computed-property');
+    expect(ruleIds).toContain('vue/no-required-prop-with-default');
+    const returnDiag = report.diagnostics.find(
+      (d) => d.ruleId === 'vue/return-in-computed-property',
+    );
+    expect(returnDiag?.severity).toBe('error');
+    expect(returnDiag?.source).toBe('oxlint');
+    const propDiag = report.diagnostics.find(
+      (d) => d.ruleId === 'vue/no-required-prop-with-default',
+    );
+    expect(propDiag?.severity).toBe('warn');
+    expect(report.score).toBeLessThan(100);
+  });
+
   it('flips a warn-only result to exitCode 1 when failOn is warn', async () => {
     const dir = await fixture({
       'warn.vue':

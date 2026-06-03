@@ -93,6 +93,69 @@ describe('generateOxlintConfig', () => {
     await cleanup();
   });
 
+  const NEW_RECOMMENDED_VUE_BUILTINS: Record<string, 'error' | 'warn'> = {
+    'vue/no-arrow-functions-in-watch': 'error',
+    'vue/no-deprecated-data-object-declaration': 'error',
+    'vue/no-deprecated-events-api': 'error',
+    'vue/no-deprecated-destroyed-lifecycle': 'error',
+    'vue/no-deprecated-model-definition': 'error',
+    'vue/no-deprecated-delete-set': 'error',
+    'vue/no-deprecated-vue-config-keycodes': 'error',
+    'vue/no-lifecycle-after-await': 'error',
+    'vue/no-this-in-before-route-enter': 'error',
+    'vue/return-in-computed-property': 'error',
+    'vue/valid-define-emits': 'error',
+    'vue/valid-define-props': 'error',
+    'vue/no-required-prop-with-default': 'warn',
+    'vue/prefer-import-from-vue': 'warn',
+    'vue/no-import-compiler-macros': 'warn',
+    'vue/no-multiple-slot-args': 'warn',
+    'vue/require-default-export': 'warn',
+  };
+
+  const STRICT_ONLY_VUE_BUILTINS = [
+    'vue/define-emits-declaration',
+    'vue/define-props-declaration',
+    'vue/define-props-destructuring',
+    'vue/max-props',
+  ];
+
+  it('emits every recommended vue builtin rule with its severity by default', async () => {
+    const { configPath, cleanup } = await generateOxlintConfig({
+      pluginPaths: ['/p.js'],
+    });
+    const cfg = await readConfig(configPath);
+    for (const [id, severity] of Object.entries(NEW_RECOMMENDED_VUE_BUILTINS)) {
+      expect(cfg.rules[id]).toBe(severity);
+    }
+    await cleanup();
+  });
+
+  it('excludes strict-only vue builtin style rules from the default config', async () => {
+    const { configPath, cleanup } = await generateOxlintConfig({
+      pluginPaths: ['/p.js'],
+    });
+    const cfg = await readConfig(configPath);
+    for (const id of STRICT_ONLY_VUE_BUILTINS) {
+      expect(id in cfg.rules).toBe(false);
+    }
+    await cleanup();
+  });
+
+  it('allowlists strict-only vue builtin style rules so info overrides survive', async () => {
+    const overrides: Record<string, 'info'> = {};
+    for (const id of STRICT_ONLY_VUE_BUILTINS) overrides[id] = 'info';
+    const { configPath, cleanup } = await generateOxlintConfig({
+      pluginPaths: ['/p.js'],
+      ruleOverrides: overrides,
+    });
+    const cfg = await readConfig(configPath);
+    for (const id of STRICT_ONLY_VUE_BUILTINS) {
+      expect(cfg.rules[id]).toBe('warn');
+    }
+    await cleanup();
+  });
+
   it('includes a nuxt oxlint-plugin override only when framework is nuxt', async () => {
     const off = await generateOxlintConfig({
       pluginPaths: ['/p.js'],

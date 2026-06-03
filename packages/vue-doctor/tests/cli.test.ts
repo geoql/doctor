@@ -1130,6 +1130,22 @@ describe('run', () => {
       expect(out).not.toContain('vue-doctor/no-em-dash-in-string');
     });
 
+    it('lists newly wired vue builtin rules', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'list-rules',
+        '--source',
+        'oxlint-builtin',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('vue/return-in-computed-property');
+      expect(out).toContain('vue/no-deprecated-events-api');
+      expect(out).toContain('vue/no-required-prop-with-default');
+      expect(out).toContain('vue/max-props');
+    });
+
     it('filters by --severity', async () => {
       const code = await run([
         'node',
@@ -1269,6 +1285,21 @@ describe('run', () => {
       expect(out).toContain('Severity:');
       expect(out).toContain('error');
       expect(out).toContain('docs.doctor.geoql.in');
+    });
+
+    it('explains a newly wired vue builtin rule', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'explain',
+        'vue/no-deprecated-events-api',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('vue/no-deprecated-events-api');
+      expect(out).toContain('error');
+      expect(out).toContain('vue-builtin');
+      expect(out).toContain('oxlint-builtin');
     });
 
     it('marks off-by-default rules with the opt-in note', async () => {
