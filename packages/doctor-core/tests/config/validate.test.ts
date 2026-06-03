@@ -188,4 +188,34 @@ describe('validateConfig', () => {
       validateConfig({ unknownField: 'whatever', threshold: 50 }),
     ).not.toThrow();
   });
+
+  describe('fixExcludes', () => {
+    it('rejects a non-array fixExcludes', () => {
+      expect(() => validateConfig({ fixExcludes: 'bad' })).toThrow(
+        InvalidConfigError,
+      );
+      expect(() => validateConfig({ fixExcludes: 'bad' })).toThrow(
+        'fixExcludes',
+      );
+    });
+
+    it('rejects a fixExcludes array with non-string entries', () => {
+      expect(() => validateConfig({ fixExcludes: ['rule1', 42] })).toThrow(
+        InvalidConfigError,
+      );
+      expect(() => validateConfig({ fixExcludes: ['rule1', 42] })).toThrow(
+        'fixExcludes',
+      );
+    });
+
+    it('accepts a valid fixExcludes array', () => {
+      expect(() =>
+        validateConfig({ fixExcludes: ['vue/no-import-compiler-macros'] }),
+      ).not.toThrow();
+    });
+
+    it('accepts an empty fixExcludes array', () => {
+      expect(() => validateConfig({ fixExcludes: [] })).not.toThrow();
+    });
+  });
 });

@@ -63,6 +63,16 @@ export function validateConfig(raw: unknown): void {
     }
   }
 
+  if ('fixExcludes' in config) {
+    const fixExcludes = config.fixExcludes;
+    if (!Array.isArray(fixExcludes)) {
+      throw new InvalidConfigError('fixExcludes: must be an array of strings');
+    }
+    if (!fixExcludes.every((v) => typeof v === 'string')) {
+      throw new InvalidConfigError('fixExcludes: must be an array of strings');
+    }
+  }
+
   if ('rules' in config) {
     const rules = config.rules;
     if (rules === null || typeof rules !== 'object' || Array.isArray(rules)) {

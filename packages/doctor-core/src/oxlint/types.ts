@@ -29,6 +29,7 @@ export interface OxlintRunOptions {
   oxlintBin: string;
   timeoutMs?: number;
   maxOutputBytes?: number;
+  fix?: boolean;
 }
 
 export interface OxlintRunResult {

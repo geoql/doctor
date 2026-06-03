@@ -52,6 +52,20 @@ describe('loadDoctorConfig', () => {
     expect(result.configFile).toBeUndefined();
   });
 
+  it('resolves fixExcludes from a config file', async () => {
+    writeFileSync(
+      join(tmp, 'doctor.config.json'),
+      JSON.stringify({ fixExcludes: ['vue/no-import-compiler-macros'] }),
+    );
+    const result = await loadDoctorConfig(tmp);
+    expect(result.fixExcludes).toEqual(['vue/no-import-compiler-macros']);
+  });
+
+  it('leaves fixExcludes undefined when not declared', async () => {
+    const result = await loadDoctorConfig(tmp);
+    expect(result.fixExcludes).toBeUndefined();
+  });
+
   it('loads a JSON config file and tags source as json', async () => {
     writeFileSync(
       join(tmp, 'doctor.config.json'),

@@ -14,6 +14,8 @@ export interface ScriptPassOptions {
   ruleOverrides?: Record<string, Severity | 'off'>;
   timeoutMs?: number;
   framework?: 'vue' | 'nuxt';
+  fix?: boolean;
+  fixExcludes?: string[];
 }
 
 export interface ScriptPassResult {
@@ -47,6 +49,7 @@ export async function runScriptPass(
       configPath,
       oxlintBin,
       timeoutMs: opts.timeoutMs,
+      fix: opts.fix,
     });
     return {
       diagnostics: toCanonicalDiagnostics(raw.diagnostics, opts.rootDir),

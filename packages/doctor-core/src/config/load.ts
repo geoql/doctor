@@ -127,5 +127,6 @@ export async function loadDoctorConfig(
     preset: presetName,
     source,
     configFile,
+    ...(raw.fixExcludes ? { fixExcludes: raw.fixExcludes } : {}),
   };
 }

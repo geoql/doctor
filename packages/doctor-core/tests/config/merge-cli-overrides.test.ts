@@ -109,4 +109,36 @@ describe('mergeCliOverrides', () => {
     mergeCliOverrides(baseResolved, { threshold: 99 });
     expect(baseResolved.threshold).toBe(original.threshold);
   });
+
+  it('adds fixExcludes from CLI overrides', () => {
+    const result = mergeCliOverrides(baseResolved, {
+      fixExcludes: ['vue/no-import-compiler-macros'],
+    });
+    expect(result.fixExcludes).toEqual(['vue/no-import-compiler-macros']);
+  });
+
+  it('CLI fixExcludes overrides config fixExcludes', () => {
+    const withConfig: ResolvedDoctorConfig = {
+      ...baseResolved,
+      fixExcludes: ['from/config'],
+    };
+    const result = mergeCliOverrides(withConfig, {
+      fixExcludes: ['from/cli'],
+    });
+    expect(result.fixExcludes).toEqual(['from/cli']);
+  });
+
+  it('preserves config fixExcludes when CLI does not override', () => {
+    const withConfig: ResolvedDoctorConfig = {
+      ...baseResolved,
+      fixExcludes: ['from/config'],
+    };
+    const result = mergeCliOverrides(withConfig, { threshold: 70 });
+    expect(result.fixExcludes).toEqual(['from/config']);
+  });
+
+  it('omits fixExcludes when neither config nor CLI provide it', () => {
+    const result = mergeCliOverrides(baseResolved, {});
+    expect(result.fixExcludes).toBeUndefined();
+  });
 });

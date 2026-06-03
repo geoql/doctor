@@ -26,7 +26,9 @@ export async function runOxlint(
   opts: OxlintRunOptions,
 ): Promise<OxlintRunResult> {
   return new Promise<OxlintRunResult>((resolve, reject) => {
-    const args = ['-c', opts.configPath, '--format', 'json', opts.targetPath];
+    const args = ['-c', opts.configPath, '--format', 'json'];
+    if (opts.fix) args.push('--fix');
+    args.push(opts.targetPath);
     const child = spawn(opts.oxlintBin, args, {
       cwd: opts.rootDir,
       stdio: ['ignore', 'pipe', 'pipe'],

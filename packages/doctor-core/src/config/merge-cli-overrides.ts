@@ -7,6 +7,7 @@ export interface CliOverrides {
   failOn?: 'error' | 'warn' | 'none';
   threshold?: number;
   rules?: Record<string, Severity | 'off'>;
+  fixExcludes?: string[];
 }
 
 export function mergeCliOverrides(
@@ -34,5 +35,8 @@ export function mergeCliOverrides(
     rules,
     source: resolved.source,
     configFile: resolved.configFile,
+    ...((cli.fixExcludes ?? resolved.fixExcludes)
+      ? { fixExcludes: cli.fixExcludes ?? resolved.fixExcludes }
+      : {}),
   };
 }

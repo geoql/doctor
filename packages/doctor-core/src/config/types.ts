@@ -18,6 +18,20 @@ export interface DoctorUserConfig {
   preset?: string;
   rules?: Record<string, Severity | 'off'>;
   extends?: string[];
+  fixExcludes?: string[];
+}
+
+export interface ResolvedDoctorConfig {
+  rootDir: string;
+  include: string[];
+  exclude: string[];
+  failOn: 'error' | 'warn' | 'none';
+  threshold: number;
+  rules: Record<string, Severity>;
+  preset: 'minimal' | 'recommended' | 'strict' | 'all';
+  source: ConfigSource;
+  configFile?: string;
+  fixExcludes?: string[];
 }
 
 /**

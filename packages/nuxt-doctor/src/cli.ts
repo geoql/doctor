@@ -294,6 +294,8 @@ interface CliFlags {
   full?: boolean;
   project?: string;
   prComment?: string | true;
+  fix?: boolean;
+  fixExclude?: string | string[];
 }
 
 interface PreparedOptions {
@@ -382,12 +384,14 @@ async function runSingleAudit(
     ...(flags.config ? { explicitPath: flags.config } : {}),
     ...(flags.preset ? { presetOverride: flags.preset } : {}),
   });
+  const fixExclude = toArray(flags.fixExclude);
   const merged: ResolvedDoctorConfig = mergeCliOverrides(resolved, {
     failOn: flags.failOn as 'error' | 'warn' | 'none' | undefined,
     include: toArray(flags.include),
     exclude: toArray(flags.exclude),
     rules: prepared.ruleOverrides,
     threshold: prepared.threshold,
+    ...(fixExclude ? { fixExcludes: fixExclude } : {}),
   });
   const report = await audit({
     rootDir: merged.rootDir,
@@ -400,6 +404,8 @@ async function runSingleAudit(
     lint: flags.lint,
     respectInlineDisables: flags.respectInlineDisables,
     scopeFiles,
+    fix: flags.fix,
+    ...(merged.fixExcludes ? { fixExcludes: merged.fixExcludes } : {}),
   });
   const allowedRuleIds = new Set(Object.keys(merged.rules));
   report.diagnostics = report.diagnostics.filter((d) =>
@@ -700,6 +706,14 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     )
     .option('--output <file>', 'Write the report to a file instead of stdout')
     .option('--pr-comment', 'Emit a focused Markdown PR-comment body')
+    .option(
+      '--fix',
+      'Auto-fix oxlint-pass findings in place (built-in vue/* rules only; template/SFC/dead-code/project findings are not fixable). Skipped in --diff/--staged mode.',
+    )
+    .option(
+      '--fix-exclude <ruleId>',
+      'Mark a rule as not-auto-fixable (repeatable). Note: oxlint applies built-in fixes globally, so this is enforced only for doctor plugin fixes; built-in vue/* fixes still apply.',
+    )
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
       if (flags.failOn !== undefined && !isFailOnLevel(flags.failOn)) {
@@ -733,6 +747,19 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         }
         if (flags.verbose && flags.quiet) {
           throw new Error('--verbose using --quiet are mutually exclusive.');
+        }
+        const fixActive = flags.fix === true;
+        const fixSkippedForScope =
+          fixActive && !flags.full && (flags.diff || flags.staged);
+        if (fixSkippedForScope) {
+          process.stderr.write(
+            'nuxt-doctor: --fix skipped in --diff/--staged mode (auto-fix only runs on a full scan to avoid rewriting files outside the diff).\n',
+          );
+        }
+        if (fixActive && flags.fixExclude !== undefined) {
+          process.stderr.write(
+            'nuxt-doctor: --fix-exclude is not enforced for built-in vue/* rules (oxlint applies their fixes globally); it currently scopes only future doctor plugin fixes.\n',
+          );
         }
         const prepared: PreparedOptions = { ruleOverrides, threshold };
 
@@ -771,6 +798,11 @@ export async function run(argv: string[] = process.argv): Promise<number> {
             configSource,
           });
           process.stderr.write(`${verboseOutput}\n`);
+        }
+        if (fixActive && !fixSkippedForScope) {
+          process.stderr.write(
+            `nuxt-doctor: applied oxlint --fix; ${report.diagnostics.length} finding${report.diagnostics.length === 1 ? '' : 's'} remain (re-run to see them).\n`,
+          );
         }
         if (flags.score) {
           process.stdout.write(`${report.score}\n`);

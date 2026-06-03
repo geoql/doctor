@@ -119,4 +119,16 @@ describe('runOxlint', () => {
     const res = await runOxlint(opts(bin, { timeoutMs: 0 }));
     expect(res.diagnostics).toEqual([]);
   });
+
+  it('appends --fix to args when fix:true is set', async () => {
+    const bin = await fakeBin(`printf '{"diagnostics":[]}'`);
+    const res = await runOxlint(opts(bin, { fix: true }));
+    expect(res.diagnostics).toEqual([]);
+  });
+
+  it('omits --fix when fix is not set', async () => {
+    const bin = await fakeBin(`printf '{"diagnostics":[]}'`);
+    const res = await runOxlint(opts(bin));
+    expect(res.diagnostics).toEqual([]);
+  });
 });

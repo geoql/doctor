@@ -44,4 +44,31 @@ describe('runScriptPass', () => {
       expect(d.file.startsWith('/')).toBe(true);
     }
   });
+
+  it('forwards fix:true to the oxlint spawn args', async () => {
+    const dir = await fixture({
+      'clean.vue': '<template><div /></template>\n',
+    });
+    const result = await runScriptPass({
+      rootDir: dir,
+      targetPath: dir,
+      timeoutMs: 60_000,
+      fix: true,
+    });
+    expect(result).toBeDefined();
+  });
+
+  it('threads fixExcludes to the oxlint spawn args', async () => {
+    const dir = await fixture({
+      'clean.vue': '<template><div /></template>\n',
+    });
+    const result = await runScriptPass({
+      rootDir: dir,
+      targetPath: dir,
+      timeoutMs: 60_000,
+      fix: true,
+      fixExcludes: ['vue/no-import-compiler-macros'],
+    });
+    expect(result).toBeDefined();
+  });
 });

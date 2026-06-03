@@ -36,6 +36,8 @@ export interface AuditConfig {
   threshold?: number;
   scopeFiles?: string[];
   respectInlineDisables?: boolean;
+  fix?: boolean;
+  fixExcludes?: string[];
 }
 
 export interface AuditTimings {

@@ -26,6 +26,7 @@ export type RuleVisitor = (node: AstNode) => void;
 
 export interface Rule {
   create: (context: RuleContext) => Record<string, RuleVisitor>;
+  fix?: (node: AstNode) => string | null;
 }
 
 export interface Plugin {
