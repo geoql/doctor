@@ -1,0 +1,24 @@
+{
+  "name": "@geoql/doctor-benchmark",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Benchmark suite for @geoql/doctor — measures doctor vs eslint-plugin-vue on a synthetic Vue/Nuxt corpus using mitata.",
+  "type": "module",
+  "scripts": {
+    "gen-fixtures": "node generate-fixtures.mjs",
+    "bench": "node bench.mjs"
+  },
+  "dependencies": {
+    "@geoql/doctor-core": "workspace:*",
+    "@geoql/nuxt-doctor": "workspace:*",
+    "@geoql/vue-doctor": "workspace:*"
+  },
+  "devDependencies": {
+    "@nuxt/eslint-config": "1.15.2",
+    "@typescript-eslint/parser": "8.60.1",
+    "eslint": "10.4.1",
+    "eslint-plugin-vue": "10.9.1",
+    "mitata": "1.0.34",
+    "vue-eslint-parser": "10.4.1"
+  }
+}
