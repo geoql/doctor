@@ -2,7 +2,9 @@
 
 > Your agent writes bad Vue/Nuxt. This catches it.
 
-A pair of CLIs and oxlint plugins that audit Vue 3 + Nuxt 4 apps for performance, correctness, security, and AI-agent anti-patterns.
+A pair of CLIs and oxlint plugins that audit Vue 3 + Nuxt 4 apps for performance, correctness, security, and AI-agent anti-patterns. It does not scaffold or generate — it _critiques_ the code your agent just wrote and gives it a deterministic health score.
+
+**Documentation:** [docs.the-doctor.report](https://docs.the-doctor.report)
 
 ## Packages
 
@@ -23,6 +25,15 @@ npx -y @geoql/vue-doctor
 # Audit a Nuxt 4 project
 npx -y @geoql/nuxt-doctor
 ```
+
+## Documentation
+
+Full docs — rules, CLI reference, config, and scoring — live at **[docs.the-doctor.report](https://docs.the-doctor.report)**.
+
+Both CLIs run a deterministic audit, print a health score (0–100) with grouped
+diagnostics, and exit non-zero when findings breach your `--fail-on` threshold —
+so they drop straight into CI. See the [docs](https://docs.the-doctor.report)
+for flags (`--fix`, `--ci`, `--sarif`, `--json`, presets) and the full rule set.
 
 ## Status
 
