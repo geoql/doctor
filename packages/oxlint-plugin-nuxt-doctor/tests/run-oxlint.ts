@@ -1,5 +1,5 @@
 import { execFileSync, execSync } from 'node:child_process';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 export interface OxlintDiagnostic {
@@ -65,6 +65,43 @@ export function runOxlint(
     rmSync(tmpDir, { recursive: true, force: true });
   }
   return JSON.parse(stdout) as OxlintResult;
+}
+
+export interface OxlintFixResult {
+  before: string;
+  after: string;
+}
+
+export function runOxlintFix(
+  ruleId: string,
+  fixture: string,
+  fixtureExt = '.ts',
+): OxlintFixResult {
+  const tmpDir = resolve(import.meta.dirname, '.e2e-fix-tmp');
+  mkdirSync(tmpDir, { recursive: true });
+  const configPath = resolve(tmpDir, '.oxlintrc.json');
+  const fixturePath = resolve(tmpDir, `fixture${fixtureExt}`);
+  try {
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        jsPlugins: [PLUGIN_DIST],
+        rules: { [`nuxt-doctor/${ruleId}`]: 'warn' },
+      }),
+    );
+    writeFileSync(fixturePath, fixture);
+    try {
+      execFileSync(OXLINT_BIN, ['--fix', '-c', configPath, fixturePath], {
+        encoding: 'utf-8',
+        timeout: 30_000,
+      });
+    } catch {
+      void 0;
+    }
+    return { before: fixture, after: readFileSync(fixturePath, 'utf-8') };
+  } finally {
+    rmSync(tmpDir, { recursive: true, force: true });
+  }
 }
 
 export function firedRuleIds(result: OxlintResult): string[] {

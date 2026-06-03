@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { firedRuleIds, hasStackOverflow, runOxlint } from './run-oxlint.js';
+import {
+  firedRuleIds,
+  hasStackOverflow,
+  runOxlint,
+  runOxlintFix,
+} from './run-oxlint.js';
 
 describe('e2e: real oxlint integration', () => {
   it('no-process-client-server fires on process.client', () => {
@@ -87,6 +92,55 @@ describe('e2e: real oxlint integration', () => {
     expect(hasStackOverflow(result)).toBe(false);
     expect(firedRuleIds(result)).not.toContain(
       'nuxt-doctor(hydration/clientOnly-for-browser-apis)',
+    );
+  });
+});
+
+describe('e2e: real oxlint --fix applies nuxt-doctor fixes to disk', () => {
+  it('no-process-client-server rewrites process.client to import.meta.client', () => {
+    const { after } = runOxlintFix(
+      'ai-slop/no-process-client-server',
+      `export const a = process.client;\n`,
+    );
+    expect(after).toBe(`export const a = import.meta.client;\n`);
+  });
+
+  it('rewrites every legacy process flag and leaves process.env untouched', () => {
+    const source = [
+      `export const a = process.client;`,
+      `export const b = process.server ? 1 : 2;`,
+      `export const c = process.browser;`,
+      `export const d = process.env.NODE_ENV;`,
+      ``,
+    ].join('\n');
+    const { after } = runOxlintFix('ai-slop/no-process-client-server', source);
+    expect(after).toContain(`export const a = import.meta.client;`);
+    expect(after).toContain(`export const b = import.meta.server ? 1 : 2;`);
+    expect(after).toContain(`export const c = import.meta.browser;`);
+    expect(after).toContain(`export const d = process.env.NODE_ENV;`);
+  });
+
+  it('the rewrite is idempotent on a second pass', () => {
+    const first = runOxlintFix(
+      'ai-slop/no-process-client-server',
+      `if (process.server) { run(); }\n`,
+    );
+    const second = runOxlintFix(
+      'ai-slop/no-process-client-server',
+      first.after,
+    );
+    expect(second.after).toBe(first.after);
+    expect(second.after).toBe(`if (import.meta.server) { run(); }\n`);
+  });
+
+  it('the re-linted fixed output no longer reports the finding', () => {
+    const { after } = runOxlintFix(
+      'ai-slop/no-process-client-server',
+      `const x = process.client;\n`,
+    );
+    const result = runOxlint('ai-slop/no-process-client-server', after);
+    expect(firedRuleIds(result)).not.toContain(
+      'nuxt-doctor(ai-slop/no-process-client-server)',
     );
   });
 });

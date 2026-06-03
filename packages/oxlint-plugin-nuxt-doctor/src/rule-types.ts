@@ -9,9 +9,22 @@ export interface AstNode {
   [key: string]: unknown;
 }
 
+export interface Fix {
+  range: [number, number];
+  text: string;
+  node?: AstNode;
+}
+
+export interface Fixer {
+  replaceText: (node: AstNode, text: string) => Fix;
+}
+
+export type FixFn = (fixer: Fixer) => Fix;
+
 export interface ReportDescriptor {
   node: AstNode;
   message: string;
+  fix?: FixFn;
 }
 
 export interface RuleContext {
@@ -24,7 +37,13 @@ export interface RuleContext {
 
 export type RuleVisitor = (node: AstNode) => void;
 
+export interface RuleMeta {
+  name?: string;
+  fixable?: 'code' | 'whitespace';
+}
+
 export interface Rule {
+  meta?: RuleMeta;
   create: (context: RuleContext) => Record<string, RuleVisitor>;
   fix?: (node: AstNode) => string | null;
 }

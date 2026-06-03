@@ -19,4 +19,14 @@ export const noProcessClientServer = defineRule({
       },
     };
   },
+  fix(node: AstNode) {
+    const object = node.object as AstNode | undefined;
+    if (object?.type !== 'Identifier') return null;
+    if ((object as AstNode & { name: string }).name !== 'process') return null;
+    const property = node.property as AstNode | undefined;
+    if (property?.type !== 'Identifier') return null;
+    const name = property.name as string;
+    if (!LEGACY_PROPS.has(name)) return null;
+    return `import.meta.${name}`;
+  },
 });

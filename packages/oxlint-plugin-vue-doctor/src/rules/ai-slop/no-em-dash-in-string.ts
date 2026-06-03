@@ -23,4 +23,12 @@ export const noEmDashInString = defineRule({
       },
     };
   },
+  fix(node: AstNode) {
+    const literal = node as LiteralNode;
+    if (typeof literal.value !== 'string') return null;
+    const raw = literal.raw;
+    if (typeof raw !== 'string') return null;
+    if (!raw.includes(EM_DASH)) return null;
+    return raw.split(EM_DASH).join('-');
+  },
 });

@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { firedRuleIds, hasStackOverflow, runOxlint } from './run-oxlint.js';
+import {
+  firedRuleIds,
+  hasStackOverflow,
+  runOxlint,
+  runOxlintFix,
+} from './run-oxlint.js';
+
+const EM_DASH = '\u2014';
 
 describe('e2e: real oxlint integration', () => {
   it('watch-without-cleanup fires on uncleaned addEventListener', () => {
@@ -99,6 +106,51 @@ describe('e2e: real oxlint integration', () => {
     expect(hasStackOverflow(result)).toBe(false);
     expect(firedRuleIds(result)).toContain(
       'vue-doctor(performance/prefer-defineAsyncComponent-on-route)',
+    );
+  });
+});
+
+describe('e2e: real oxlint --fix applies vue-doctor fixes to disk', () => {
+  it('no-em-dash-in-string replaces the em dash with a hyphen', () => {
+    const { after } = runOxlintFix(
+      'no-em-dash-in-string',
+      `const s = "loading${EM_DASH}please wait";\n`,
+    );
+    expect(after).toBe(`const s = "loading-please wait";\n`);
+    expect(after).not.toContain(EM_DASH);
+  });
+
+  it('no-em-dash-in-string fix is idempotent on a second pass', () => {
+    const first = runOxlintFix(
+      'no-em-dash-in-string',
+      `const s = "a${EM_DASH}b${EM_DASH}c";\n`,
+    );
+    const second = runOxlintFix('no-em-dash-in-string', first.after);
+    expect(second.after).toBe(first.after);
+    expect(second.after).toBe(`const s = "a-b-c";\n`);
+  });
+
+  it('no-em-dash-in-string leaves surrounding code and escaped sequences untouched', () => {
+    const source = [
+      `const keep = 1 - 2;`,
+      `const esc = "x\\u2014y";`,
+      `const hit = "p${EM_DASH}q";`,
+      ``,
+    ].join('\n');
+    const { after } = runOxlintFix('no-em-dash-in-string', source);
+    expect(after).toContain(`const keep = 1 - 2;`);
+    expect(after).toContain(`const esc = "x\\u2014y";`);
+    expect(after).toContain(`const hit = "p-q";`);
+  });
+
+  it('the re-linted fixed output no longer reports the em-dash finding', () => {
+    const { after } = runOxlintFix(
+      'no-em-dash-in-string',
+      `const s = "before${EM_DASH}after";\n`,
+    );
+    const result = runOxlint('no-em-dash-in-string', after);
+    expect(firedRuleIds(result)).not.toContain(
+      'vue-doctor(no-em-dash-in-string)',
     );
   });
 });

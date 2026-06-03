@@ -1,6 +1,7 @@
 import { parseSync } from 'oxc-parser';
 import type {
   AstNode,
+  Fixer,
   ReportDescriptor,
   Rule,
   RuleContext,
@@ -11,6 +12,7 @@ export interface RunRuleOptions {
   /** Capability tokens visible to the rule (e.g. 'auto-imports:vue'). */
   capabilities?: string[];
   settings?: Record<string, unknown>;
+  applyFix?: boolean;
 }
 
 export interface CapturedReport {
@@ -18,7 +20,12 @@ export interface CapturedReport {
   type: string;
   line?: number;
   column?: number;
+  fixed?: string;
 }
+
+const captureFixer: Fixer = {
+  replaceText: (node, text) => ({ range: [0, 0], text, node }),
+};
 
 const WALK_SKIP = new Set(['type', 'loc', 'start', 'end', 'range', 'parent']);
 
@@ -85,12 +92,16 @@ export function runRule(
   const capabilities = new Set(options.capabilities ?? []);
   const context: RuleContext = {
     report: (descriptor: ReportDescriptor) => {
-      reports.push({
+      const captured: CapturedReport = {
         message: descriptor.message,
         type: descriptor.node.type,
         line: descriptor.node.loc?.start.line,
         column: descriptor.node.loc?.start.column,
-      });
+      };
+      if (options.applyFix && descriptor.fix) {
+        captured.fixed = descriptor.fix(captureFixer).text;
+      }
+      reports.push(captured);
     },
     getFilename: () => filename,
     settings: options.settings,
