@@ -2,6 +2,7 @@ import { agentReport } from './agent.js';
 import { htmlReport } from './html.js';
 import { jsonCompactReport } from './json-compact.js';
 import { jsonReport } from './json.js';
+import { prCommentReport } from './pr-comment.js';
 import { prettyReport } from './pretty.js';
 import { sarifReport } from './sarif.js';
 import { renderVerboseTrace, type VerboseTraceOptions } from './verbose.js';
@@ -13,7 +14,8 @@ export type ReporterFormat =
   | 'json'
   | 'json-compact'
   | 'sarif'
-  | 'html';
+  | 'html'
+  | 'pr-comment';
 
 export { renderVerboseTrace, type VerboseTraceOptions };
 
@@ -27,5 +29,6 @@ export function format(
   if (kind === 'json-compact') return jsonCompactReport(input);
   if (kind === 'sarif') return sarifReport(input);
   if (kind === 'html') return htmlReport(input);
+  if (kind === 'pr-comment') return prCommentReport(input);
   return agentReport(input, options);
 }

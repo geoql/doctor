@@ -22,6 +22,10 @@ inputs:
     description: "Only report findings in files changed vs HEAD. Set to 'true' to enable."
     required: false
     default: 'false'
+  pr-comment:
+    description: "Emit a Markdown PR comment. Set to 'true' to enable."
+    required: false
+    default: 'false'
   working-directory:
     description: 'Directory to run the audit in (the Nuxt project root).'
     required: false
@@ -57,11 +61,6 @@ runs:
       id: doctor
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      env:
-        INPUT_PRESET: ${{ inputs.preset }}
-        INPUT_THRESHOLD: ${{ inputs.threshold }}
-        INPUT_FAIL_ON: ${{ inputs.fail-on }}
-        INPUT_DIFF: ${{ inputs.diff }}
       run: |
         args=(--preset "$INPUT_PRESET" --threshold "$INPUT_THRESHOLD" --fail-on "$INPUT_FAIL_ON")
         if [ "$INPUT_DIFF" = "true" ]; then
@@ -88,3 +87,18 @@ runs:
         if [ "$code" -ne 0 ]; then
           exit "$code"
         fi
+
+    - name: Generate PR comment
+      if: inputs.pr-comment == 'true'
+      shell: bash
+      run: |
+        set +e
+        nuxt-doctor --preset "$INPUT_PRESET" --threshold "$INPUT_THRESHOLD" --fail-on "$INPUT_FAIL_ON" --pr-comment --output doctor-comment.md
+        set -e
+
+    - name: Post PR comment
+      if: inputs.pr-comment == 'true'
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        header: doctor
+        path: doctor-comment.md

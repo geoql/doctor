@@ -15,6 +15,7 @@ export default defineConfig({
         'cac',
         'kolorist',
         'oxlint',
+        'prompts',
         /^node:/,
       ],
     },

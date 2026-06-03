@@ -27,6 +27,20 @@ export type {
 } from './config/index.js';
 export { detectProject } from './detect-project.js';
 export {
+  detectSummary,
+  normalizeInitAnswers,
+  parseExcludeList,
+  planInit,
+  renderDetectSummary,
+  type InitConfigFormat,
+  type InitFileWrite,
+  type InitOptions,
+  type InitPlan,
+  type InitPreset,
+  type RawInitAnswers,
+  type ResolvedInitAnswers,
+} from './init/index.js';
+export {
   findMonorepoRoot,
   type MonorepoResult,
 } from './project-info/find-monorepo-root.js';
@@ -66,6 +80,7 @@ export {
   type DoctorReport,
 } from './reporters/json.js';
 export { jsonCompactReport } from './reporters/json-compact.js';
+export { prCommentReport } from './reporters/pr-comment.js';
 export { prettyReport } from './reporters/pretty.js';
 export type {
   ProjectInfoLite,

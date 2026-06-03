@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import {
   audit,
   detectProject,
+  detectSummary,
   encodeAnnotations,
   findMonorepoRoot,
   format,
@@ -14,10 +15,13 @@ import {
   loadDoctorConfig,
   loadRuleDoc,
   mergeCliOverrides,
+  normalizeInitAnswers,
+  planInit,
   renderVerboseTrace,
   scoreDiagnostics,
   type AuditReport,
   type ConfigSource,
+  type InitConfigFormat,
   type ListRulesFilter,
   type ProjectInfo,
   type RegisteredRule,
@@ -30,6 +34,7 @@ import {
   type WorkspacePackage,
 } from '@geoql/doctor-core';
 import { cac } from 'cac';
+import prompts from 'prompts';
 
 function readVersion(): string {
   try {
@@ -59,6 +64,13 @@ interface ExplainCliFlags {
 interface InspectCliFlags {
   json?: boolean;
   jsonCompact?: boolean;
+}
+
+interface InitCliFlags {
+  yes?: boolean;
+  configFormat?: string;
+  force?: boolean;
+  dryRun?: boolean;
 }
 
 interface ProjectInfoJsonPayload {
@@ -117,7 +129,7 @@ function renderInspect(p: ProjectInfo, rootDir: string): string {
   lines.push('');
   lines.push('framework');
   lines.push(`  ${p.framework}`);
-  lines.push(`  vue: ${p.vueVersion ?? '(none)'}`);
+  lines.push(`  nuxt: ${p.nuxtVersion ?? '(none)'}`);
   lines.push(`  typescript: ${p.typescriptVersion ?? '(none)'}`);
   lines.push('');
   lines.push('project layout');
@@ -194,6 +206,7 @@ const VALID_SOURCES = new Set<RuleSource>([
   'oxlint-builtin',
   'eslint-plugin-vue',
 ]);
+const VALID_CONFIG_FORMATS = new Set(['ts', 'json', 'package-json']);
 
 function buildListRulesFilter(flags: ListRulesCliFlags): ListRulesFilter {
   const out: {
@@ -280,6 +293,7 @@ interface CliFlags {
   staged?: boolean;
   full?: boolean;
   project?: string;
+  prComment?: string | true;
 }
 
 interface PreparedOptions {
@@ -325,6 +339,7 @@ function parseRuleOverrides(
 }
 
 function resolveFormat(flags: CliFlags): ReporterFormat {
+  if (flags.prComment !== undefined) return 'pr-comment';
   if (flags.jsonCompact) return 'json-compact';
   if (flags.json) return 'json';
   const kind = flags.format;
@@ -333,9 +348,10 @@ function resolveFormat(flags: CliFlags): ReporterFormat {
     kind === 'json' ||
     kind === 'json-compact' ||
     kind === 'sarif' ||
-    kind === 'html';
+    kind === 'html' ||
+    kind === 'pr-comment';
   if (userPickedFormat) {
-    return kind;
+    return kind as ReporterFormat;
   }
   if (
     typeof flags.output === 'string' &&
@@ -506,6 +522,132 @@ async function runProjectAudits(
   return { report: aggregateReports(reports, root), source };
 }
 
+async function runInit(dir: string, flags: InitCliFlags): Promise<void> {
+  const targetDir = resolve(dir);
+  const configFormat = (flags.configFormat ?? 'ts') as InitConfigFormat;
+  if (!VALID_CONFIG_FORMATS.has(configFormat)) {
+    process.stderr.write(
+      `nuxt-doctor init: --config-format must be ts | json | package-json, got '${flags.configFormat}'\n`,
+    );
+    process.exitCode = 2;
+    return;
+  }
+
+  const resolvedAnswers = flags.yes
+    ? {
+        configFormat,
+        preset: 'recommended' as const,
+        threshold: undefined,
+        exclude: undefined,
+      }
+    : await runInteractiveInit(configFormat);
+
+  if (process.exitCode === 2) return;
+
+  const plan = await planInit({
+    dir: targetDir,
+    configFormat: resolvedAnswers.configFormat,
+    preset: resolvedAnswers.preset,
+    threshold: resolvedAnswers.threshold,
+    exclude: resolvedAnswers.exclude,
+    binName: 'nuxt-doctor',
+  });
+
+  const summary = await detectSummary(targetDir);
+  process.stdout.write(`${summary}\n`);
+
+  if (plan.conflict && !flags.force) {
+    process.stderr.write(
+      `nuxt-doctor init: ${plan.conflictPath} already exists. Run with --force to overwrite.\n`,
+    );
+    process.exitCode = 2;
+    return;
+  }
+
+  if (flags.dryRun) {
+    for (const write of plan.writes) {
+      process.stdout.write(`[dry-run] would write ${write.path}\n`);
+      process.stdout.write(`${write.content}\n`);
+    }
+    process.exitCode = 0;
+    return;
+  }
+
+  for (const write of plan.writes) {
+    writeFileSync(write.path, write.content, 'utf8');
+  }
+  process.exitCode = 0;
+}
+
+async function runInteractiveInit(defaultFormat: InitConfigFormat): Promise<{
+  configFormat: InitConfigFormat;
+  preset: 'recommended' | 'strict' | 'minimal';
+  threshold: number | undefined;
+  exclude: string | undefined;
+}> {
+  const answers = await prompts(
+    [
+      {
+        type: 'select',
+        name: 'target',
+        message: 'Config target?',
+        choices: [
+          { title: 'doctor.config.ts (recommended)', value: 'ts' },
+          { title: 'doctor.config.json', value: 'json' },
+          { title: 'package.json#doctor', value: 'package-json' },
+        ],
+        initial: defaultFormat === 'package-json' ? 2 : 0,
+      },
+      {
+        type: 'select',
+        name: 'preset',
+        message: 'Base preset?',
+        choices: [
+          { title: 'recommended (errors + warnings)', value: 'recommended' },
+          { title: 'strict (recommended + info)', value: 'strict' },
+          { title: 'minimal (errors only)', value: 'minimal' },
+        ],
+        initial: 0,
+      },
+      {
+        type: 'number',
+        name: 'threshold',
+        message: 'Minimum passing score (0-100, blank to skip)',
+        min: 0,
+        max: 100,
+        initial: '',
+      },
+      {
+        type: 'text',
+        name: 'exclude',
+        message: 'Exclude glob patterns (comma-separated, blank to skip)',
+        initial: '',
+      },
+    ],
+    {
+      onCancel: () => {
+        process.stderr.write('nuxt-doctor init: cancelled\n');
+        process.exitCode = 2;
+      },
+    },
+  );
+
+  if (process.exitCode === 2)
+    return {
+      configFormat: 'ts' as InitConfigFormat,
+      preset: 'recommended' as const,
+      threshold: undefined,
+      exclude: undefined,
+    };
+
+  return normalizeInitAnswers({
+    target: answers.target as InitConfigFormat | undefined,
+    preset: answers.preset as 'recommended' | 'strict' | 'minimal' | undefined,
+    threshold: answers.threshold || undefined,
+    exclude: answers.exclude as string | undefined,
+  });
+}
+
 export async function run(argv: string[] = process.argv): Promise<number> {
   const cli = cac('nuxt-doctor');
 
@@ -513,7 +655,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .command('[path]', 'Audit a Nuxt project')
     .option(
       '--format <kind>',
-      'Output format (agent|pretty|json|json-compact|sarif|html)',
+      'Output format (agent|pretty|json|json-compact|sarif|html|pr-comment)',
       {
         default: 'agent',
       },
@@ -557,6 +699,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       'Comma-separated workspace project names to audit (monorepo)',
     )
     .option('--output <file>', 'Write the report to a file instead of stdout')
+    .option('--pr-comment', 'Emit a focused Markdown PR-comment body')
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
       if (flags.failOn !== undefined && !isFailOnLevel(flags.failOn)) {
@@ -589,7 +732,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           throw new Error('--diff and --staged are mutually exclusive.');
         }
         if (flags.verbose && flags.quiet) {
-          throw new Error('--verbose and --quiet are mutually exclusive.');
+          throw new Error('--verbose using --quiet are mutually exclusive.');
         }
         const prepared: PreparedOptions = { ruleOverrides, threshold };
 
@@ -722,6 +865,24 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         process.stdout.write(renderInspect(project, rootDir));
       }
       process.exitCode = 0;
+    });
+
+  cli
+    .command('init [dir]', 'Scaffold a doctor config for the project')
+    .option('-y, --yes', 'Non-interactive, use recommended defaults')
+    .option(
+      '--config-format <ts|json|package-json>',
+      'Config file format (default: ts)',
+    )
+    .option('--force', 'Overwrite existing config')
+    .option('--dry-run', 'Print what would be written, touch nothing')
+    .action(async (dir: string | undefined, flags: InitCliFlags) => {
+      try {
+        await runInit(dir ?? '.', flags);
+      } catch (err) {
+        process.stderr.write(`${err instanceof Error ? err.message : err}\n`);
+        process.exitCode = 2;
+      }
     });
 
   cli.help();
