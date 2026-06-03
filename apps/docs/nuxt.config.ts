@@ -12,7 +12,6 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/content',
     '@nuxt/eslint',
-    '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxtjs/color-mode',
     '@vueuse/nuxt',
@@ -27,7 +26,7 @@ export default defineNuxtConfig({
     ],
   ],
 
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/fonts.css', '~/assets/css/main.css'],
 
   colorMode: {
     classSuffix: '',
@@ -144,21 +143,6 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
     typeCheck: false,
-  },
-
-  fonts: {
-    families: [
-      {
-        name: 'Geist',
-        provider: 'google',
-        weights: [300, 400, 500, 600, 700, 800],
-      },
-      {
-        name: 'Geist Mono',
-        provider: 'google',
-        weights: [300, 400, 500, 600, 700],
-      },
-    ],
   },
 
   shadcn: {

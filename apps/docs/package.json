@@ -18,7 +18,6 @@
   "dependencies": {
     "@cf-wasm/og": "0.3.8",
     "@nuxt/content": "3.14.0",
-    "@nuxt/fonts": "0.14.0",
     "@nuxt/icon": "2.2.3",
     "@nuxtjs/color-mode": "4.0.0",
     "@nuxtjs/plausible": "3.0.2",
