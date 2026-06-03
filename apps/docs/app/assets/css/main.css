@@ -1,0 +1,324 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+/* =================================================================
+   TOKENS — ported verbatim from .design-explorations/docs.html
+   OKLch only. No raw hex. No #000 / #fff.
+   ================================================================= */
+:root,
+.dark {
+  --bg: oklch(0.16 0.012 90);
+  --surface: oklch(0.205 0.012 90);
+  --surface-2: oklch(0.25 0.014 85);
+  --border: oklch(0.31 0.012 85);
+  --border-soft: oklch(0.26 0.01 85);
+  --ink: oklch(0.95 0.008 90);
+  --ink-muted: oklch(0.7 0.012 85);
+  --ink-dim: oklch(0.55 0.01 85);
+  --error: oklch(0.64 0.22 27);
+  --warn: oklch(0.8 0.15 80);
+  --info: oklch(0.7 0.13 240);
+  --ok: oklch(0.72 0.16 165);
+  --accent: oklch(0.64 0.22 27);
+  --ink-on-accent: oklch(0.99 0 0);
+
+  --d-fast: 120ms;
+  --d-base: 200ms;
+  --d-slow: 360ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --r: 6px;
+}
+
+:root:not(.dark) {
+  --bg: oklch(0.985 0.008 90);
+  --surface: oklch(0.965 0.01 88);
+  --surface-2: oklch(0.94 0.012 85);
+  --border: oklch(0.88 0.012 85);
+  --border-soft: oklch(0.92 0.01 85);
+  --ink: oklch(0.22 0.012 90);
+  --ink-muted: oklch(0.45 0.012 85);
+  --ink-dim: oklch(0.58 0.01 85);
+  --error: oklch(0.55 0.22 27);
+  --warn: oklch(0.66 0.15 70);
+  --info: oklch(0.52 0.16 250);
+  --ok: oklch(0.55 0.15 162);
+  --accent: oklch(0.55 0.22 27);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-dim: var(--ink-dim);
+  --color-error: var(--error);
+  --color-warn: var(--warn);
+  --color-info: var(--info);
+  --color-ok: var(--ok);
+  --color-accent: var(--accent);
+  --color-ink-on-accent: var(--ink-on-accent);
+
+  --font-sans:
+    'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-display: 'Geist', ui-sans-serif, system-ui, sans-serif;
+
+  --radius: 6px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  :root:not(.dark) {
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition:
+      background var(--d-slow) var(--ease),
+      color var(--d-slow) var(--ease);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--accent) 35%, transparent);
+    color: var(--ink);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-dim);
+  }
+}
+
+@layer utilities {
+  .font-mono-tabular {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .nav-blur {
+    background: color-mix(in oklch, var(--bg) 86%, transparent);
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 600ms var(--ease),
+      transform 600ms var(--ease);
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}
+
+/* =================================================================
+   PROSE — docs reading typography
+   ================================================================= */
+.prose {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ink-muted);
+}
+.prose p {
+  margin: 0 0 18px;
+  max-width: 68ch;
+}
+.prose p strong,
+.prose p b {
+  color: var(--ink);
+  font-weight: 500;
+}
+.prose a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in oklch, var(--ink-muted) 60%, transparent);
+  text-decoration-thickness: 1px;
+}
+.prose a:hover {
+  text-decoration-color: var(--accent);
+}
+.prose code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--ink);
+}
+.prose h1 {
+  font-family: var(--font-sans);
+  font-size: clamp(32px, 4vw, 44px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  font-weight: 700;
+  margin: 0 0 16px;
+  scroll-margin-top: 80px;
+}
+.prose h2 {
+  font-family: var(--font-sans);
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-weight: 700;
+  margin: 56px 0 16px;
+  scroll-margin-top: 80px;
+}
+.prose h3 {
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--ink);
+  font-weight: 600;
+  margin: 32px 0 10px;
+  scroll-margin-top: 80px;
+}
+.prose h2 a,
+.prose h3 a {
+  color: var(--ink-dim);
+  opacity: 0;
+  margin-left: 8px;
+  text-decoration: none;
+  transition: opacity var(--d-fast) var(--ease);
+}
+.prose h2:hover a,
+.prose h3:hover a {
+  opacity: 1;
+}
+.prose ul,
+.prose ol {
+  padding-left: 22px;
+  margin: 0 0 18px;
+}
+.prose li {
+  margin-bottom: 6px;
+}
+.prose li::marker {
+  color: var(--ink-dim);
+}
+.prose blockquote {
+  margin: 24px 0;
+  padding: 4px 0 4px 18px;
+  border-left: 2px solid var(--accent);
+  color: var(--ink-muted);
+  font-style: italic;
+}
+.prose table {
+  width: 100%;
+  font-size: 14px;
+  border-collapse: collapse;
+  margin: 16px 0 24px;
+  border: 1px solid var(--border-soft);
+}
+.prose th {
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 500;
+  color: var(--ink);
+  background: color-mix(in oklch, var(--surface-2) 50%, transparent);
+  border-bottom: 1px solid var(--border-soft);
+}
+.prose td {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border-soft);
+  color: var(--ink-muted);
+}
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--border-soft);
+  margin: 32px 0;
+}
+
+/* =================================================================
+   SHIKI — code blocks
+   ================================================================= */
+.prose pre {
+  margin: 24px 0 28px;
+  background: var(--surface) !important;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px !important;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--ink);
+  overflow-x: auto;
+}
+.prose pre code {
+  font-family: inherit;
+  font-size: inherit;
+  background: transparent !important;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+.shiki,
+.shiki span {
+  background-color: transparent !important;
+}

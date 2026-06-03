@@ -34,9 +34,9 @@ jspm_packages/
 
 # Build outputs
 dist/
-build/
 .output/
 .nuxt/
+.data/
 
 # TypeScript cache
 *.tsbuildinfo
