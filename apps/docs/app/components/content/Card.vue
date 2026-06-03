@@ -9,7 +9,7 @@ defineProps<{
   <NuxtLink
     v-if="to"
     :to="to"
-    class="group block border border-border bg-surface p-4 transition-colors duration-120 hover:border-accent"
+    class="group block rounded-lg border border-border bg-surface p-4 transition-colors duration-120 hover:border-accent"
   >
     <h4
       class="mb-1.5 font-sans text-sm font-semibold tracking-tight text-ink group-hover:text-accent"

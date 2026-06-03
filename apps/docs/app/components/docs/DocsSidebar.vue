@@ -32,9 +32,9 @@ const isActive = (path: string): boolean => route.path === path;
               :to="item.path"
               :aria-current="isActive(item.path) ? 'page' : undefined"
               :class="[
-                'block px-3 py-1.5 text-[13.5px] leading-snug rounded-[5px] transition-[color,background,box-shadow] duration-120 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                'block px-3 py-1.5 text-[13.5px] leading-snug rounded-md transition-[color,background] duration-120 ease-[cubic-bezier(0.16,1,0.3,1)]',
                 isActive(item.path)
-                  ? 'text-ink bg-[color-mix(in_oklch,var(--accent)_9%,transparent)] font-medium shadow-[inset_2px_0_0_var(--accent)]'
+                  ? 'text-ink bg-[color-mix(in_oklch,var(--accent)_10%,transparent)] font-medium'
                   : 'text-ink-muted hover:text-ink hover:bg-surface',
               ]"
             >

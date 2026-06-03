@@ -25,7 +25,7 @@ watch(
       >
         <NuxtLink to="/" class="flex items-center gap-2.5">
           <span
-            class="grid size-[22px] place-items-center rounded-[4px] bg-accent text-ink-on-accent font-mono text-xs font-bold shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_50%,transparent),0_0_0_4px_color-mix(in_oklch,var(--accent)_14%,transparent)]"
+            class="grid size-[22px] place-items-center rounded-sm bg-accent text-ink-on-accent font-mono text-xs font-bold shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_50%,transparent),0_0_0_4px_color-mix(in_oklch,var(--accent)_14%,transparent)]"
             aria-hidden="true"
             >+</span
           >
@@ -53,7 +53,7 @@ watch(
           <Icon name="lucide:search" class="size-3.5 opacity-80" />
           <span class="grow text-left">Search docs…</span>
           <span
-            class="font-mono text-[11px] text-ink-muted border border-border bg-bg px-1.5 h-5 inline-flex items-center"
+            class="font-mono text-[11px] text-ink-muted border border-border bg-bg px-1.5 h-5 inline-flex items-center rounded-sm"
             >⌘K</span
           >
         </button>
@@ -61,7 +61,7 @@ watch(
         <nav class="ml-auto flex items-center gap-1" aria-label="primary">
           <NuxtLink
             to="/getting-started/installation"
-            class="px-2.5 py-1.5 text-[13.5px] text-ink-muted transition-[color,background] duration-120 hover:text-ink hover:bg-surface"
+            class="rounded-md px-2.5 py-1.5 text-[13.5px] text-ink-muted transition-[color,background] duration-120 hover:text-ink hover:bg-surface"
             >Docs</NuxtLink
           >
           <NuxtLink
@@ -69,7 +69,7 @@ watch(
             external
             target="_blank"
             rel="noopener noreferrer"
-            class="px-2.5 py-1.5 text-[13.5px] text-ink-muted transition-[color,background] duration-120 hover:text-ink hover:bg-surface"
+            class="rounded-md px-2.5 py-1.5 text-[13.5px] text-ink-muted transition-[color,background] duration-120 hover:text-ink hover:bg-surface"
             >GitHub</NuxtLink
           >
           <DocsThemeToggle />
@@ -77,7 +77,7 @@ watch(
 
         <button
           type="button"
-          class="md:hidden ml-2 size-8 inline-flex items-center justify-center border border-border bg-surface text-ink-muted"
+          class="md:hidden ml-2 size-8 inline-flex items-center justify-center rounded-md border border-border bg-surface text-ink-muted"
           aria-label="Toggle navigation"
           @click="toggleSidebar"
         >

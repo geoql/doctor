@@ -19,6 +19,7 @@ interface AlertConfig {
   icon: typeof Info;
   label: string;
   labelColor: string;
+  tint: string;
 }
 
 const config = computed<AlertConfig>(() => {
@@ -28,22 +29,47 @@ const config = computed<AlertConfig>(() => {
         icon: AlertTriangle,
         label: 'Warning',
         labelColor: 'text-warn',
+        tint: 'var(--warn)',
       };
     case 'tip':
-      return { icon: Lightbulb, label: 'Tip', labelColor: 'text-ok' };
+      return {
+        icon: Lightbulb,
+        label: 'Tip',
+        labelColor: 'text-ok',
+        tint: 'var(--ok)',
+      };
     case 'success':
-      return { icon: CheckCircle, label: 'Success', labelColor: 'text-ok' };
+      return {
+        icon: CheckCircle,
+        label: 'Success',
+        labelColor: 'text-ok',
+        tint: 'var(--ok)',
+      };
     case 'error':
-      return { icon: XCircle, label: 'Error', labelColor: 'text-error' };
+      return {
+        icon: XCircle,
+        label: 'Error',
+        labelColor: 'text-error',
+        tint: 'var(--error)',
+      };
     default:
-      return { icon: Info, label: 'Info', labelColor: 'text-info' };
+      return {
+        icon: Info,
+        label: 'Info',
+        labelColor: 'text-info',
+        tint: 'var(--info)',
+      };
   }
 });
 </script>
 
 <template>
   <aside
-    class="my-6 border-l-2 border-l-info bg-[color-mix(in_oklch,var(--info)_7%,var(--surface))] p-4"
+    class="my-6 rounded-lg border p-4"
+    :style="{
+      borderColor: `color-mix(in oklch, ${config.tint} 30%, var(--border))`,
+      background: `color-mix(in oklch, ${config.tint} 7%, var(--surface))`,
+    }"
   >
     <div class="mb-1 flex items-center gap-2">
       <component :is="config.icon" :class="['size-4', config.labelColor]" />

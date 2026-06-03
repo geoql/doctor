@@ -21,7 +21,7 @@ const tabs = computed(() => {
 </script>
 
 <template>
-  <div class="my-6 border border-border">
+  <div class="my-6 overflow-hidden rounded-lg border border-border">
     <div
       v-if="tabs.length > 1"
       class="flex border-b border-border bg-surface-2"
