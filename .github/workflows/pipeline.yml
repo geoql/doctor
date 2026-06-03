@@ -59,3 +59,16 @@ jobs:
       needs.ci-node.result == 'success'
     uses: ./.github/workflows/coverage.yml
     secrets: inherit
+
+  deploy-docs:
+    name: 'Deploy Docs'
+    needs: [extract-branch, ci-node]
+    if: |
+      always() &&
+      needs.ci-node.result == 'success' &&
+      (
+        (github.event_name == 'push' && needs.extract-branch.outputs.current_branch == 'main') ||
+        github.event_name == 'workflow_dispatch'
+      )
+    uses: ./.github/workflows/deploy-docs.yml
+    secrets: inherit

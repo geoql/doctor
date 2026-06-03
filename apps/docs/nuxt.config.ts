@@ -1,13 +1,19 @@
+import tailwindcss from '@tailwindcss/vite';
+
 export default defineNuxtConfig({
-  compatibilityDate: '2025-12-01',
+  compatibilityDate: '2026-05-26',
   future: { compatibilityVersion: 4 },
   devtools: { enabled: false },
 
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
   modules: [
     '@nuxt/content',
+    '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/icon',
-    '@nuxt/eslint',
     '@nuxtjs/color-mode',
     '@vueuse/nuxt',
     'motion-v/nuxt',
@@ -99,7 +105,22 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'cloudflare-pages',
     cloudflare: {
+      // Single source of truth — Nitro writes dist/_worker.js/wrangler.json at
+      // build time, so there is no local wrangler.json. The DB binding backs
+      // Nuxt Content v3 (database.type: 'd1').
+      deployConfig: true,
       nodeCompat: true,
+      wrangler: {
+        name: 'geoql-doctor-docs',
+        compatibility_date: '2026-05-26',
+        d1_databases: [
+          {
+            binding: 'DB',
+            database_name: 'geoql-doctor-docs-db',
+            database_id: 'c9376a38-b408-4d52-843d-a2cf3225f26e',
+          },
+        ],
+      },
     },
     experimental: {
       wasm: true,
