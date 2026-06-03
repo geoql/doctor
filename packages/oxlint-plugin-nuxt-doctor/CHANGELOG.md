@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/geoql/doctor/compare/oxlint-plugin-nuxt-doctor-v0.1.1...oxlint-plugin-nuxt-doctor-v0.1.2) (2026-06-03)
+
+
+### Features
+
+* **cli:** --fix auto-fixer framework + oxlint passthrough ([#61](https://github.com/geoql/doctor/issues/61)) ([fec5828](https://github.com/geoql/doctor/commit/fec582869e1d60fdee97f86080ddaa68f308350a))
+* **plugins:** safe autofixes for em-dash + process.client rules ([#62](https://github.com/geoql/doctor/issues/62)) ([ae3dbcb](https://github.com/geoql/doctor/commit/ae3dbcbdada2885f44b164110a4981dec8e58439))
+
 ## [0.1.1](https://github.com/geoql/doctor/compare/oxlint-plugin-nuxt-doctor-v0.1.0...oxlint-plugin-nuxt-doctor-v0.1.1) (2026-06-02)
 
 

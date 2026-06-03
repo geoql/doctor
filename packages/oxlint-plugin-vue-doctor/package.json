@@ -1,6 +1,6 @@
 {
   "name": "@geoql/oxlint-plugin-vue-doctor",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "description": "oxlint JS plugin for Vue 3 anti-patterns and AI-slop detection. Pairs with oxlint's built-in vue plugin via jsPlugins. TypeScript, ESM.",
   "keywords": [
