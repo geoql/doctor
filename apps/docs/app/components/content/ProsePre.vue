@@ -44,9 +44,15 @@ async function copyText() {
       class="flex items-center gap-2.5 border-b border-border-soft bg-surface-2 px-3 py-2"
     >
       <div class="flex items-center gap-1.5" aria-hidden="true">
-        <span class="block size-2 rounded-full bg-error" />
-        <span class="block size-2 rounded-full bg-warn" />
-        <span class="block size-2 rounded-full bg-info" />
+        <!-- bg-error!/bg-warn!/bg-info! = Tailwind v4 `!` important variant.
+             The dots sit inside a wrapper div that inherits class="shiki" from
+             $attrs hoisting; the Shiki dual-theme stylesheet injects
+             `html .shiki span { background: var(--shiki-default-bg) }` at runtime
+             with higher specificity than the plain .bg-error utility. The
+             important variant is the project-local way to win the cascade. -->
+        <span class="block size-2 rounded-full bg-error!" />
+        <span class="block size-2 rounded-full bg-warn!" />
+        <span class="block size-2 rounded-full bg-info!" />
       </div>
       <span class="font-mono text-xs text-ink-muted">{{
         filename ?? language
