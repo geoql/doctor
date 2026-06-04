@@ -1,4 +1,18 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
+
+// Single source of truth for the version pill: the published CLI version.
+// Reading vue-doctor's package.json at build time keeps the docs badge in
+// lockstep with the npm release without a network call.
+const cliVersion = JSON.parse(
+  readFileSync(
+    fileURLToPath(
+      new URL('../../packages/vue-doctor/package.json', import.meta.url),
+    ),
+    'utf8',
+  ),
+).version as string;
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-05-26',
@@ -71,6 +85,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      version: cliVersion,
       baseUrl:
         process.env.NUXT_PUBLIC_BASE_URL || 'https://docs.the-doctor.report',
     },

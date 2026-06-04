@@ -1,6 +1,20 @@
 <script setup lang="ts">
 const { sections } = useDocsNavigation();
 
+const version = useRuntimeConfig().public.version;
+
+const { openSearch } = useDocsSearch();
+onKeyStroke(
+  'k',
+  (event) => {
+    if (event.metaKey || event.ctrlKey) {
+      event.preventDefault();
+      openSearch();
+    }
+  },
+  { dedupe: true },
+);
+
 const sidebarOpen = ref(false);
 function toggleSidebar() {
   sidebarOpen.value = !sidebarOpen.value;
@@ -41,7 +55,7 @@ watch(
               aria-hidden="true"
               class="inline-block size-1.5 rounded-full bg-ok shadow-[0_0_0_3px_color-mix(in_oklch,var(--ok)_25%,transparent)]"
             />
-            v0
+            v{{ version }}
           </span>
         </NuxtLink>
 
@@ -49,6 +63,7 @@ watch(
           type="button"
           class="hidden md:inline-flex md:items-center md:gap-2.5 h-8 min-w-[220px] rounded-md border border-border bg-surface px-2.5 text-[13px] text-ink-dim transition-[border-color,color] duration-120 hover:border-ink-muted hover:text-ink-muted"
           aria-label="Search docs"
+          @click="openSearch"
         >
           <Icon name="lucide:search" class="size-3.5 opacity-80" />
           <span class="grow text-left">Search docs…</span>
@@ -117,5 +132,7 @@ watch(
         <slot />
       </main>
     </div>
+
+    <DocsSearch />
   </div>
 </template>

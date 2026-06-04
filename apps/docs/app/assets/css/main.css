@@ -239,17 +239,15 @@
   margin: 32px 0 10px;
   scroll-margin-top: 80px;
 }
-.prose h2 a,
-.prose h3 a {
-  color: var(--ink-dim);
-  opacity: 0;
-  margin-left: 8px;
+.prose :is(h1, h2, h3, h4) a {
+  color: inherit;
   text-decoration: none;
-  transition: opacity var(--d-fast) var(--ease);
+  transition: text-decoration-color var(--d-fast) var(--ease);
 }
-.prose h2:hover a,
-.prose h3:hover a {
-  opacity: 1;
+.prose :is(h1, h2, h3, h4) a:hover {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklch, var(--accent) 50%, transparent);
+  text-underline-offset: 4px;
 }
 .prose ul,
 .prose ol {

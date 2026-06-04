@@ -3,6 +3,8 @@ import { ArrowRight, Github } from 'lucide-vue-next';
 
 definePageMeta({ layout: 'default' });
 
+const version = useRuntimeConfig().public.version;
+
 usePageSeo({
   title: 'the-doctor.report — Vue 3 / Nuxt 4 Code Audit',
   description:
@@ -51,7 +53,7 @@ const sections = [
       <p
         class="mb-5 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-dim"
       >
-        v0 · MIT · offline · deterministic
+        v{{ version }} · MIT · offline · deterministic
       </p>
       <h1
         class="font-sans font-bold leading-[1.02] tracking-[-0.035em] text-ink m-0 mb-6 text-[clamp(40px,6vw,72px)]"
