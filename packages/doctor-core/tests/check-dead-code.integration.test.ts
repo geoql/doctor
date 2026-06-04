@@ -106,4 +106,32 @@ describe('checkDeadCode integration', () => {
       false,
     );
   }, 60_000);
+
+  // Same scenario as above but for type exports (knip reports them under
+  // a different rule id). Auto-import plugins can register type exports
+  // alongside value exports, so a type like `AutoOptions` exported from
+  // `composables/useAuto.ts` is reachable at build time even without a
+  // source-level import. This guards the `unused-type-export` half of
+  // the same regression — if knip changes how it treats type exports
+  // in entry-point files, this test catches the regression.
+  it('does not flag auto-imported type exports from convention dirs (#85 edge case)', async () => {
+    const projectInfo = await detectProject(AUTO_IMPORT_FIXTURE);
+    const doctorConfig = await loadDoctorConfig(AUTO_IMPORT_FIXTURE);
+
+    const diagnostics = await checkDeadCode({
+      projectInfo,
+      doctorConfig,
+      enabled: true,
+      timeoutMs: 60_000,
+    });
+
+    const unusedTypeExports = diagnostics.filter(
+      (d) => d.ruleId === 'dead-code/unused-type-export',
+    );
+    const flaggedTypeExports = unusedTypeExports.map((d) => d.file);
+
+    expect(
+      flaggedTypeExports.some((f) => f.includes('composables/useAuto')),
+    ).toBe(false);
+  }, 60_000);
 });
