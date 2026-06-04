@@ -1,6 +1,6 @@
 {
   "name": "@geoql/nuxt-doctor",
-  "version": "0.1.0-alpha.0",
+  "version": "1.0.0",
   "description": "CLI auditor for Nuxt 4 apps. Detects anti-patterns, AI-slop, and best-practice violations.",
   "license": "MIT",
   "exports": {

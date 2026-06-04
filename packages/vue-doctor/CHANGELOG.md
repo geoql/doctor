@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0](https://github.com/geoql/doctor/compare/vue-doctor-v0.1.1...vue-doctor-v1.0.0) (2026-06-04)
+
+
+### Features
+
+* first stable release — `npx @geoql/vue-doctor` CLI surface (flags, subcommands, reporters) is now API-stable
+
+
 ## [0.1.1](https://github.com/geoql/doctor/compare/vue-doctor-v0.1.0...vue-doctor-v0.1.1) (2026-06-02)
 
 

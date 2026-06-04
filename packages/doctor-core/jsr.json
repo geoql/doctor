@@ -1,6 +1,6 @@
 {
   "name": "@geoql/doctor-core",
-  "version": "0.1.0-alpha.0",
+  "version": "1.0.0",
   "description": "Audit engine for @geoql/vue-doctor and @geoql/nuxt-doctor. Hybrid two-pass: @vue/compiler-sfc template AST + oxlint subprocess.",
   "license": "MIT",
   "exports": {

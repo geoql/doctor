@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v0.1.1...nuxt-doctor-v1.0.0) (2026-06-04)
+
+
+### Features
+
+* first stable release — `npx @geoql/nuxt-doctor` CLI surface is now API-stable
+
+
 ## [0.1.1](https://github.com/geoql/doctor/compare/nuxt-doctor-v0.1.0...nuxt-doctor-v0.1.1) (2026-06-02)
 
 

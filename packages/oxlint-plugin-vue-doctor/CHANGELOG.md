@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0](https://github.com/geoql/doctor/compare/oxlint-plugin-vue-doctor-v0.1.1...oxlint-plugin-vue-doctor-v1.0.0) (2026-06-04)
+
+
+### Features
+
+* first stable release — Vue 3 anti-pattern rule set is now API-stable
+
+
 ## [0.1.1](https://github.com/geoql/doctor/compare/oxlint-plugin-vue-doctor-v0.1.0...oxlint-plugin-vue-doctor-v0.1.1) (2026-06-02)
 
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.0](https://github.com/geoql/doctor/compare/doctor-core-v0.1.1...doctor-core-v1.0.0) (2026-06-04)
+
+
+### Features
+
+* first stable release — audit engine, scoring, reporters, and the hybrid two-pass pipeline are now API-stable
+
+
+### Bug Fixes
+
+* **core:** inject knip entry config via args.config so auto-import/file-routed dirs are not flagged as dead code ([#85](https://github.com/geoql/doctor/issues/85))
+
+
 ## [0.1.1](https://github.com/geoql/doctor/compare/doctor-core-v0.1.0...doctor-core-v0.1.1) (2026-06-02)
 
 
