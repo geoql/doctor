@@ -322,7 +322,10 @@
   padding: 0;
   color: inherit;
 }
-.shiki,
-.shiki span {
+/* Scope to pre.shiki only — a bare `.shiki span` selector clobbers the
+   header dots in ProsePre.vue (the wrapper div carries `class="shiki"`
+   via $attrs hoisting, so any inner span loses its bg-error/warn/info). */
+pre.shiki,
+pre.shiki span {
   background-color: transparent !important;
 }
