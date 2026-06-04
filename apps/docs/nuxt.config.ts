@@ -28,6 +28,13 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/fonts.css', '~/assets/css/main.css'],
 
+  // The docs root sends visitors straight to the first guide. The marketing
+  // landing lives at the-doctor.report; docs.* is purely the reference, so the
+  // home route should not be a second landing page.
+  routeRules: {
+    '/': { redirect: { to: '/getting-started/installation', statusCode: 301 } },
+  },
+
   colorMode: {
     classSuffix: '',
     preference: 'dark',
