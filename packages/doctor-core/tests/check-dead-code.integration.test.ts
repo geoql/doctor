@@ -77,4 +77,33 @@ describe('checkDeadCode integration', () => {
 
     expect(flagged.some((f) => f.includes('utils/trulyOrphaned'))).toBe(true);
   }, 60_000);
+
+  // The previous #85 fix made convention-dir FILES reachable by registering
+  // them as knip entry points, but EXPORTS of those files (e.g. the `useAuto`
+  // function from `composables/useAuto.ts`) are still flagged when nothing
+  // explicitly imports them — they get auto-imported by name at build time,
+  // so no source-level import exists. This test guards the export-level
+  // edge case of the same regression.
+  it('does not flag auto-imported exports from convention dirs (#85 edge case)', async () => {
+    const projectInfo = await detectProject(AUTO_IMPORT_FIXTURE);
+    const doctorConfig = await loadDoctorConfig(AUTO_IMPORT_FIXTURE);
+
+    const diagnostics = await checkDeadCode({
+      projectInfo,
+      doctorConfig,
+      enabled: true,
+      timeoutMs: 60_000,
+    });
+
+    const unusedExports = diagnostics.filter(
+      (d) => d.ruleId === 'dead-code/unused-export',
+    );
+    const flaggedExports = unusedExports.map((d) => d.file);
+
+    // Auto-import makes the export reachable even though no source file
+    // imports it, so knip must not flag it.
+    expect(flaggedExports.some((f) => f.includes('composables/useAuto'))).toBe(
+      false,
+    );
+  }, 60_000);
 });
