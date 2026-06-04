@@ -133,6 +133,6 @@ watch(
       </main>
     </div>
 
-    <DocsSearch />
+    <DocsSearchDialog />
   </div>
 </template>

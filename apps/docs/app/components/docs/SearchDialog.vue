@@ -13,10 +13,16 @@ interface SearchSection {
   content: string;
 }
 
-const { data: sections } = await useAsyncData('docs-search-sections', () =>
-  queryCollectionSearchSections('content', {
-    ignoredTags: ['code', 'pre', 'style'],
-  }),
+// Not awaited + client-only: a top-level await would make this an async
+// component needing <Suspense>, which prevents it mounting inside the layout.
+// Search is a client interaction, so the sections load lazily on the client.
+const { data: sections } = useAsyncData(
+  'docs-search-sections',
+  () =>
+    queryCollectionSearchSections('content', {
+      ignoredTags: ['code', 'pre', 'style'],
+    }),
+  { server: false, lazy: true },
 );
 
 const fuse = computed(
@@ -75,7 +81,10 @@ function onKeydown(event: KeyboardEvent) {
 </script>
 
 <template>
-  <Teleport to="body">
+  <!-- ClientOnly (not Teleport to body): the dialog is position:fixed so it
+       needs no portal, and Teleport-to-body during SSR is a known Nuxt
+       hydration-mismatch source (nuxt/nuxt#24207). Search is client-only. -->
+  <ClientOnly>
     <Transition name="search-fade">
       <div
         v-if="open"
@@ -152,7 +161,7 @@ function onKeydown(event: KeyboardEvent) {
         </div>
       </div>
     </Transition>
-  </Teleport>
+  </ClientOnly>
 </template>
 
 <style scoped>
