@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.1.0](https://github.com/geoql/doctor/compare/oxlint-plugin-vue-doctor-v1.0.0...oxlint-plugin-vue-doctor-v1.1.0) (2026-06-04)
+
+
+### Features
+
+* **cli:** --fix auto-fixer framework + oxlint passthrough ([#61](https://github.com/geoql/doctor/issues/61)) ([fec5828](https://github.com/geoql/doctor/commit/fec582869e1d60fdee97f86080ddaa68f308350a))
+* **oxlint-plugin-vue-doctor:** add composition/* rules ([#33](https://github.com/geoql/doctor/issues/33) sub-batch B) ([c37a1d9](https://github.com/geoql/doctor/commit/c37a1d9d8c4477a630e57d1c1effbdf0be5ef85c))
+* **oxlint-plugin:** [#33](https://github.com/geoql/doctor/issues/33) C2 performance/prefer-defineAsyncComponent-on-route ([99e214b](https://github.com/geoql/doctor/commit/99e214b2cb8a0d9c2d41d07ae93ecb90c61cfe77))
+* **packages:** scaffold doctor-core, oxlint-plugin-vue-doctor, vue-doctor ([#68](https://github.com/geoql/doctor/issues/68)) ([884a436](https://github.com/geoql/doctor/commit/884a4363fa17b7d39b7027950bf4b9f40f79d711))
+* **plugins:** safe autofixes for em-dash + process.client rules ([#62](https://github.com/geoql/doctor/issues/62)) ([ae3dbcb](https://github.com/geoql/doctor/commit/ae3dbcbdada2885f44b164110a4981dec8e58439))
+* **rules:** add 3 ai-slop reactivity rules + fix bundled plugin resolution ([5e52e6a](https://github.com/geoql/doctor/commit/5e52e6acaa21e496dc81188716c6f137ee2b8f23))
+* **rules:** add no-imports-from-vue-when-auto-imported ([#14](https://github.com/geoql/doctor/issues/14)) ([02768bc](https://github.com/geoql/doctor/commit/02768bc087e46a38a2c983c4eb0f7ed0daf9e45e))
+* **rules:** add reactivity/* rule batch — [#33](https://github.com/geoql/doctor/issues/33) sub-batch A ([84c86c5](https://github.com/geoql/doctor/commit/84c86c52d1899f6ab35caa1520c45dfcc4708e31))
+
+
+### Bug Fixes
+
+* **rules:** make watch-without-cleanup fire in real oxlint; add e2e guard ([49a2a66](https://github.com/geoql/doctor/commit/49a2a6676f133865409b98674bf667ad08329832))
+
+
+### Documentation
+
+* consolidate to single SPEC.md, remove stale ARCHITECTURE.md ([727f4cd](https://github.com/geoql/doctor/commit/727f4cd89de364fc004dc78495c70b613e8ec3f3))
+* rewrite all 5 package READMEs to match shipped v0.1.0 surface ([dd56904](https://github.com/geoql/doctor/commit/dd569046aea56ba794a4e0d44bca864c51983e96))
+
+
+### Miscellaneous
+
+* release main ([#79](https://github.com/geoql/doctor/issues/79)) ([df762b3](https://github.com/geoql/doctor/commit/df762b3c5cffaa52514c567d4c54dd6d9fd9bb47))
+* release main ([#81](https://github.com/geoql/doctor/issues/81)) ([eb85d4b](https://github.com/geoql/doctor/commit/eb85d4bfb82f43e7462073e0983f1612cf862f4f))
+* release main ([#82](https://github.com/geoql/doctor/issues/82)) ([d109569](https://github.com/geoql/doctor/commit/d109569ac77639dbe4a09bfcd7a65930f1e21be0))
+* **release:** v0.1.0-alpha.0 ([62fd9bb](https://github.com/geoql/doctor/commit/62fd9bbde387dafb1f8056f4fc00597c8e1031d6))
+* **release:** v1.0.0 — first stable @geoql/doctor cut ([07bd2f4](https://github.com/geoql/doctor/commit/07bd2f4f05ecee082193d2084d47172e3e333499))
+
+
+### Code Refactoring
+
+* **oxlint-plugin-vue-doctor:** move VUE_AUTO_IMPORTED to shared/ ([936cbc4](https://github.com/geoql/doctor/commit/936cbc4fa05910dfc00ae7e7c827d802960ebf36))
+
 ## [1.0.0](https://github.com/geoql/doctor/compare/oxlint-plugin-vue-doctor-v0.1.1...oxlint-plugin-vue-doctor-v1.0.0) (2026-06-04)
 
 
