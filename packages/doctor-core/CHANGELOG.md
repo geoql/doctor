@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/geoql/doctor/compare/doctor-core-v1.0.0...doctor-core-v1.0.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* **doctor-core:** dead-code knip ignores demo workspaces (example/playground) ([75cf7b4](https://github.com/geoql/doctor/commit/75cf7b42ed0644aa32f2edcdeeb485b4e679609e))
+
 ## [1.0.0](https://github.com/geoql/doctor/compare/doctor-core-v0.1.1...doctor-core-v1.0.0) (2026-06-04)
 
 

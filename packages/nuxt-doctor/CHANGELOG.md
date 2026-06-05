@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.1](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.0.0...nuxt-doctor-v1.0.1) (2026-06-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.0.1
+
 ## [1.0.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v0.1.1...nuxt-doctor-v1.0.0) (2026-06-04)
 
 
