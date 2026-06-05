@@ -7,8 +7,19 @@ export interface KnipConfig {
   project: string[];
   ignoreFiles: string[];
   ignoreDependencies: string[];
+  ignoreWorkspaces: string[];
   compilers?: Record<string, true>;
 }
+
+// Demo/playground sub-workspaces are dev-only surface, not the published
+// library. `example/` is the Vue-library demo convention; `playground/` is the
+// Nuxt-module convention. knip auto-discovers them as workspaces and tries to
+// load their vite.config.ts / nuxt.config.ts — which fails ("Cannot find module
+// 'vite'") in a bare CI checkout with no node_modules, leaking to stderr.
+// `ignoreWorkspaces` is the ONLY knip mechanism that skips a workspace BEFORE
+// its config files are loaded (`ignore` globs filter results too late; a
+// `workspaces` map only ADDS to auto-discovery, never replaces it).
+const DEMO_WORKSPACES = ['example', 'playground'];
 
 export function buildKnipConfig(
   projectInfo: ProjectInfo,
@@ -65,6 +76,7 @@ export function buildKnipConfig(
       '@geoql/vue-doctor',
       '@geoql/nuxt-doctor',
     ],
+    ignoreWorkspaces: [...DEMO_WORKSPACES],
   };
 
   if (isNuxt) {

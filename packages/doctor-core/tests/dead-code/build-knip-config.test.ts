@@ -105,6 +105,16 @@ describe('buildKnipConfig', () => {
     ]);
   });
 
+  it('ignores the example demo workspace for a Vue library', () => {
+    const config = buildKnipConfig(vueProjectInfo, baseConfig);
+    expect(config.ignoreWorkspaces).toEqual(['example', 'playground']);
+  });
+
+  it('ignores the playground demo workspace for a Nuxt module', () => {
+    const config = buildKnipConfig(nuxtProjectInfo, baseConfig);
+    expect(config.ignoreWorkspaces).toEqual(['example', 'playground']);
+  });
+
   it('treats convention dirs as entry points for a Vue project with auto-imports', () => {
     const autoImportVue: ProjectInfo = {
       ...vueProjectInfo,

@@ -130,6 +130,7 @@ async function writeKnipConfig(
     project: config.project,
     ignore: config.ignoreFiles,
     ignoreDependencies: config.ignoreDependencies,
+    ignoreWorkspaces: config.ignoreWorkspaces,
   };
   if (config.compilers) knipJson.compilers = config.compilers;
   await writeFile(configPath, JSON.stringify(knipJson, null, 2), 'utf8');

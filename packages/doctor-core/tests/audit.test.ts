@@ -198,6 +198,40 @@ describe('audit', () => {
     expect(report.score).toBe(100);
   });
 
+  it('surfaces a dead-code pass failure under DOCTOR_DEBUG', async () => {
+    const dir = await fixture({
+      'package.json': JSON.stringify({
+        name: 'test',
+        dependencies: { vue: '^3.0.0' },
+      }),
+      'index.html': '<div id="app"></div>',
+      'src/main.ts':
+        'import { createApp } from "vue";\ncreateApp({}).mount("#app");',
+    });
+    const { _knipLoader } = await import('../src/check-dead-code.js');
+    vi.spyOn(_knipLoader, 'load').mockRejectedValueOnce(
+      new Error('knip exploded'),
+    );
+    const original = process.env.DOCTOR_DEBUG;
+    process.env.DOCTOR_DEBUG = '1';
+    const stderrChunks: string[] = [];
+    const stderrSpy = vi
+      .spyOn(process.stderr, 'write')
+      .mockImplementation((chunk: string | Uint8Array): boolean => {
+        stderrChunks.push(typeof chunk === 'string' ? chunk : chunk.toString());
+        return true;
+      });
+    try {
+      const report = await audit({ rootDir: dir });
+      expect(report).toBeDefined();
+      expect(stderrChunks.join('')).toContain('dead-code pass failed');
+    } finally {
+      stderrSpy.mockRestore();
+      if (original === undefined) delete process.env.DOCTOR_DEBUG;
+      else process.env.DOCTOR_DEBUG = original;
+    }
+  });
+
   it('remaps a build-quality diagnostic severity via a rule override', async () => {
     const dir = await fixture({
       'package.json': JSON.stringify({

@@ -123,8 +123,15 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
       deadCodeDiagnostics = deduplicated.filter(
         (d) => config.rules?.[d.ruleId] !== 'off',
       );
-    } catch {
-      // knip failed — diagnostics remain empty for this pass
+    } catch (err) {
+      // knip failed — diagnostics remain empty for this pass. Surface it under
+      // DOCTOR_DEBUG (matching the script pass) so a degraded dead-code run is
+      // never silently disguised as a clean pass.
+      if (process.env.DOCTOR_DEBUG) {
+        process.stderr.write(
+          `[doctor-core] dead-code pass failed: ${String(err)}\n`,
+        );
+      }
     }
     deadCodeElapsed = performance.now() - deadCodeStart;
   }

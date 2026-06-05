@@ -1,5 +1,5 @@
 import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { detectProject } from '../src/detect-project.js';
 import { loadDoctorConfig } from '../src/config/load.js';
 import { checkDeadCode } from '../src/check-dead-code.js';
@@ -16,6 +16,13 @@ const AUTO_IMPORT_FIXTURE = resolve(
   'fixtures',
   'dead-code',
   'vue3-auto-import',
+);
+
+const WITH_EXAMPLE_FIXTURE = resolve(
+  import.meta.dirname,
+  'fixtures',
+  'dead-code',
+  'vue3-with-example',
 );
 
 describe('checkDeadCode integration', () => {
@@ -133,5 +140,45 @@ describe('checkDeadCode integration', () => {
     expect(
       flaggedTypeExports.some((f) => f.includes('composables/useAuto')),
     ).toBe(false);
+  }, 60_000);
+
+  // A demo workspace (example/) declares its own vite.config.ts that imports
+  // 'vite'. With deps NOT installed (bare CI checkout), knip auto-discovers the
+  // workspace and tries to load that config, printing
+  // "ERROR: Error loading example/vite.config.ts (Cannot find module 'vite')"
+  // to stderr while the pass silently degrades. The ignoreWorkspaces fix must
+  // stop knip from loading the demo config AT ALL. This test fails on the old
+  // code (stderr leak) and passes once example/playground are ignored.
+  it('does not load example/ demo config and emits no module-resolution error to stderr', async () => {
+    const projectInfo = await detectProject(WITH_EXAMPLE_FIXTURE);
+    const doctorConfig = await loadDoctorConfig(WITH_EXAMPLE_FIXTURE);
+
+    const stderrChunks: string[] = [];
+    const stderrSpy = vi
+      .spyOn(process.stderr, 'write')
+      .mockImplementation((chunk: string | Uint8Array): boolean => {
+        stderrChunks.push(typeof chunk === 'string' ? chunk : chunk.toString());
+        return true;
+      });
+
+    let diagnostics: Awaited<ReturnType<typeof checkDeadCode>>;
+    try {
+      diagnostics = await checkDeadCode({
+        projectInfo,
+        doctorConfig,
+        enabled: true,
+        timeoutMs: 60_000,
+      });
+    } finally {
+      stderrSpy.mockRestore();
+    }
+
+    const stderr = stderrChunks.join('');
+    expect(stderr).not.toContain("Cannot find module 'vite'");
+    expect(stderr).not.toContain('example/vite.config.ts');
+
+    const flagged = diagnostics.map((d) => d.file);
+    expect(flagged.some((f) => f.includes('example/'))).toBe(false);
+    expect(flagged.some((f) => f.includes('demo-orphan'))).toBe(false);
   }, 60_000);
 });
