@@ -103,6 +103,16 @@ export {
 } from './rule-registry.js';
 export { scoreDiagnostics } from './score.js';
 export type { ScoreBreakdownEntry, ScoreConfig, ScoreResult } from './score.js';
+export {
+  buildPushPayload,
+  pushFindings,
+  stripFindings,
+  type PushOptions,
+  type PushPayload,
+  type PushPayloadInput,
+  type PushResult,
+  type PushedFinding,
+} from './push.js';
 export type {
   Capability,
   Framework,
