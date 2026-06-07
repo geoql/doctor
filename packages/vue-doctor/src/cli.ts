@@ -17,6 +17,7 @@ import {
   mergeCliOverrides,
   normalizeInitAnswers,
   planInit,
+  pushFindings,
   renderVerboseTrace,
   scoreDiagnostics,
   type AuditReport,
@@ -288,6 +289,9 @@ interface CliFlags {
   prComment?: string | true;
   fix?: boolean;
   fixExclude?: string | string[];
+  push?: boolean;
+  pushUrl: string;
+  apiKey?: string;
 }
 
 interface PreparedOptions {
@@ -482,6 +486,42 @@ function emitReport(
     report.diagnostics.length > 0
   ) {
     process.stdout.write(`${encodeAnnotations(report.diagnostics)}\n`);
+  }
+}
+
+async function maybePushFindings(
+  report: AuditReport,
+  flags: CliFlags,
+): Promise<void> {
+  if (flags.push !== true) return;
+  if (!flags.apiKey) {
+    process.stderr.write(
+      'vue-doctor: --push enabled but --api-key is not set; skipping push (no findings were sent).\n',
+    );
+    return;
+  }
+  const url = flags.pushUrl;
+  const project: string = 'vue-doctor';
+  const result = await pushFindings({
+    project,
+    score: report.score,
+    errorCount: report.errorCount,
+    warnCount: report.warnCount,
+    infoCount: report.infoCount,
+    diagnostics: report.diagnostics,
+    url,
+    apiKey: flags.apiKey,
+  });
+  if (result.ok) {
+    process.stderr.write(
+      `vue-doctor: pushed ${report.diagnostics.length} finding${report.diagnostics.length === 1 ? '' : 's'} to ${url} (HTTP ${result.status}).\n`,
+    );
+  } else {
+    const detail =
+      result.status !== undefined ? ` (HTTP ${result.status})` : '';
+    process.stderr.write(
+      `vue-doctor: --push failed${detail}: ${result.error}. Audit exit code is unchanged.\n`,
+    );
   }
 }
 
@@ -706,6 +746,21 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       '--fix-exclude <ruleId>',
       'Mark a rule as not-auto-fixable (repeatable). Note: oxlint applies built-in fixes globally, so this is enforced only for doctor plugin fixes; built-in vue/* fixes still apply.',
     )
+    .option(
+      '--push',
+      'After the audit, POST privacy-stripped findings to the SaaS. Requires --api-key. Negatable with --no-push.',
+    )
+    .option(
+      '--push-url <url>',
+      'SaaS endpoint for --push (default: https://app.the-doctor.report/api/v1/findings)',
+      {
+        default: 'https://app.the-doctor.report/api/v1/findings',
+      },
+    )
+    .option(
+      '--api-key <key>',
+      'API key for the SaaS (sent as the x-api-key header for both --score-mode and --push).',
+    )
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
       if (flags.failOn !== undefined && !isFailOnLevel(flags.failOn)) {
@@ -798,10 +853,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         }
         if (flags.score) {
           process.stdout.write(`${report.score}\n`);
-          process.exitCode = report.exitCode;
-          return;
+        } else {
+          emitReport(report, reporter, flags);
         }
-        emitReport(report, reporter, flags);
+        await maybePushFindings(report, flags);
         process.exitCode = report.exitCode;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
