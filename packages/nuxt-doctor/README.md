@@ -59,6 +59,10 @@ nuxt-doctor --score
 | `--no-respect-inline-disables` | Surface findings even inside `doctor-disable` comments.                                                                |
 | `--threshold <n>`              | Minimum passing score, integer `0`–`100`.                                                                              |
 | `--score`                      | Print only the numeric score, for piping.                                                                              |
+| `--push`                       | After the audit, POST privacy-stripped findings to the SaaS. Requires `--api-key`. Negatable with `--no-push`.         |
+| `--no-push`                    | Skip the SaaS push (default).                                                                                          |
+| `--push-url <url>`             | SaaS endpoint for `--push` (default: `https://app.the-doctor.report/api/v1/findings`).                                 |
+| `--api-key <key>`              | API key for the SaaS, sent as the `x-api-key` header.                                                                  |
 | `--annotations`                | Emit GitHub Actions `::error::` / `::warning::` lines.                                                                 |
 | `--ci`                         | Auto-enable CI behavior (annotations on GitHub Actions).                                                               |
 | `--no-ci`                      | Disable CI auto-detection even when a CI env is set.                                                                   |
