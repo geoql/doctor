@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/geoql/doctor/compare/vue-doctor-v1.1.0...vue-doctor-v1.1.1) (2026-06-09)
+
+
+### Bug Fixes
+
+* **monorepo:** bump JSR import-map pin to doctor-core@^1.0.0 ([a9c86ba](https://github.com/geoql/doctor/commit/a9c86ba1feea1e6ce55204c74373170c501e1403))
+* **vue-cli,nuxt-cli:** add --push-project flag for SaaS slug ([b744bde](https://github.com/geoql/doctor/commit/b744bdee1553dc59dc3be0562407f44788eae99b))
+
 ## [1.1.0](https://github.com/geoql/doctor/compare/vue-doctor-v1.0.1...vue-doctor-v1.1.0) (2026-06-09)
 
 
