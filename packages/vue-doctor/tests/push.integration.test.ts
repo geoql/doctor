@@ -95,6 +95,8 @@ describe('vue-doctor --push (real CLI + local HTTP server)', () => {
         'sk-live-abc-123',
         '--push-url',
         url,
+        '--push-project',
+        'acme/widgets',
         violationDir,
       ]);
 
@@ -122,8 +124,7 @@ describe('vue-doctor --push (real CLI + local HTTP server)', () => {
           [k: string]: unknown;
         }>;
       };
-      expect(typeof body.project).toBe('string');
-      expect(body.project.length).toBeGreaterThan(0);
+      expect(body.project).toBe('acme/widgets');
       expect(body.score).toBeGreaterThan(0);
       expect(body.errorCount).toBe(1);
       expect(Array.isArray(body.findings)).toBe(true);
@@ -146,6 +147,29 @@ describe('vue-doctor --push (real CLI + local HTTP server)', () => {
       expect(f.ruleId).toBe('vue-doctor/template/v-for-has-key');
       expect(f.severity).toBe('error');
       expect(typeof f.category).toBe('string');
+    } finally {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
+  });
+
+  it('falls back to the audited directory name when --push-project is omitted', async () => {
+    const { server, port, captured } = await startCaptureServer();
+    try {
+      const url = `http://127.0.0.1:${port}/api/v1/findings`;
+      await run([
+        'node',
+        'vue-doctor',
+        '--no-dead-code',
+        '--push',
+        '--api-key',
+        'sk-test',
+        '--push-url',
+        url,
+        violationDir,
+      ]);
+      expect(captured).toHaveLength(1);
+      const body = JSON.parse(captured[0]!.body) as { project: string };
+      expect(body.project).toBe('violation');
     } finally {
       await new Promise<void>((resolve) => server.close(() => resolve()));
     }

@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { basename, dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import {
@@ -300,6 +300,7 @@ interface CliFlags {
   push?: boolean;
   pushUrl: string;
   apiKey?: string;
+  pushProject?: string;
 }
 
 interface PreparedOptions {
@@ -500,6 +501,7 @@ function emitReport(
 async function maybePushFindings(
   report: AuditReport,
   flags: CliFlags,
+  rootDir: string,
 ): Promise<void> {
   if (flags.push !== true) return;
   if (!flags.apiKey) {
@@ -509,7 +511,13 @@ async function maybePushFindings(
     return;
   }
   const url = flags.pushUrl;
-  const project: string = 'nuxt-doctor';
+  // --push-project is intentionally separate from --project (the #27 workspace
+  // aggregation filter); reusing --project would make the CLI treat the SaaS
+  // slug as a workspace package name and audit nothing.
+  const project: string =
+    flags.pushProject && flags.pushProject.length > 0
+      ? flags.pushProject
+      : basename(rootDir);
   const result = await pushFindings({
     project,
     score: report.score,
@@ -769,6 +777,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       '--api-key <key>',
       'API key for the SaaS (sent as the x-api-key header for both --score-mode and --push).',
     )
+    .option(
+      '--push-project <slug>',
+      'SaaS dashboard project slug for --push (e.g. owner/repo). Defaults to the audited directory name.',
+    )
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
       if (flags.failOn !== undefined && !isFailOnLevel(flags.failOn)) {
@@ -864,7 +876,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         } else {
           emitReport(report, reporter, flags);
         }
-        await maybePushFindings(report, flags);
+        await maybePushFindings(report, flags, rootDir);
         process.exitCode = report.exitCode;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
