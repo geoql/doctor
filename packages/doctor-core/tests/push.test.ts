@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { pushFindings, buildPushPayload, stripFindings } from '../src/push.js';
 import { RULE_REGISTRY } from '../src/rule-registry.js';
 import type { Diagnostic } from '../src/types.js';
@@ -124,6 +124,31 @@ describe('stripFindings', () => {
 });
 
 describe('buildPushPayload', () => {
+  // Scrub CI env so default-shape assertions are deterministic on a GitHub runner,
+  // where these vars are set and would add commitSha/branch keys to the payload.
+  const ciEnvKeys = [
+    'GITHUB_SHA',
+    'GITHUB_REF_NAME',
+    'GITHUB_PR_NUMBER',
+  ] as const;
+  let savedCiEnv: Record<string, string | undefined> = {};
+
+  beforeEach(() => {
+    savedCiEnv = {};
+    for (const key of ciEnvKeys) {
+      savedCiEnv[key] = process.env[key];
+      delete process.env[key];
+    }
+  });
+
+  afterEach(() => {
+    for (const key of ciEnvKeys) {
+      const value = savedCiEnv[key];
+      if (value !== undefined) process.env[key] = value;
+      else delete process.env[key];
+    }
+  });
+
   it('produces the documented top-level shape with required fields', () => {
     const payload = buildPushPayload({
       project: 'geoql/doctor',
