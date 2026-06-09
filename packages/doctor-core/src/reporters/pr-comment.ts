@@ -3,7 +3,7 @@ import type { Diagnostic } from '../types.js';
 import { compareStrings } from './render.js';
 import type { ReporterInput } from './types.js';
 
-const DOCS_BASE = 'https://docs.doctor.geoql.in/rules/';
+const DOCS_BASE = 'https://docs.the-doctor.report/rules/';
 const MAX_PER_SECTION = 5;
 
 function binName(toolName: string): string {

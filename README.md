@@ -2,49 +2,104 @@
 
 > Your agent writes bad Vue/Nuxt. This catches it.
 
-A pair of CLIs and oxlint plugins that audit Vue 3 + Nuxt 4 apps for performance, correctness, security, and AI-agent anti-patterns. It does not scaffold or generate — it _critiques_ the code your agent just wrote and gives it a deterministic health score.
+[![npm](https://img.shields.io/npm/v/@geoql/vue-doctor?label=vue-doctor)](https://www.npmjs.com/package/@geoql/vue-doctor)
+[![npm](https://img.shields.io/npm/v/@geoql/nuxt-doctor?label=nuxt-doctor)](https://www.npmjs.com/package/@geoql/nuxt-doctor)
+[![JSR](https://jsr.io/badges/@geoql/vue-doctor)](https://jsr.io/@geoql/vue-doctor)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-**Documentation:** [docs.the-doctor.report](https://docs.the-doctor.report)
+## What is this?
+
+A pnpm monorepo of CLIs and oxlint plugins that audit Vue 3 and Nuxt 4 apps for performance, correctness, security, and AI-agent anti-patterns. It does not scaffold or generate. It critiques the code your agent just wrote and gives it a deterministic 0-100 health score. The audit runs fully local and offline: same code in, same score out.
+
+Full docs, rule reference, config, and scoring live at [docs.the-doctor.report](https://docs.the-doctor.report).
+
+## Ecosystem
+
+| Repo                       | What                            | Link                                                                     |
+| -------------------------- | ------------------------------- | ------------------------------------------------------------------------ |
+| `geoql/doctor` (this repo) | OSS CLIs + oxlint rule plugins  | [github.com/geoql/doctor](https://github.com/geoql/doctor)               |
+| `geoql/doctor-action`      | GitHub Action wrapper           | [github.com/geoql/doctor-action](https://github.com/geoql/doctor-action) |
+| `the-doctor.report`        | Hosted SaaS dashboard (private) | [app.the-doctor.report](https://app.the-doctor.report)                   |
+| Docs                       | Rules, CLI, scoring reference   | [docs.the-doctor.report](https://docs.the-doctor.report)                 |
 
 ## Packages
 
-| Package                                                                  | Description                      | Version                                                                                                                                 |
-| ------------------------------------------------------------------------ | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [`@geoql/doctor-core`](packages/doctor-core)                             | Audit engine, scoring, reporters | [![npm](https://img.shields.io/npm/v/@geoql/doctor-core)](https://www.npmjs.com/package/@geoql/doctor-core)                             |
-| [`@geoql/oxlint-plugin-vue-doctor`](packages/oxlint-plugin-vue-doctor)   | oxlint JS plugin: Vue 3 rules    | [![npm](https://img.shields.io/npm/v/@geoql/oxlint-plugin-vue-doctor)](https://www.npmjs.com/package/@geoql/oxlint-plugin-vue-doctor)   |
-| [`@geoql/oxlint-plugin-nuxt-doctor`](packages/oxlint-plugin-nuxt-doctor) | oxlint JS plugin: Nuxt 4 rules   | [![npm](https://img.shields.io/npm/v/@geoql/oxlint-plugin-nuxt-doctor)](https://www.npmjs.com/package/@geoql/oxlint-plugin-nuxt-doctor) |
-| [`@geoql/vue-doctor`](packages/vue-doctor)                               | CLI: `npx -y @geoql/vue-doctor`  | [![npm](https://img.shields.io/npm/v/@geoql/vue-doctor)](https://www.npmjs.com/package/@geoql/vue-doctor)                               |
-| [`@geoql/nuxt-doctor`](packages/nuxt-doctor)                             | CLI: `npx -y @geoql/nuxt-doctor` | [![npm](https://img.shields.io/npm/v/@geoql/nuxt-doctor)](https://www.npmjs.com/package/@geoql/nuxt-doctor)                             |
+| Package                                                                  | Version                                                                                                                                 | Description                                                |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| [`@geoql/doctor-core`](packages/doctor-core)                             | [![npm](https://img.shields.io/npm/v/@geoql/doctor-core)](https://www.npmjs.com/package/@geoql/doctor-core)                             | Audit engine: scoring, reporters, hybrid two-pass analysis |
+| [`@geoql/vue-doctor`](packages/vue-doctor)                               | [![npm](https://img.shields.io/npm/v/@geoql/vue-doctor)](https://www.npmjs.com/package/@geoql/vue-doctor)                               | CLI for Vue 3 projects                                     |
+| [`@geoql/nuxt-doctor`](packages/nuxt-doctor)                             | [![npm](https://img.shields.io/npm/v/@geoql/nuxt-doctor)](https://www.npmjs.com/package/@geoql/nuxt-doctor)                             | CLI for Nuxt 4 projects                                    |
+| [`@geoql/oxlint-plugin-vue-doctor`](packages/oxlint-plugin-vue-doctor)   | [![npm](https://img.shields.io/npm/v/@geoql/oxlint-plugin-vue-doctor)](https://www.npmjs.com/package/@geoql/oxlint-plugin-vue-doctor)   | oxlint JS plugin: Vue 3 rules                              |
+| [`@geoql/oxlint-plugin-nuxt-doctor`](packages/oxlint-plugin-nuxt-doctor) | [![npm](https://img.shields.io/npm/v/@geoql/oxlint-plugin-nuxt-doctor)](https://www.npmjs.com/package/@geoql/oxlint-plugin-nuxt-doctor) | oxlint JS plugin: Nuxt 4 rules                             |
+
+The two CLIs ship at `1.1.1`, published on [npm](https://www.npmjs.com/org/geoql) and [JSR](https://jsr.io/@geoql) with OIDC provenance.
 
 ## Quick start
 
 ```sh
-# Audit a Vue 3 project
+# Audit a Vue 3 project (npm)
 npx -y @geoql/vue-doctor
 
-# Audit a Nuxt 4 project
+# Audit a Nuxt 4 project (npm)
 npx -y @geoql/nuxt-doctor
+
+# Run from JSR (Deno)
+deno run -A jsr:@geoql/vue-doctor
+deno run -A jsr:@geoql/nuxt-doctor
 ```
 
-## Documentation
+Both CLIs print a health score with grouped diagnostics and exit non-zero when findings breach your `--fail-on` threshold, so they drop straight into CI.
 
-Full docs — rules, CLI reference, config, and scoring — live at **[docs.the-doctor.report](https://docs.the-doctor.report)**.
+## Monorepo layout
 
-Both CLIs run a deterministic audit, print a health score (0–100) with grouped
-diagnostics, and exit non-zero when findings breach your `--fail-on` threshold —
-so they drop straight into CI. See the [docs](https://docs.the-doctor.report)
-for flags (`--fix`, `--ci`, `--sarif`, `--json`, presets) and the full rule set.
+```
+geoql/doctor/
+├── packages/
+│   ├── doctor-core/                  # @geoql/doctor-core — audit engine
+│   ├── vue-doctor/                   # @geoql/vue-doctor — Vue 3 CLI
+│   ├── nuxt-doctor/                  # @geoql/nuxt-doctor — Nuxt 4 CLI
+│   ├── oxlint-plugin-vue-doctor/     # Vue 3 oxlint rules
+│   ├── oxlint-plugin-nuxt-doctor/    # Nuxt 4 oxlint rules
+│   └── benchmark/                    # perf workspace (not published)
+├── apps/docs/                        # docs.the-doctor.report (Nuxt)
+└── docs/SPEC.md                      # the locked spec
+```
 
-## Status
+## CLI flags
 
-`v0.1.0` — published on [npm](https://www.npmjs.com/org/geoql) and [JSR](https://jsr.io/@geoql) with provenance. See the [v1.0 milestone](https://github.com/geoql/doctor/milestone/3) for the roadmap.
+Both `vue-doctor` and `nuxt-doctor` share the same surface. Key flags:
+
+| Flag                             | Purpose                                                                                        |
+| -------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `--preset <name>`                | Base preset: `minimal` \| `recommended` \| `strict` \| `all`                                   |
+| `--format <kind>`                | `agent` (default) \| `pretty` \| `json` \| `json-compact` \| `sarif` \| `html` \| `pr-comment` |
+| `--fail-on <level>`              | Exit non-zero on `error` \| `warn` \| `none` (default `error`)                                 |
+| `--threshold <n>`                | Minimum passing score 0-100                                                                    |
+| `--rule <id:level>`              | Override one rule (repeatable), e.g. `--rule a/b:off`                                          |
+| `--fix`                          | Auto-fix oxlint-pass findings in place (full scan only)                                        |
+| `--diff` / `--staged` / `--full` | Scope to changed, staged, or all files                                                         |
+| `--score`                        | Print only the integer score                                                                   |
+| `--output <file>`                | Write the report to a file                                                                     |
+| `--pr-comment`                   | Emit a Markdown PR-comment body                                                                |
+| `--push`                         | POST privacy-stripped findings to the SaaS (needs `--api-key`)                                 |
+| `--push-url <url>`               | Findings endpoint (default `https://app.the-doctor.report/api/v1/findings`)                    |
+| `--api-key <key>`                | the-doctor.report API key (`doc_…`), sent as the `x-api-key` header                            |
+| `--push-project <slug>`          | Dashboard project slug, e.g. `owner/repo` (defaults to the audited dir name)                   |
+
+Subcommands: `list-rules`, `explain <ruleId>`, `inspect [dir]`, `init [dir]`. Run `vue-doctor --help` for the complete list.
+
+## Scoring model
+
+Internal severities are `error`, `warn`, and `info` with weights `5`, `2`, and `0.5`. The score uses square-root decay: each repeated occurrence of a rule contributes `weight × 1/√(i+1)`, so the first hit costs full weight and repeats cost less. The final score is `max(0, round(100 − penalty))`. `--fail-on` accepts `error`, `warn`, or `none`. An invalid value exits `2`.
 
 ## Development
 
 ```sh
 pnpm install
-pnpm run lint
-pnpm run format
+pnpm run lint        # vp lint
+pnpm run format      # vp fmt
+pnpm run build       # vp pack per package
+pnpm run coverage    # vitest run --coverage (100% gate)
 ```
 
 Requires Node `>=24` and pnpm `11.4.0`.

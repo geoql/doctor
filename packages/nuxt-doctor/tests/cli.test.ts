@@ -1375,7 +1375,7 @@ describe('run', () => {
       expect(out).toContain('nuxt-doctor/ai-slop/no-process-client-server');
       expect(out).toContain('Severity:');
       expect(out).toContain('error');
-      expect(out).toContain('docs.doctor.geoql.in');
+      expect(out).toContain('docs.the-doctor.report');
     });
 
     it('marks off-by-default rules with the opt-in note', async () => {
@@ -1405,7 +1405,7 @@ describe('run', () => {
       };
       expect(parsed.id).toBe('vue-doctor/no-em-dash-in-string');
       expect(parsed.severity).toBe('warn');
-      expect(parsed.helpUri).toContain('docs.doctor.geoql.in');
+      expect(parsed.helpUri).toContain('docs.the-doctor.report');
     });
 
     it('exits 2 on an unknown rule', async () => {

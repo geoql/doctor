@@ -297,14 +297,14 @@ describe('sarifReport', () => {
     expect(new Set(hashes).size).toBe(hashes.length);
   });
 
-  it('emits helpUri on each rule descriptor pointing at docs.doctor.geoql.in', () => {
+  it('emits helpUri on each rule descriptor pointing at docs.the-doctor.report', () => {
     const parsed = JSON.parse(sarifReport(makeInput([ERROR_DIAG]))) as {
       runs: {
         tool: { driver: { rules: { id: string; helpUri: string }[] } };
       }[];
     };
     const rule = parsed.runs[0]!.tool.driver.rules[0]!;
-    expect(rule.helpUri).toContain('docs.doctor.geoql.in');
+    expect(rule.helpUri).toContain('docs.the-doctor.report');
     expect(rule.helpUri).toContain('vue-doctor/template/v-for-has-key');
   });
 

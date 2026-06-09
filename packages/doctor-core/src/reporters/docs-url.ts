@@ -1,3 +1,3 @@
 export function docsUrl(ruleId: string): string {
-  return `https://docs.doctor.geoql.in/rules/${ruleId}`;
+  return `https://docs.the-doctor.report/rules/${ruleId}`;
 }

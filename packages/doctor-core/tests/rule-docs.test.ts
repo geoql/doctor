@@ -29,7 +29,7 @@ describe('rule-docs', () => {
       expect(doc!.category).toBe(rule.category);
       expect(doc!.recommended).toBe(rule.recommended);
       expect(doc!.source).toBe(rule.source);
-      expect(doc!.helpUri).toContain('docs.doctor.geoql.in');
+      expect(doc!.helpUri).toContain('docs.the-doctor.report');
       expect(doc!.description).toContain(rule.id);
       expect(doc!.hasOverride).toBe(false);
     }

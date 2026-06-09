@@ -64,6 +64,34 @@ describe('stripFindings', () => {
     expect(json).not.toContain('SECRET RECOMMENDATION');
   });
 
+  it('relativizes absolute file paths against rootDir (no CI runner paths leak)', () => {
+    const out = stripFindings(
+      [
+        makeDiag({
+          file: '/home/runner/work/v-clappr/v-clappr/src/components/Player.vue',
+        }),
+      ],
+      '/home/runner/work/v-clappr/v-clappr',
+    );
+    expect(out[0]!.file).toBe('src/components/Player.vue');
+  });
+
+  it('leaves already-relative file paths untouched when rootDir is given', () => {
+    const out = stripFindings(
+      [makeDiag({ file: 'src/a.ts' })],
+      '/home/runner/work/v-clappr/v-clappr',
+    );
+    expect(out[0]!.file).toBe('src/a.ts');
+  });
+
+  it('keeps absolute paths outside rootDir relative-safe (no ../ escapes)', () => {
+    const out = stripFindings(
+      [makeDiag({ file: '/tmp/elsewhere/file.ts' })],
+      '/home/runner/work/v-clappr/v-clappr',
+    );
+    expect(out[0]!.file).toBe('/tmp/elsewhere/file.ts');
+  });
+
   it('looks up the category from RULE_REGISTRY (not the ruleId prefix)', () => {
     const out = stripFindings([makeDiag({ ruleId: 'dead-code/unused-file' })]);
     expect(out[0]!.category).toBe('dead-code');

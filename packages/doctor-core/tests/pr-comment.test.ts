@@ -141,7 +141,7 @@ describe('prCommentReport', () => {
 
   it('footer links to the docs base and the top finding explain command', () => {
     const out = prCommentReport(makeInput([diag({ severity: 'error' })]));
-    expect(out).toContain('https://docs.doctor.geoql.in/rules/');
+    expect(out).toContain('https://docs.the-doctor.report/rules/');
     expect(out).toContain(
       'Run `vue-doctor explain vue-doctor/template/v-for-has-key`',
     );

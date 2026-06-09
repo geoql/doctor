@@ -114,7 +114,7 @@ describe('agent reporter', () => {
         '    code: const { name, age } = props\n' +
         '    fix:  const { name } = toRefs(props)\n' +
         '    why:  Destructuring a reactive object loses reactivity.\n' +
-        '    docs: https://docs.doctor.geoql.in/rules/reactivity/no-destructure-reactive\n' +
+        '    docs: https://docs.the-doctor.report/rules/reactivity/no-destructure-reactive\n' +
         '\n' +
         'NEXT STEPS:\n' +
         '  −5 pts  1× reactivity/no-destructure-reactive\n' +
@@ -256,7 +256,7 @@ describe('agent reporter', () => {
   it('renders the docs URL for the ruleId', () => {
     const out = agentReport(makeInput({ diagnostics: [diag({})] }));
     expect(out).toContain(
-      '    docs: https://docs.doctor.geoql.in/rules/reactivity/no-destructure-reactive\n',
+      '    docs: https://docs.the-doctor.report/rules/reactivity/no-destructure-reactive\n',
     );
   });
 

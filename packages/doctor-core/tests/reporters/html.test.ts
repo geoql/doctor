@@ -109,9 +109,9 @@ describe('htmlReport', () => {
     expect(html).toContain('rule/with&lt;brackets&gt;');
   });
 
-  it('includes a docs link per finding pointing at docs.doctor.geoql.in', () => {
+  it('includes a docs link per finding pointing at docs.the-doctor.report', () => {
     const html = htmlReport(makeInput([ERROR_DIAG]));
-    expect(html).toContain('docs.doctor.geoql.in');
+    expect(html).toContain('docs.the-doctor.report');
     expect(html).toContain('rel="noopener"');
   });
 

@@ -517,6 +517,7 @@ async function maybePushFindings(
     warnCount: report.warnCount,
     infoCount: report.infoCount,
     diagnostics: report.diagnostics,
+    rootDir,
     url,
     apiKey: flags.apiKey,
   });
