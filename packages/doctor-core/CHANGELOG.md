@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/geoql/doctor/compare/doctor-core-v1.0.1...doctor-core-v1.1.0) (2026-06-09)
+
+
+### Features
+
+* **doctor-core:** add --push mode with privacy-stripped findings ([e6dbbd6](https://github.com/geoql/doctor/commit/e6dbbd6b5e96f81638a8851880c5fdd94fa3ab98))
+
 ## [1.0.1](https://github.com/geoql/doctor/compare/doctor-core-v1.0.0...doctor-core-v1.0.1) (2026-06-05)
 
 

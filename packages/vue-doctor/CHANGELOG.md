@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/geoql/doctor/compare/vue-doctor-v1.0.1...vue-doctor-v1.1.0) (2026-06-09)
+
+
+### Features
+
+* **vue-doctor:** wire --push flag to push privacy-stripped findings to the SaaS ([29d8005](https://github.com/geoql/doctor/commit/29d80052ff9bf3f6c58db0d5e01f629bdab8edad))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.1.0
+
 ## [1.0.1](https://github.com/geoql/doctor/compare/vue-doctor-v1.0.0...vue-doctor-v1.0.1) (2026-06-05)
 
 

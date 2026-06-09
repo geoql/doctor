@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.0.1...nuxt-doctor-v1.1.0) (2026-06-09)
+
+
+### Features
+
+* **nuxt-doctor:** wire --push flag to push privacy-stripped findings to the SaaS ([5a8da3e](https://github.com/geoql/doctor/commit/5a8da3e6bd42809e6fd813d453e7f368325167d9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.1.0
+
 ## [1.0.1](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.0.0...nuxt-doctor-v1.0.1) (2026-06-05)
 
 
