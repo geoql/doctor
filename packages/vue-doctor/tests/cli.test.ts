@@ -1432,4 +1432,36 @@ describe('run', () => {
       expect(parsed.packageJsonPath).toBeNull();
     });
   });
+
+  it('#91 — diagnostics array and bySeverity counts stay in sync after allowedRuleIds filter', async () => {
+    const offDir = resolve(here, 'fixtures/issue91-off');
+    const code = await run(['node', 'vue-doctor', offDir, '--format', 'json']);
+    expect(code).toBe(1);
+    const raw = stdout.join('');
+    const report = JSON.parse(raw) as {
+      diagnostics: Array<{ ruleId: string; severity: string }>;
+      score: {
+        value: number;
+        bySeverity: { error: number; warn: number; info: number };
+      };
+    };
+    if (!report.score) {
+      throw new Error(`Missing score. raw=${raw.slice(0, 400)}`);
+    }
+    const arrayCount = report.diagnostics.length;
+    const sum =
+      report.score.bySeverity.error +
+      report.score.bySeverity.warn +
+      report.score.bySeverity.info;
+    expect(sum).toBe(arrayCount);
+    for (const d of report.diagnostics) {
+      const inBySeverity =
+        d.severity === 'error'
+          ? report.score.bySeverity.error > 0
+          : d.severity === 'warn'
+            ? report.score.bySeverity.warn > 0
+            : report.score.bySeverity.info > 0;
+      expect(inBySeverity).toBe(true);
+    }
+  });
 });

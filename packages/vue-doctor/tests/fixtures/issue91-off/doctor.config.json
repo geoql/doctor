@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "vue/no-missing-key": "off"
+  },
+  "failOn": "warn"
+}

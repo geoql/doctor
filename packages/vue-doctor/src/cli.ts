@@ -20,6 +20,7 @@ import {
   pushFindings,
   renderVerboseTrace,
   scoreDiagnostics,
+  filterReportByRules,
   type AuditReport,
   type ConfigSource,
   type InitConfigFormat,
@@ -405,10 +406,8 @@ async function runSingleAudit(
     ...(merged.fixExcludes ? { fixExcludes: merged.fixExcludes } : {}),
   });
   const allowedRuleIds = new Set(Object.keys(merged.rules));
-  report.diagnostics = report.diagnostics.filter((d) =>
-    allowedRuleIds.has(d.ruleId),
-  );
-  return { report, source: resolved.source };
+  const filtered = filterReportByRules(report, allowedRuleIds, merged.failOn);
+  return { report: filtered, source: resolved.source };
 }
 
 function aggregateReports(

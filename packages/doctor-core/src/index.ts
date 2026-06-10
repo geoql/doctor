@@ -102,6 +102,7 @@ export {
   type RuleSource,
 } from './rule-registry.js';
 export { scoreDiagnostics } from './score.js';
+export { filterReportByRules } from './audit-filter.js';
 export type { ScoreBreakdownEntry, ScoreConfig, ScoreResult } from './score.js';
 export {
   buildPushPayload,
