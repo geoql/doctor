@@ -1509,7 +1509,51 @@ describe('run', () => {
     });
   });
 
-  it('#91 — diagnostics array and bySeverity counts stay in sync after allowedRuleIds filter', async () => {
+  it('#91 — info-severity rule excluded by the recommended preset does not desync counts from diagnostics', async () => {
+    // Regression for the desync the issue describes: a rule that the
+    // engine emits (info severity) but the CLI's allowedRuleIds filter
+    // drops (the rule id is not in the recommended preset's rule map).
+    // Pre-fix: bySeverity.info was 1 and diagnostics was [] (desync).
+    // Post-fix: filterReportByRules rescores from the filtered array,
+    // so bySeverity.info becomes 0 and breakdown drops the rule.
+    const infoDir = resolve(here, 'fixtures/issue91-info');
+    const code = await run([
+      'node',
+      'nuxt-doctor',
+      infoDir,
+      '--format',
+      'json',
+    ]);
+    expect(code).toBe(0);
+    const raw = stdout.join('');
+    const report = JSON.parse(raw) as {
+      diagnostics: Array<{ ruleId: string; severity: string }>;
+      score: {
+        bySeverity: { error: number; warn: number; info: number };
+        breakdown: Array<{ ruleId: string }>;
+      };
+    };
+    if (!report.score) {
+      throw new Error(`Missing score. raw=${raw.slice(0, 400)}`);
+    }
+    // Invariant: bySeverity sum equals diagnostics array length.
+    const arrayCount = report.diagnostics.length;
+    const sum =
+      report.score.bySeverity.error +
+      report.score.bySeverity.warn +
+      report.score.bySeverity.info;
+    expect(sum).toBe(arrayCount);
+    // The preset-excluded rule's id must NOT appear in the score breakdown
+    // (the score was recomputed from the post-filter array, so its
+    // penalty is gone too).
+    for (const b of report.score.breakdown) {
+      expect(b.ruleId).not.toBe(
+        'vue-doctor/template/avoid-deep-v-bind-spread-in-list',
+      );
+    }
+  });
+
+  it('#91 — off-rule path (smoke): engine suppresses the off rule, CLI filter is a no-op, invariant holds trivially', async () => {
     const offDir = resolve(here, 'fixtures/issue91-off');
     const code = await run(['node', 'nuxt-doctor', offDir, '--format', 'json']);
     expect(code).toBe(1);
@@ -1517,7 +1561,6 @@ describe('run', () => {
     const report = JSON.parse(raw) as {
       diagnostics: Array<{ ruleId: string; severity: string }>;
       score: {
-        value: number;
         bySeverity: { error: number; warn: number; info: number };
       };
     };
@@ -1530,14 +1573,5 @@ describe('run', () => {
       report.score.bySeverity.warn +
       report.score.bySeverity.info;
     expect(sum).toBe(arrayCount);
-    for (const d of report.diagnostics) {
-      const inBySeverity =
-        d.severity === 'error'
-          ? report.score.bySeverity.error > 0
-          : d.severity === 'warn'
-            ? report.score.bySeverity.warn > 0
-            : report.score.bySeverity.info > 0;
-      expect(inBySeverity).toBe(true);
-    }
   });
 });
