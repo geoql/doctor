@@ -9,6 +9,10 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "predev": "node ./scripts/generate-rule-pages.mjs",
+    "prebuild": "node ./scripts/generate-rule-pages.mjs",
+    "pregenerate": "node ./scripts/generate-rule-pages.mjs",
+    "generate:rules": "node ./scripts/generate-rule-pages.mjs",
     "lint": "oxlint && eslint .",
     "lint:fix": "oxlint --fix && eslint . --fix",
     "typecheck": "nuxt typecheck",
@@ -35,6 +39,7 @@
     "vue": "3.5.35"
   },
   "devDependencies": {
+    "@geoql/doctor-core": "workspace:^",
     "@nuxt/eslint": "1.15.2",
     "@nuxt/eslint-config": "1.15.2",
     "@tailwindcss/vite": "4.3.0",

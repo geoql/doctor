@@ -1,0 +1,5 @@
+# Auto-generated per-rule docs pages. Regenerated from
+# @geoql/doctor-core's RULE_REGISTRY on every `predev` / `prebuild`
+# / `pregenerate`; the hand-written category pages (1.vue.md, 2.nuxt.md)
+# and any future hand-authored content at the rules root are NOT ignored.
+/content/2.rules/*/

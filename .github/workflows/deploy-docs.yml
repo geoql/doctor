@@ -30,6 +30,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # The docs site codegens one Markdown page per rule out of
+      # @geoql/doctor-core's RULE_REGISTRY (`apps/docs/scripts/generate-rule-pages.mjs`).
+      # That script imports the package's `dist/`, so the workspace
+      # package must be built first.
+      - name: Build @geoql/doctor-core
+        run: pnpm --filter @geoql/doctor-core build
+
       - name: Build
         run: pnpm --filter @geoql/doctor-docs build
         env:
