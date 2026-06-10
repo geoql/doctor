@@ -61,7 +61,7 @@ const sections = [
         the<span class="text-accent">·</span>doctor.report
       </h1>
       <p
-        class="m-0 mb-8 max-w-[58ch] text-[clamp(17px,1.5vw,21px)] leading-[1.5] text-ink-muted"
+        class="m-0 mb-8 max-w-[58ch] text-[clamp(17px,1.5vw,21px)] leading-normal text-ink-muted"
       >
         Your agent writes bad Vue and Nuxt.
         <span class="text-ink">This catches it.</span>
@@ -92,9 +92,7 @@ const sections = [
     </section>
 
     <!-- ═══ The score card ═══ -->
-    <section
-      class="reveal mb-16 border border-border bg-surface px-6 py-6 sm:px-8"
-    >
+    <section class="reveal mb-16 border border-border bg-surface p-6 sm:px-8">
       <div class="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-center">
         <div class="font-mono-tabular">
           <div
@@ -149,7 +147,7 @@ const sections = [
           >
             {{ section.title }}
           </h3>
-          <p class="mb-4 text-sm leading-relaxed text-ink-muted">
+          <p class="mb-4 text-sm/relaxed text-ink-muted">
             {{ section.description }}
           </p>
           <span

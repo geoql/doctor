@@ -82,7 +82,7 @@ const config = computed<AlertConfig>(() => {
         {{ config.label }}
       </span>
     </div>
-    <div class="text-sm leading-relaxed text-ink-muted [&_p]:mb-0">
+    <div class="text-sm/relaxed text-ink-muted [&_p]:mb-0">
       <slot />
     </div>
   </aside>

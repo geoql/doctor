@@ -16,7 +16,7 @@ defineProps<{
     >
       {{ title }}
     </h4>
-    <div class="text-sm leading-relaxed text-ink-muted">
+    <div class="text-sm/relaxed text-ink-muted">
       <slot />
     </div>
     <span
@@ -33,7 +33,7 @@ defineProps<{
     <h4 class="mb-1.5 font-sans text-sm font-semibold tracking-tight text-ink">
       {{ title }}
     </h4>
-    <div class="text-sm leading-relaxed text-ink-muted">
+    <div class="text-sm/relaxed text-ink-muted">
       <slot />
     </div>
   </div>

@@ -88,7 +88,7 @@ function onKeydown(event: KeyboardEvent) {
     <Transition name="search-fade">
       <div
         v-if="open"
-        class="fixed inset-0 z-[100] flex items-start justify-center px-4 pt-[12vh]"
+        class="fixed inset-0 z-100 flex items-start justify-center px-4 pt-[12vh]"
         @click.self="closeSearch"
       >
         <div

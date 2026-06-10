@@ -1,5 +1,6 @@
 // @ts-check
 import { createConfigForNuxt } from '@nuxt/eslint-config/flat';
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import oxlint from 'eslint-plugin-oxlint';
 
 export default createConfigForNuxt({
@@ -13,6 +14,22 @@ export default createConfigForNuxt({
     files: ['app/pages/**/*.vue', 'app/layouts/**/*.vue'],
     rules: {
       'vue/multi-word-component-names': 'off',
+    },
+  })
+  .append({
+    plugins: {
+      'better-tailwindcss': betterTailwindcss,
+    },
+    rules: {
+      'better-tailwindcss/enforce-canonical-classes': 'error',
+      'better-tailwindcss/no-conflicting-classes': 'error',
+      'better-tailwindcss/no-duplicate-classes': 'error',
+      'better-tailwindcss/no-unnecessary-whitespace': 'error',
+    },
+    settings: {
+      'better-tailwindcss': {
+        entryPoint: 'app/assets/css/main.css',
+      },
     },
   })
   .append(...oxlint.configs['flat/recommended'])
