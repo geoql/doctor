@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/geoql/doctor/compare/doctor-core-v1.1.0...doctor-core-v1.1.1) (2026-06-10)
+
+
+### Bug Fixes
+
+* **core:** [#91](https://github.com/geoql/doctor/issues/91) score/findings desync after allowedRuleIds filter ([2606aff](https://github.com/geoql/doctor/commit/2606aff02b7792372390e2d36bdb02910583947f))
+* **core:** relativize pushed finding paths + point docs urls at docs.the-doctor.report ([542af7f](https://github.com/geoql/doctor/commit/542af7f4ac6bbf82b1da7303d2d9a71ef5a386e4))
+
 ## [1.1.0](https://github.com/geoql/doctor/compare/doctor-core-v1.0.1...doctor-core-v1.1.0) (2026-06-09)
 
 
