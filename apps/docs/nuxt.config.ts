@@ -35,6 +35,9 @@ export default defineNuxtConfig({
       '@nuxtjs/plausible',
       {
         domain: 'docs.the-doctor.report',
+        // Self-hosted Plausible: without apiHost the module silently posts
+        // events to plausible.io (its default) and the dashboard shows zero hits.
+        apiHost: 'https://analytics.geoql.in',
         autoOutboundTracking: true,
       },
     ],
