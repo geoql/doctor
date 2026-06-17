@@ -108,6 +108,86 @@ describe('e2e: real oxlint integration', () => {
       'vue-doctor(performance/prefer-defineAsyncComponent-on-route)',
     );
   });
+
+  it('security/no-inner-html fires on an innerHTML assignment', () => {
+    const result = runOxlint(
+      'security/no-inner-html',
+      `el.innerHTML = userContent;`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).toContain(
+      'vue-doctor(security/no-inner-html)',
+    );
+  });
+
+  it('security/no-inner-html does NOT fire on textContent', () => {
+    const result = runOxlint(
+      'security/no-inner-html',
+      `el.textContent = userContent;`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).not.toContain(
+      'vue-doctor(security/no-inner-html)',
+    );
+  });
+
+  it('security/no-eval-like fires on eval', () => {
+    const result = runOxlint('security/no-eval-like', `eval(code);`);
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).toContain('vue-doctor(security/no-eval-like)');
+  });
+
+  it('security/no-eval-like does NOT fire on JSON.parse', () => {
+    const result = runOxlint('security/no-eval-like', `JSON.parse(data);`);
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).not.toContain(
+      'vue-doctor(security/no-eval-like)',
+    );
+  });
+
+  it('security/no-auth-token-in-web-storage fires on a token setItem', () => {
+    const result = runOxlint(
+      'security/no-auth-token-in-web-storage',
+      `localStorage.setItem('accessToken', t);`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).toContain(
+      'vue-doctor(security/no-auth-token-in-web-storage)',
+    );
+  });
+
+  it('security/no-auth-token-in-web-storage does NOT fire on a theme key', () => {
+    const result = runOxlint(
+      'security/no-auth-token-in-web-storage',
+      `localStorage.setItem('theme', 'dark');`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).not.toContain(
+      'vue-doctor(security/no-auth-token-in-web-storage)',
+    );
+  });
+
+  it('security/no-secrets-in-source fires on a high-signal secret literal', () => {
+    const result = runOxlint(
+      'security/no-secrets-in-source',
+      `const k = 'sk-live-abc123xyz789def';`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).toContain(
+      'vue-doctor(security/no-secrets-in-source)',
+    );
+  });
+
+  it('security/no-secrets-in-source does NOT fire on a plain short string', () => {
+    const result = runOxlint(
+      'security/no-secrets-in-source',
+      `const theme = 'dark';`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).not.toContain(
+      'vue-doctor(security/no-secrets-in-source)',
+    );
+  });
 });
 
 describe('e2e: real oxlint --fix applies vue-doctor fixes to disk', () => {

@@ -6,7 +6,7 @@ describe('plugin index', () => {
     expect(plugin.meta.name).toBe('vue-doctor');
   });
 
-  it('registers all eleven rules', () => {
+  it('registers all fifteen rules', () => {
     expect(Object.keys(plugin.rules).sort()).toEqual(
       [
         'no-destructure-props-without-to-refs',
@@ -20,6 +20,10 @@ describe('plugin index', () => {
         'composition/prefer-script-setup-for-new-files',
         'composition/defineProps-typed',
         'performance/prefer-defineAsyncComponent-on-route',
+        'security/no-inner-html',
+        'security/no-eval-like',
+        'security/no-auth-token-in-web-storage',
+        'security/no-secrets-in-source',
       ].sort(),
     );
   });

@@ -94,6 +94,28 @@ describe('e2e: real oxlint integration', () => {
       'nuxt-doctor(hydration/clientOnly-for-browser-apis)',
     );
   });
+
+  it('security/no-user-input-in-fetch-url fires on a route-controlled URL', () => {
+    const result = runOxlint(
+      'security/no-user-input-in-fetch-url',
+      `const { data } = useFetch(route.query.redirect);`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).toContain(
+      'nuxt-doctor(security/no-user-input-in-fetch-url)',
+    );
+  });
+
+  it('security/no-user-input-in-fetch-url does NOT fire on a fixed path', () => {
+    const result = runOxlint(
+      'security/no-user-input-in-fetch-url',
+      `const { data } = useFetch('/api/content', { query: { id: route.query.id } });`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).not.toContain(
+      'nuxt-doctor(security/no-user-input-in-fetch-url)',
+    );
+  });
 });
 
 describe('e2e: real oxlint --fix applies nuxt-doctor fixes to disk', () => {

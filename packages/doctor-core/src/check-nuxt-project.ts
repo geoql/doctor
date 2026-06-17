@@ -4,6 +4,7 @@ import { checkLangOnHtml } from './nuxt/post-checks/lang-on-html.js';
 import { checkNitroCloudflarePreset } from './nuxt/post-checks/nitro-cloudflare-preset.js';
 import { checkNoModulesIncompatibleWithNuxt4 } from './nuxt/post-checks/no-modules-incompatible-with-nuxt-4.js';
 import { checkNoNodeOnlyModules } from './nuxt/post-checks/no-node-only-modules.js';
+import { checkNoSecretInPublicRuntimeConfig } from './nuxt/post-checks/no-secret-in-public-runtime-config.js';
 import { checkNuxtMajorCurrent } from './nuxt/post-checks/nuxt-major-current.js';
 import { checkOgImageViaSatori } from './nuxt/post-checks/og-image-via-satori.js';
 import { checkPresetDefinedForDeployTarget } from './nuxt/post-checks/preset-defined-for-deploy-target.js';
@@ -34,6 +35,7 @@ export async function checkNuxtProject(
     Promise.resolve(checkNitroCloudflarePreset(projectInfo)),
     checkOgImageViaSatori(projectInfo),
     checkNoNodeOnlyModules(projectInfo),
+    checkNoSecretInPublicRuntimeConfig(projectInfo),
   ]);
 
   const issues: NuxtPostCheckIssue[] = results.flat();

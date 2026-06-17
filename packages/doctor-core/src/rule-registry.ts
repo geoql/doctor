@@ -19,7 +19,9 @@ export type RuleCategory =
   | 'cloudflare'
   | 'server-routes'
   | 'hydration'
-  | 'data-fetching';
+  | 'data-fetching'
+  | 'security'
+  | 'design';
 
 export type RuleSource = 'doctor' | 'oxlint-builtin' | 'eslint-plugin-vue';
 
@@ -607,6 +609,122 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
     id: 'nuxt-doctor/hydration/clientOnly-for-browser-apis',
     severity: 'error',
     category: 'hydration',
+    source: 'doctor',
+    recommended: true,
+  },
+
+  // ── Security rules ───────────────────────────────────────────────────────────
+  {
+    id: 'vue-doctor/security/no-v-html',
+    severity: 'error',
+    category: 'security',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/security/no-inner-html',
+    severity: 'error',
+    category: 'security',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/security/no-eval-like',
+    severity: 'error',
+    category: 'security',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/security/no-auth-token-in-web-storage',
+    severity: 'warn',
+    category: 'security',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/security/no-secrets-in-source',
+    severity: 'warn',
+    category: 'security',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/security/no-target-blank-without-rel',
+    severity: 'warn',
+    category: 'security',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/security/no-javascript-uri',
+    severity: 'error',
+    category: 'security',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/security/no-secret-in-public-runtime-config',
+    severity: 'error',
+    category: 'security',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/security/no-user-input-in-fetch-url',
+    severity: 'warn',
+    category: 'security',
+    source: 'doctor',
+    recommended: true,
+  },
+
+  // ── Design / Tailwind rules ──────────────────────────────────────────────────
+  {
+    id: 'vue-doctor/design/no-arbitrary-tailwind-values',
+    severity: 'warn',
+    category: 'design',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/design/no-raw-hex-color',
+    severity: 'warn',
+    category: 'design',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/design/no-default-tailwind-palette',
+    severity: 'warn',
+    category: 'design',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/design/no-important-utility',
+    severity: 'warn',
+    category: 'design',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/design/no-hardcoded-inline-style',
+    severity: 'warn',
+    category: 'design',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/design/no-missing-alt',
+    severity: 'warn',
+    category: 'design',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/design/no-absurd-z-index',
+    severity: 'warn',
+    category: 'design',
     source: 'doctor',
     recommended: true,
   },

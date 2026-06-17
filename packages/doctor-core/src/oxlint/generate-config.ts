@@ -42,6 +42,10 @@ const VUE_DEFAULT_RULES: Record<string, Severity> = {
   'vue-doctor/reactivity/watch-without-cleanup': 'warn',
   'vue-doctor/composition/prefer-script-setup-for-new-files': 'warn',
   'vue-doctor/composition/defineProps-typed': 'warn',
+  'vue-doctor/security/no-inner-html': 'error',
+  'vue-doctor/security/no-eval-like': 'error',
+  'vue-doctor/security/no-auth-token-in-web-storage': 'warn',
+  'vue-doctor/security/no-secrets-in-source': 'warn',
 };
 
 const NUXT_PLUGIN_RULES: Record<string, Severity> = {
@@ -55,6 +59,7 @@ const NUXT_PLUGIN_RULES: Record<string, Severity> = {
   'nuxt-doctor/server-routes/createError-on-failure': 'warn',
   'nuxt-doctor/hydration/no-document-in-setup': 'error',
   'nuxt-doctor/hydration/clientOnly-for-browser-apis': 'error',
+  'nuxt-doctor/security/no-user-input-in-fetch-url': 'warn',
 };
 
 // Only these ids are real oxlint-plugin/built-in rules. Other doctor rules run
@@ -96,6 +101,10 @@ const VUE_OXLINT_RULE_IDS: ReadonlySet<string> = new Set([
   'vue-doctor/composition/prefer-script-setup-for-new-files',
   'vue-doctor/composition/defineProps-typed',
   'vue-doctor/performance/prefer-defineAsyncComponent-on-route',
+  'vue-doctor/security/no-inner-html',
+  'vue-doctor/security/no-eval-like',
+  'vue-doctor/security/no-auth-token-in-web-storage',
+  'vue-doctor/security/no-secrets-in-source',
 ]);
 
 const NUXT_OXLINT_RULE_IDS: ReadonlySet<string> = new Set(

@@ -6,7 +6,7 @@ describe('plugin index', () => {
     expect(plugin.meta.name).toBe('nuxt-doctor');
   });
 
-  it('registers all ten rules', () => {
+  it('registers all eleven rules', () => {
     expect(Object.keys(plugin.rules).sort()).toEqual(
       [
         'ai-slop/no-process-client-server',
@@ -19,6 +19,7 @@ describe('plugin index', () => {
         'server-routes/createError-on-failure',
         'hydration/no-document-in-setup',
         'hydration/clientOnly-for-browser-apis',
+        'security/no-user-input-in-fetch-url',
       ].sort(),
     );
   });

@@ -11,6 +11,10 @@ import { preferDefineAsyncComponentOnRoute } from './performance/prefer-defineAs
 import { preferReadonlyForInjected } from './reactivity/prefer-readonly-for-injected.js';
 import { preferShallowRefForLargeData } from './reactivity/prefer-shallowRef-for-large-data.js';
 import { watchWithoutCleanup } from './reactivity/watch-without-cleanup.js';
+import { noAuthTokenInWebStorage } from './security/no-auth-token-in-web-storage.js';
+import { noEvalLike } from './security/no-eval-like.js';
+import { noInnerHtml } from './security/no-inner-html.js';
+import { noSecretsInSource } from './security/no-secrets-in-source.js';
 
 function coreRule(
   id: string,
@@ -99,5 +103,33 @@ export const VUE_RULES: readonly CoreRule[] = [
     'info',
     false,
     defineRule(preferDefineAsyncComponentOnRoute),
+  ),
+  coreRule(
+    'security/no-inner-html',
+    'security',
+    'error',
+    true,
+    defineRule(noInnerHtml),
+  ),
+  coreRule(
+    'security/no-eval-like',
+    'security',
+    'error',
+    true,
+    defineRule(noEvalLike),
+  ),
+  coreRule(
+    'security/no-auth-token-in-web-storage',
+    'security',
+    'warn',
+    true,
+    defineRule(noAuthTokenInWebStorage),
+  ),
+  coreRule(
+    'security/no-secrets-in-source',
+    'security',
+    'warn',
+    true,
+    defineRule(noSecretsInSource),
   ),
 ];

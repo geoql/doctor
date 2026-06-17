@@ -44,3 +44,8 @@ export { noDestructureReactiveWithoutToRefs } from './rules/vue/ai-slop/no-destr
 export { noEmDashInString } from './rules/vue/ai-slop/no-em-dash-in-string.js';
 export { noImportsFromVueWhenAutoImported } from './rules/vue/ai-slop/no-imports-from-vue-when-auto-imported.js';
 export { noNonNullAssertionOnRefValue } from './rules/vue/ai-slop/no-non-null-assertion-on-ref-value.js';
+export { noAuthTokenInWebStorage } from './rules/vue/security/no-auth-token-in-web-storage.js';
+export { noEvalLike } from './rules/vue/security/no-eval-like.js';
+export { noInnerHtml } from './rules/vue/security/no-inner-html.js';
+export { noSecretsInSource } from './rules/vue/security/no-secrets-in-source.js';
+export { noUserInputInFetchUrl } from './rules/nuxt/security/no-user-input-in-fetch-url.js';

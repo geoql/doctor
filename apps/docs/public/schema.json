@@ -367,6 +367,70 @@
         "nuxt-doctor/hydration/clientOnly-for-browser-apis": {
           "type": "string",
           "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/security/no-v-html": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/security/no-inner-html": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/security/no-eval-like": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/security/no-auth-token-in-web-storage": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/security/no-secrets-in-source": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/security/no-target-blank-without-rel": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/security/no-javascript-uri": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/security/no-secret-in-public-runtime-config": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/security/no-user-input-in-fetch-url": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-arbitrary-tailwind-values": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-raw-hex-color": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-default-tailwind-palette": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-important-utility": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-hardcoded-inline-style": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-missing-alt": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-absurd-z-index": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
         }
       },
       "additionalProperties": {

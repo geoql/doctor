@@ -19,7 +19,9 @@ export type RuleCategory =
   | 'cloudflare'
   | 'server-routes'
   | 'hydration'
-  | 'data-fetching';
+  | 'data-fetching'
+  | 'security'
+  | 'design';
 
 export interface SourceLocation {
   start: { line: number; column: number };

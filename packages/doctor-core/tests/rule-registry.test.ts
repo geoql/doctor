@@ -130,6 +130,8 @@ describe('rule-registry', () => {
       'server-routes',
       'hydration',
       'data-fetching',
+      'security',
+      'design',
     ]);
     const validSrc = new Set(['doctor', 'oxlint-builtin', 'eslint-plugin-vue']);
     for (const rule of RULE_REGISTRY) {
