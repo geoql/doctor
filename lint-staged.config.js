@@ -2,6 +2,7 @@ const ignorePatterns = [
   /(?:^|\/)jsr\.json$/,
   /(?:^|\/)CHANGELOG\.md$/,
   /(?:^|\/)pnpm-lock\.yaml$/,
+  /(?:^|\/)qa\//,
 ];
 
 const isIgnored = (file) =>

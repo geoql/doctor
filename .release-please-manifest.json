@@ -2,6 +2,8 @@
   "packages/doctor-core": "1.1.1",
   "packages/oxlint-plugin-vue-doctor": "1.0.0",
   "packages/oxlint-plugin-nuxt-doctor": "1.0.0",
+  "packages/eslint-plugin-vue-doctor": "1.0.0",
+  "packages/eslint-plugin-nuxt-doctor": "1.0.0",
   "packages/nuxt-doctor": "1.1.2",
   "packages/vue-doctor": "1.1.2"
 }

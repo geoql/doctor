@@ -4,6 +4,8 @@ const packages = [
   'packages/doctor-core',
   'packages/oxlint-plugin-vue-doctor',
   'packages/oxlint-plugin-nuxt-doctor',
+  'packages/eslint-plugin-vue-doctor',
+  'packages/eslint-plugin-nuxt-doctor',
   'packages/nuxt-doctor',
   'packages/vue-doctor',
 ];
