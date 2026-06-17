@@ -1344,6 +1344,50 @@ describe('run', () => {
     });
   });
 
+  describe('react.doctor parity aliases', () => {
+    it('`why <ruleId>` aliases `explain`', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'why',
+        'vue-doctor/template/v-for-has-key',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('Rule:');
+      expect(out).toContain('vue-doctor/template/v-for-has-key');
+      expect(out).toContain('Severity:');
+    });
+
+    it('`rules` aliases `list-rules`', async () => {
+      const code = await run(['node', 'vue-doctor', 'rules']);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('@geoql/vue-doctor');
+      expect(out).toContain('vue-doctor/no-em-dash-in-string');
+    });
+
+    it('`why` on an unknown rule exits 2', async () => {
+      const code = await run(['node', 'vue-doctor', 'why', 'does/not/exist']);
+      expect(code).toBe(2);
+      expect(stderr.join('')).toContain("unknown rule 'does/not/exist'");
+    });
+
+    it('`rules --preset recommended` honors filters through the alias', async () => {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'rules',
+        '--preset',
+        'recommended',
+      ]);
+      expect(code).toBe(0);
+      expect(stdout.join('')).toContain(
+        'vue-doctor/reactivity/watch-without-cleanup',
+      );
+    });
+  });
+
   describe('inspect subcommand', () => {
     it('prints detected project capabilities for a real Vue project', async () => {
       const code = await run(['node', 'vue-doctor', 'inspect', cleanDir]);

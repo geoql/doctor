@@ -882,6 +882,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       'list-rules',
       'List every registered rule with id, severity, category, source, and preset membership',
     )
+    .alias('rules')
     .option('--preset <name>', 'Filter to: recommended | all')
     .option('--category <name>', 'Filter by category')
     .option(
@@ -918,6 +919,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       'explain <ruleId>',
       "Print the rule's severity, category, recommendation, and helpUri",
     )
+    .alias('why')
     .option('--json', 'Emit structured JSON instead of formatted text')
     .action(async (ruleId: string, flags: ExplainCliFlags) => {
       const doc = loadRuleDoc(ruleId);

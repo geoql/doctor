@@ -1420,6 +1420,36 @@ describe('run', () => {
     });
   });
 
+  describe('react.doctor parity aliases', () => {
+    it('`why <ruleId>` aliases `explain`', async () => {
+      const code = await run([
+        'node',
+        'nuxt-doctor',
+        'why',
+        'nuxt-doctor/ai-slop/no-process-client-server',
+      ]);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('Rule:');
+      expect(out).toContain('nuxt-doctor/ai-slop/no-process-client-server');
+      expect(out).toContain('Severity:');
+    });
+
+    it('`rules` aliases `list-rules`', async () => {
+      const code = await run(['node', 'nuxt-doctor', 'rules']);
+      expect(code).toBe(0);
+      const out = stdout.join('');
+      expect(out).toContain('@geoql/nuxt-doctor');
+      expect(out).toContain('nuxt-doctor/ai-slop/no-process-client-server');
+    });
+
+    it('`why` on an unknown rule exits 2', async () => {
+      const code = await run(['node', 'nuxt-doctor', 'why', 'does/not/exist']);
+      expect(code).toBe(2);
+      expect(stderr.join('')).toContain("unknown rule 'does/not/exist'");
+    });
+  });
+
   describe('inspect subcommand', () => {
     it('prints detected project capabilities for a real Nuxt project', async () => {
       const code = await run(['node', 'nuxt-doctor', 'inspect', cleanDir]);
