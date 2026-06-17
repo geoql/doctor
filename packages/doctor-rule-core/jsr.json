@@ -1,0 +1,16 @@
+{
+  "name": "@geoql/doctor-rule-core",
+  "version": "1.0.0",
+  "description": "Linter-neutral rule cores shared by the oxlint plugins and the future ESLint plugin.",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publish": {
+    "include": [
+      "src",
+      "README.md",
+      "LICENSE"
+    ]
+  }
+}

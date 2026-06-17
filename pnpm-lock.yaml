@@ -427,6 +427,21 @@ importers:
         specifier: ^4.1.7
         version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
 
+  packages/doctor-rule-core:
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      oxc-parser:
+        specifier: 0.133.0
+        version: 0.133.0
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
+
   packages/nuxt-doctor:
     dependencies:
       '@geoql/doctor-core':
@@ -487,6 +502,9 @@ importers:
 
   packages/oxlint-plugin-nuxt-doctor:
     dependencies:
+      '@geoql/doctor-rule-core':
+        specifier: workspace:*
+        version: link:../doctor-rule-core
       oxlint:
         specifier: ^1.66.0
         version: 1.67.0(oxlint-tsgolint@0.22.1)(vite-plus@0.1.22(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))(yaml@2.9.0))
@@ -506,6 +524,9 @@ importers:
 
   packages/oxlint-plugin-vue-doctor:
     dependencies:
+      '@geoql/doctor-rule-core':
+        specifier: workspace:*
+        version: link:../doctor-rule-core
       oxlint:
         specifier: ^1.66.0
         version: 1.67.0(oxlint-tsgolint@0.22.1)(vite-plus@0.1.22(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))(yaml@2.9.0))

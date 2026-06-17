@@ -1,0 +1,103 @@
+import { defineRule } from '../../define-rule.js';
+import type { CoreRule } from '../../types.js';
+import { noDestructurePropsWithoutToRefs } from './ai-slop/no-destructure-props-without-toRefs.js';
+import { noDestructureReactiveWithoutToRefs } from './ai-slop/no-destructure-reactive-without-toRefs.js';
+import { noEmDashInString } from './ai-slop/no-em-dash-in-string.js';
+import { noImportsFromVueWhenAutoImported } from './ai-slop/no-imports-from-vue-when-auto-imported.js';
+import { noNonNullAssertionOnRefValue } from './ai-slop/no-non-null-assertion-on-ref-value.js';
+import { definePropsTyped } from './composition/defineProps-typed.js';
+import { preferScriptSetupForNewFiles } from './composition/prefer-script-setup-for-new-files.js';
+import { preferDefineAsyncComponentOnRoute } from './performance/prefer-defineAsyncComponent-on-route.js';
+import { preferReadonlyForInjected } from './reactivity/prefer-readonly-for-injected.js';
+import { preferShallowRefForLargeData } from './reactivity/prefer-shallowRef-for-large-data.js';
+import { watchWithoutCleanup } from './reactivity/watch-without-cleanup.js';
+
+function coreRule(
+  id: string,
+  category: CoreRule['category'],
+  severity: CoreRule['severity'],
+  recommended: boolean,
+  rule: Omit<CoreRule, 'id' | 'category' | 'severity' | 'recommended'>,
+): CoreRule {
+  return { id, category, severity, recommended, ...rule };
+}
+
+export const VUE_RULES: readonly CoreRule[] = [
+  coreRule(
+    'no-em-dash-in-string',
+    'ai-slop',
+    'warn',
+    true,
+    defineRule(noEmDashInString),
+  ),
+  coreRule(
+    'no-destructure-props-without-to-refs',
+    'ai-slop',
+    'error',
+    true,
+    defineRule(noDestructurePropsWithoutToRefs),
+  ),
+  coreRule(
+    'no-destructure-reactive-without-to-refs',
+    'ai-slop',
+    'error',
+    true,
+    defineRule(noDestructureReactiveWithoutToRefs),
+  ),
+  coreRule(
+    'no-non-null-assertion-on-ref-value',
+    'ai-slop',
+    'warn',
+    true,
+    defineRule(noNonNullAssertionOnRefValue),
+  ),
+  coreRule(
+    'no-imports-from-vue-when-auto-imported',
+    'ai-slop',
+    'warn',
+    true,
+    defineRule(noImportsFromVueWhenAutoImported),
+  ),
+  coreRule(
+    'reactivity/watch-without-cleanup',
+    'reactivity',
+    'warn',
+    true,
+    defineRule(watchWithoutCleanup),
+  ),
+  coreRule(
+    'reactivity/prefer-shallowRef-for-large-data',
+    'reactivity',
+    'info',
+    false,
+    defineRule(preferShallowRefForLargeData),
+  ),
+  coreRule(
+    'reactivity/prefer-readonly-for-injected',
+    'reactivity',
+    'info',
+    false,
+    defineRule(preferReadonlyForInjected),
+  ),
+  coreRule(
+    'composition/prefer-script-setup-for-new-files',
+    'composition',
+    'warn',
+    true,
+    defineRule(preferScriptSetupForNewFiles),
+  ),
+  coreRule(
+    'composition/defineProps-typed',
+    'composition',
+    'warn',
+    true,
+    defineRule(definePropsTyped),
+  ),
+  coreRule(
+    'performance/prefer-defineAsyncComponent-on-route',
+    'performance',
+    'info',
+    false,
+    defineRule(preferDefineAsyncComponentOnRoute),
+  ),
+];

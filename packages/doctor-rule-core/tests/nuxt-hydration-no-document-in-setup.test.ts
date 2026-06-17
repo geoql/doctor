@@ -1,0 +1,92 @@
+import { describe, expect, it } from 'vitest';
+import { noDocumentInSetup } from '../src/rules/nuxt/hydration/no-document-in-setup.js';
+import { runRule } from './run-rule.js';
+
+const rule = noDocumentInSetup;
+
+describe('hydration/no-document-in-setup', () => {
+  it('fires on document at top level', () => {
+    const reports = runRule(rule, `const title = document.title;`);
+    expect(reports).toHaveLength(1);
+    expect(reports[0]!.type).toBe('Identifier');
+    expect(reports[0]!.message).toContain('document');
+  });
+
+  it('fires on window at top level', () => {
+    const reports = runRule(rule, `const w = window;`);
+    expect(reports).toHaveLength(1);
+  });
+
+  it('fires on navigator at top level', () => {
+    const reports = runRule(rule, `const ua = navigator.userAgent;`);
+    expect(reports).toHaveLength(1);
+  });
+
+  it('fires on localStorage at top level', () => {
+    const reports = runRule(rule, `const x = localStorage.getItem('x');`);
+    expect(reports).toHaveLength(1);
+  });
+
+  it('does NOT fire on document inside onMounted', () => {
+    const reports = runRule(
+      rule,
+      `onMounted(() => { const t = document.title; });`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on window inside a regular function', () => {
+    const reports = runRule(rule, `function foo() { return window.location; }`);
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on unrelated identifiers', () => {
+    const reports = runRule(rule, `const x = 42;`);
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on navigator inside FunctionExpression', () => {
+    const reports = runRule(
+      rule,
+      `function getUA() { return navigator.userAgent; }`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('fires on sessionStorage at top level', () => {
+    const reports = runRule(rule, `const x = sessionStorage.getItem('k');`);
+    expect(reports).toHaveLength(1);
+  });
+
+  it('does NOT fire on document inside FunctionExpression callback', () => {
+    const reports = runRule(
+      rule,
+      `onMounted(function() { const t = document.title; });`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on document inside a nested arrow function', () => {
+    const reports = runRule(
+      rule,
+      `const f = () => { const g = () => { const t = document.title; }; };`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on window inside a nested function expression', () => {
+    const reports = runRule(
+      rule,
+      `const f = function () { const g = function () { return window; }; };`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on navigator inside a nested function declaration', () => {
+    const reports = runRule(
+      rule,
+      `function outer() { function inner() { return navigator.userAgent; } }`,
+    );
+    expect(reports).toEqual([]);
+  });
+});

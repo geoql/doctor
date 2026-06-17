@@ -1,16 +1,15 @@
 {
-  "name": "@geoql/oxlint-plugin-nuxt-doctor",
+  "name": "@geoql/doctor-rule-core",
   "version": "1.0.0",
   "private": false,
-  "description": "oxlint JS plugin for Nuxt 4 anti-patterns and AI-slop detection. Pairs with oxlint's built-in vue plugin via jsPlugins. TypeScript, ESM.",
+  "description": "Linter-neutral rule cores shared by @geoql/oxlint-plugin-vue-doctor, @geoql/oxlint-plugin-nuxt-doctor, and the future ESLint plugin. ESTree/JS-AST only.",
   "keywords": [
-    "ai-slop",
+    "doctor",
     "geoql",
     "lint",
     "nuxt",
-    "nuxt4",
-    "oxlint",
-    "oxlint-plugin"
+    "rules",
+    "vue"
   ],
   "homepage": "https://github.com/geoql/doctor#readme",
   "bugs": {
@@ -25,7 +24,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/geoql/doctor.git",
-    "directory": "packages/oxlint-plugin-nuxt-doctor"
+    "directory": "packages/doctor-rule-core"
   },
   "files": [
     "dist"
@@ -49,16 +48,10 @@
     "build": "vp pack",
     "test": "vitest run"
   },
-  "dependencies": {
-    "@geoql/doctor-rule-core": "workspace:*"
-  },
   "devDependencies": {
     "@types/node": "^25.9.1",
     "oxc-parser": "0.133.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.7"
-  },
-  "peerDependencies": {
-    "oxlint": "^1.66.0"
   }
 }

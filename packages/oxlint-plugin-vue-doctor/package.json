@@ -49,6 +49,9 @@
     "build": "vp pack",
     "test": "vitest run"
   },
+  "dependencies": {
+    "@geoql/doctor-rule-core": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^25.9.1",
     "oxc-parser": "0.133.0",
