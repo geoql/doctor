@@ -14,6 +14,7 @@ export default defineConfig({
       '*.min.css',
       'packages/*/dist',
       '**/tests/fixtures/**',
+      '**/qa/**',
     ],
   },
   fmt: {
