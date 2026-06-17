@@ -1,6 +1,6 @@
 {
   "rules": {
-    "vue/no-missing-key": "off"
+    "vue-doctor/no-em-dash-in-string": "off"
   },
   "failOn": "warn"
 }

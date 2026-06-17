@@ -1,0 +1,379 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "rootDir": {
+      "type": "string"
+    },
+    "include": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exclude": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "failOn": {
+      "type": "string",
+      "enum": ["error", "warn", "none"]
+    },
+    "threshold": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "preset": {
+      "type": "string",
+      "enum": ["minimal", "recommended", "strict", "all"]
+    },
+    "extends": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fixExcludes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rules": {
+      "type": "object",
+      "properties": {
+        "vue/no-export-in-script-setup": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/require-typed-ref": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-arrow-functions-in-watch": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-deprecated-data-object-declaration": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-deprecated-events-api": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-deprecated-destroyed-lifecycle": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-deprecated-model-definition": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-deprecated-delete-set": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-deprecated-vue-config-keycodes": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-lifecycle-after-await": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-this-in-before-route-enter": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/return-in-computed-property": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/valid-define-emits": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/valid-define-props": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-required-prop-with-default": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/prefer-import-from-vue": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-import-compiler-macros": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/no-multiple-slot-args": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/require-default-export": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/define-emits-declaration": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/define-props-declaration": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/define-props-destructuring": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue/max-props": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/no-em-dash-in-string": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/no-destructure-props-without-to-refs": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/no-destructure-reactive-without-to-refs": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/no-non-null-assertion-on-ref-value": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/no-imports-from-vue-when-auto-imported": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/reactivity/watch-without-cleanup": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/reactivity/prefer-shallowRef-for-large-data": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/reactivity/prefer-readonly-for-injected": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/composition/prefer-script-setup-for-new-files": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/composition/defineProps-typed": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/performance/prefer-defineAsyncComponent-on-route": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/template/v-for-has-key": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/template/v-if-v-for-precedence": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/template/v-memo-on-large-list": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/template/no-inline-object-prop-in-list": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/template/no-computed-getter-in-template-loop": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/template/avoid-deep-v-bind-spread-in-list": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/sfc/no-mixed-options-and-composition-api": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/build-quality/tsconfig-strict-required": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/build-quality/vue-tsc-in-devDeps": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/build-quality/no-vue-cli": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/build-quality/eslint-plugin-vue-installed": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/deps/duplicate-vue-versions": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/deps/vue-major-current": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "dead-code/unused-file": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "dead-code/unused-export": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "dead-code/unused-type-export": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "dead-code/unused-member": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "dead-code/unused-dependency": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "dead-code/unlisted-dependency": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "dead-code/duplicate-export": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/structure/uses-app-directory": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/structure/nuxt-major-current": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/modules-deps/no-modules-incompatible-with-nuxt-4": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/modules-deps/recommended-modules-installed": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/nitro/compatibilityDate-set": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/nitro/preset-defined-for-deploy-target": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/nitro/runtime-config-typed": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/seo/lang-on-html": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/seo/useSeoMeta-on-public-page": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/seo/og-image-defined": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/cloudflare/nitro-cloudflare-preset": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/cloudflare/og-image-via-satori": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/cloudflare/no-node-only-modules": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/data-fetching/no-shared-key-across-pages": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/data-fetching/ssr-safe-onMounted-only-for-client": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/ai-slop/no-mixed-app-and-root-layout": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/ai-slop/no-process-client-server": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/ai-slop/no-explicit-imports-of-auto-imported": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/ai-slop/no-useState-for-server-data": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/ai-slop/no-fetch-in-setup": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/data-fetching/useAsyncData-key-required-in-loop": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/server-routes/defineEventHandler-typed": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/server-routes/validate-body-with-h3-v2": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/server-routes/createError-on-failure": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/hydration/no-document-in-setup": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "nuxt-doctor/hydration/clientOnly-for-browser-apis": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        }
+      },
+      "additionalProperties": {
+        "type": "string",
+        "enum": ["error", "warn", "info", "off"]
+      }
+    }
+  },
+  "additionalProperties": {}
+}

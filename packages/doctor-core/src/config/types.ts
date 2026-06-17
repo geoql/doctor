@@ -1,3 +1,4 @@
+import type { DoctorUserConfigInput } from './schema.js';
 import type { Severity } from '../types.js';
 
 export type ConfigSource =
@@ -6,48 +7,31 @@ export type ConfigSource =
   | 'mjs'
   | 'js'
   | 'json'
+  | 'jsonc'
   | 'package.json'
   | 'built-in';
 
-export interface DoctorUserConfig {
-  rootDir?: string;
-  include?: string[];
-  exclude?: string[];
-  failOn?: 'error' | 'warn' | 'none';
-  threshold?: number;
-  preset?: string;
-  rules?: Record<string, Severity | 'off'>;
-  extends?: string[];
-  fixExcludes?: string[];
-}
-
-export interface ResolvedDoctorConfig {
-  rootDir: string;
-  include: string[];
-  exclude: string[];
-  failOn: 'error' | 'warn' | 'none';
-  threshold: number;
-  rules: Record<string, Severity>;
-  preset: 'minimal' | 'recommended' | 'strict' | 'all';
-  source: ConfigSource;
-  configFile?: string;
-  fixExcludes?: string[];
-}
+/**
+ * User-authored config shape, inferred from {@link DoctorUserConfigSchema} so
+ * the zod schema is the single source of truth for the accepted fields.
+ */
+export type DoctorUserConfig = DoctorUserConfigInput;
 
 /**
- * Resolved + normalized config that audit consumes.
- * - `rules` is the merged effective severity map (preset base + user overrides - explicit offs).
- * - `preset` is the preset name that was applied as the base.
+ * Resolved + normalized config that audit consumes. `failOn` and `preset` are
+ * narrowed from the schema-derived user shape; `rules` is the merged effective
+ * severity map (preset base + user overrides minus explicit offs), so it never
+ * carries `'off'`.
  */
-
 export interface ResolvedDoctorConfig {
   rootDir: string;
   include: string[];
   exclude: string[];
-  failOn: 'error' | 'warn' | 'none';
+  failOn: NonNullable<DoctorUserConfig['failOn']>;
   threshold: number;
   rules: Record<string, Severity>;
-  preset: 'minimal' | 'recommended' | 'strict' | 'all';
+  preset: NonNullable<DoctorUserConfig['preset']>;
   source: ConfigSource;
   configFile?: string;
+  fixExcludes?: string[];
 }

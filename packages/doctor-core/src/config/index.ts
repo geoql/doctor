@@ -14,3 +14,10 @@ export { defineConfig } from './define-config.js';
 export { loadDoctorConfig } from './load.js';
 export { mergeCliOverrides } from './merge-cli-overrides.js';
 export { validateConfig } from './validate.js';
+export {
+  buildJsonSchema,
+  DoctorUserConfigSchema,
+  LevelSchema,
+  RuleEntrySchema,
+  type DoctorUserConfigInput,
+} from './schema.js';

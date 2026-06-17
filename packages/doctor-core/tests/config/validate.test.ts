@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { InvalidConfigError } from '../../src/config/errors.js';
 import { validateConfig } from '../../src/config/validate.js';
+import { RULE_REGISTRY } from '../../src/rule-registry.js';
+
+const REAL_ERROR_ID = RULE_REGISTRY.find((r) => r.severity === 'error')!.id;
+const REAL_WARN_ID = RULE_REGISTRY.find((r) => r.severity === 'warn')!.id;
+const REAL_INFO_ID = RULE_REGISTRY.find((r) => r.severity === 'info')!.id;
 
 describe('validateConfig', () => {
   it('passes a valid empty config', () => {
@@ -14,7 +19,7 @@ describe('validateConfig', () => {
         exclude: ['dist'],
         failOn: 'warn',
         threshold: 50,
-        rules: { 'foo/bar': 'error', 'baz/qux': 'off' },
+        rules: { [REAL_ERROR_ID]: 'error', [REAL_WARN_ID]: 'off' },
       }),
     ).not.toThrow();
   });
@@ -156,30 +161,48 @@ describe('validateConfig', () => {
 
     it('rejects an invalid severity in rules', () => {
       expect(() =>
-        validateConfig({ rules: { 'foo/bar': 'critical' } }),
+        validateConfig({ rules: { [REAL_ERROR_ID]: 'critical' } }),
       ).toThrow(InvalidConfigError);
       expect(() =>
-        validateConfig({ rules: { 'foo/bar': 'critical' } }),
-      ).toThrow('rules.foo/bar');
+        validateConfig({ rules: { [REAL_ERROR_ID]: 'critical' } }),
+      ).toThrow(`rules.${REAL_ERROR_ID}`);
     });
 
     it('accepts all valid severities including off', () => {
       expect(() =>
         validateConfig({
           rules: {
-            'a/b': 'error',
-            'c/d': 'warn',
-            'e/f': 'info',
-            'g/h': 'off',
+            [REAL_ERROR_ID]: 'error',
+            [REAL_WARN_ID]: 'warn',
+            [REAL_INFO_ID]: 'info',
           },
         }),
       ).not.toThrow();
     });
 
     it('rejects a non-string rule value', () => {
-      expect(() => validateConfig({ rules: { 'foo/bar': 42 } })).toThrow(
+      expect(() => validateConfig({ rules: { [REAL_ERROR_ID]: 42 } })).toThrow(
         InvalidConfigError,
       );
+    });
+
+    it('rejects an unknown rule id (new zod behavior)', () => {
+      expect(() =>
+        validateConfig({ rules: { 'totally/unknown': 'error' } }),
+      ).toThrow(InvalidConfigError);
+      expect(() =>
+        validateConfig({ rules: { 'totally/unknown': 'error' } }),
+      ).toThrow('totally/unknown');
+    });
+
+    it('carries the zod issue list on InvalidConfigError', () => {
+      try {
+        validateConfig({ threshold: 150 });
+        expect.unreachable('should have thrown');
+      } catch (err) {
+        expect(err).toBeInstanceOf(InvalidConfigError);
+        expect((err as InvalidConfigError).issues.length).toBeGreaterThan(0);
+      }
     });
   });
 

@@ -14,15 +14,20 @@ export {
   ConfigCycleError,
   ConfigFileNotFoundError,
   InvalidConfigError,
+  buildJsonSchema,
   defineConfig,
+  DoctorUserConfigSchema,
+  LevelSchema,
   loadDoctorConfig,
   mergeCliOverrides,
+  RuleEntrySchema,
   validateConfig,
 } from './config/index.js';
 export type {
   CliOverrides,
   ConfigSource,
   DoctorUserConfig,
+  DoctorUserConfigInput,
   ResolvedDoctorConfig,
 } from './config/index.js';
 export { detectProject } from './detect-project.js';

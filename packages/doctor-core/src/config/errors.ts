@@ -14,6 +14,15 @@ export class ConfigCycleError extends Error {
   }
 }
 
+import type { z } from 'zod';
+
 export class InvalidConfigError extends Error {
   override name = 'InvalidConfigError' as const;
+
+  readonly issues: readonly z.core.$ZodIssue[];
+
+  constructor(message: string, issues: readonly z.core.$ZodIssue[] = []) {
+    super(message);
+    this.issues = issues;
+  }
 }

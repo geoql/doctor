@@ -109,6 +109,37 @@ describe('loadDoctorConfig', () => {
     expect(result.threshold).toBe(80);
   });
 
+  it('loads a jsonc config with comments and trailing commas, tags source jsonc', async () => {
+    writeFileSync(
+      join(tmp, 'doctor.config.jsonc'),
+      `{
+  // leading comment
+  "threshold": 73,
+  "failOn": "warn", /* inline */
+  "exclude": ["dist",],
+}`,
+    );
+    const result = await loadDoctorConfig(tmp);
+    expect(result.source).toBe('jsonc');
+    expect(result.threshold).toBe(73);
+    expect(result.failOn).toBe('warn');
+    expect(result.exclude).toContain('dist');
+  });
+
+  it('accepts and ignores a $schema field in a jsonc config', async () => {
+    writeFileSync(
+      join(tmp, 'doctor.config.jsonc'),
+      `{
+  "$schema": "https://docs.the-doctor.report/schema.json",
+  "threshold": 21,
+}`,
+    );
+    const result = await loadDoctorConfig(tmp);
+    expect(result.source).toBe('jsonc');
+    expect(result.threshold).toBe(21);
+    expect(result).not.toHaveProperty('$schema');
+  });
+
   it('loads package.json#doctor and tags source as package.json', async () => {
     writeFileSync(
       join(tmp, 'package.json'),
@@ -226,18 +257,18 @@ describe('loadDoctorConfig', () => {
   });
 
   it('user overrides merge on top of preset; off explicitly removes a rule', async () => {
-    // Pick a real rule from the registry that recommended preset includes.
+    // Both ids must be registered now that the zod schema rejects unknown ids.
     const registeredErrorRule = 'vue-doctor/template/v-for-has-key';
+    const registeredInfoRule =
+      'vue-doctor/reactivity/prefer-shallowRef-for-large-data';
     writeFileSync(
       join(tmp, 'doctor.config.json'),
       JSON.stringify({
-        rules: { 'foo/bar': 'error', [registeredErrorRule]: 'off' },
+        rules: { [registeredInfoRule]: 'error', [registeredErrorRule]: 'off' },
       }),
     );
     const result = await loadDoctorConfig(tmp);
-    // User-added rule appears.
-    expect(result.rules['foo/bar']).toBe('error');
-    // User-off-ed rule is removed from the preset base.
+    expect(result.rules[registeredInfoRule]).toBe('error');
     expect(result.rules).not.toHaveProperty(registeredErrorRule);
   });
 

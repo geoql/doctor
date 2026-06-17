@@ -1,91 +1,31 @@
+import { z } from 'zod';
+import { DoctorUserConfigSchema } from './schema.js';
 import { InvalidConfigError } from './errors.js';
-import { isPresetName } from './presets.js';
 
-const VALID_SEVERITIES = new Set(['error', 'warn', 'info', 'off']);
-const VALID_FAIL_ON = new Set(['error', 'warn', 'none']);
+/**
+ * Render a single zod issue into the historical hand-rolled message format
+ * (`<path>: <message>`), so InvalidConfigError.message stays backward-compatible
+ * with callers that assert on substrings like `threshold`, `failOn`, or
+ * `rules.foo/bar`. A root-level issue (empty path) maps to the legacy
+ * `config: must be an object` wording.
+ */
+function formatIssue(issue: z.core.$ZodIssue): string {
+  if (issue.path.length === 0) {
+    return 'config: must be an object';
+  }
+  const path = issue.path.map((segment) => String(segment)).join('.');
+  return `${path}: ${issue.message}`;
+}
 
+/**
+ * Validate a raw, untrusted config object against the zod schema — the single
+ * source of truth. Throws {@link InvalidConfigError} (carrying the full zod
+ * issue list) on the first failure, mirroring the legacy validator's
+ * throw-on-first-error contract.
+ */
 export function validateConfig(raw: unknown): void {
-  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
-    throw new InvalidConfigError('config: must be an object');
-  }
-
-  const config = raw as Record<string, unknown>;
-
-  if ('threshold' in config) {
-    const threshold = config.threshold;
-    if (typeof threshold !== 'number' || !Number.isInteger(threshold)) {
-      throw new InvalidConfigError(
-        `threshold: must be an integer 0..100, got ${JSON.stringify(threshold)}`,
-      );
-    }
-    if (threshold < 0 || threshold > 100) {
-      throw new InvalidConfigError(
-        `threshold: must be 0..100, got ${threshold}`,
-      );
-    }
-  }
-
-  if ('preset' in config) {
-    const preset = config.preset;
-    if (typeof preset !== 'string' || !isPresetName(preset)) {
-      throw new InvalidConfigError(
-        `preset: must be one of 'minimal', 'recommended', 'strict', 'all', got ${JSON.stringify(preset)}`,
-      );
-    }
-  }
-
-  if ('failOn' in config) {
-    const failOn = config.failOn;
-    if (typeof failOn !== 'string' || !VALID_FAIL_ON.has(failOn)) {
-      throw new InvalidConfigError(
-        `failOn: must be 'error', 'warn', or 'none', got ${JSON.stringify(failOn)}`,
-      );
-    }
-  }
-
-  if ('include' in config) {
-    const include = config.include;
-    if (!Array.isArray(include)) {
-      throw new InvalidConfigError('include: must be an array of strings');
-    }
-    if (!include.every((v) => typeof v === 'string')) {
-      throw new InvalidConfigError('include: must be an array of strings');
-    }
-  }
-
-  if ('exclude' in config) {
-    const exclude = config.exclude;
-    if (!Array.isArray(exclude)) {
-      throw new InvalidConfigError('exclude: must be an array of strings');
-    }
-    if (!exclude.every((v) => typeof v === 'string')) {
-      throw new InvalidConfigError('exclude: must be an array of strings');
-    }
-  }
-
-  if ('fixExcludes' in config) {
-    const fixExcludes = config.fixExcludes;
-    if (!Array.isArray(fixExcludes)) {
-      throw new InvalidConfigError('fixExcludes: must be an array of strings');
-    }
-    if (!fixExcludes.every((v) => typeof v === 'string')) {
-      throw new InvalidConfigError('fixExcludes: must be an array of strings');
-    }
-  }
-
-  if ('rules' in config) {
-    const rules = config.rules;
-    if (rules === null || typeof rules !== 'object' || Array.isArray(rules)) {
-      throw new InvalidConfigError('rules: must be an object');
-    }
-    for (const [key, value] of Object.entries(
-      rules as Record<string, unknown>,
-    )) {
-      if (typeof value !== 'string' || !VALID_SEVERITIES.has(value)) {
-        throw new InvalidConfigError(
-          `rules.${key}: must be a severity ('error', 'warn', 'info', or 'off'), got ${JSON.stringify(value)}`,
-        );
-      }
-    }
-  }
+  const result = DoctorUserConfigSchema.safeParse(raw);
+  if (result.success) return;
+  const { issues } = result.error;
+  throw new InvalidConfigError(formatIssue(issues[0]!), issues);
 }

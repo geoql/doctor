@@ -21,6 +21,7 @@ const SOURCE_MAP: Record<string, ConfigSource> = {
   mjs: 'mjs',
   js: 'js',
   json: 'json',
+  jsonc: 'jsonc',
 };
 
 export interface LoadDoctorConfigOptions {
