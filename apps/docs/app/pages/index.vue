@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ArrowRight, Github } from 'lucide-vue-next';
-
 definePageMeta({ layout: 'default' });
 
 const version = useRuntimeConfig().public.version;
@@ -74,7 +72,8 @@ const sections = [
           class="group inline-flex items-center gap-2 border border-ink bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-bg transition-colors duration-120 hover:bg-transparent hover:text-ink"
         >
           Get Started
-          <ArrowRight
+          <Icon
+            name="lucide:arrow-right"
             class="size-3.5 transition-transform group-hover:translate-x-0.5"
           />
         </NuxtLink>
@@ -85,7 +84,7 @@ const sections = [
           rel="noopener noreferrer"
           class="inline-flex items-center gap-2 border border-border px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-ink-muted transition-colors duration-120 hover:border-ink-muted hover:text-ink"
         >
-          <Github class="size-3.5" />
+          <Icon name="lucide:github" class="size-3.5" />
           View on GitHub
         </NuxtLink>
       </div>

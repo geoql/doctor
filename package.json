@@ -43,21 +43,21 @@
     "prepare": "is-ci || husky"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.0.1",
-    "@commitlint/config-conventional": "^21.0.1",
-    "@types/node": "^25.9.0",
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@types/node": "^25.9.3",
     "@vitest/coverage-v8": "4.1.7",
     "husky": "^9.1.7",
     "is-ci": "^4.1.0",
-    "lint-staged": "^17.0.5",
+    "lint-staged": "^17.0.7",
     "typescript": "^6.0.3",
-    "vite-plus": "^0.1.22",
+    "vite-plus": "^0.1.24",
     "vitest": "4.1.7"
   },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "11.4.0",
+      "version": "11.7.0",
       "onFail": "warn"
     },
     "runtime": {
@@ -68,5 +68,5 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.4.0"
+  "packageManager": "pnpm@11.7.0"
 }

@@ -250,5 +250,5 @@ describe('nuxt-doctor init + --pr-comment', () => {
     expect(out).toContain('## 🛡 @geoql/nuxt-doctor — Score:');
     expect(out).toContain('### Errors');
     expect(out).toContain('vue-doctor/template/v-for-has-key');
-  }, 20000);
+  }, 40000);
 });

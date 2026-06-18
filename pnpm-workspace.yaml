@@ -22,3 +22,4 @@ minimumReleaseAgeExclude:
   - nuxt@4.4.7
   - reka-ui@2.9.9
   - wrangler@4.97.0
+  - '@lucide/vue@1.21.0'

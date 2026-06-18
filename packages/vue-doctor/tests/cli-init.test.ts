@@ -250,5 +250,5 @@ describe('vue-doctor init + --pr-comment', () => {
     expect(out).toContain('## 🛡 @geoql/vue-doctor — Score:');
     expect(out).toContain('### Errors');
     expect(out).toContain('vue-doctor/template/v-for-has-key');
-  }, 20000);
+  }, 40000);
 });

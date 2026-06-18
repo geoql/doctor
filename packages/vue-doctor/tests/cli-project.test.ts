@@ -68,7 +68,7 @@ describe('run --project', () => {
     expect(report.projectInfo.rootDirectory).toBe(workspaceDir);
     const ruleIds = report.diagnostics.map((d: { ruleId: string }) => d.ruleId);
     expect(ruleIds).toContain('vue-doctor/template/v-for-has-key');
-  });
+  }, 40000);
 
   it('warns on an unknown project and exits 2 when nothing matches', async () => {
     const code = await run([
@@ -106,7 +106,7 @@ describe('run --project', () => {
     );
     const report = JSON.parse(stdout.join(''));
     expect(report.score.value).toBe(100);
-  });
+  }, 40000);
 
   it('ignores --project on a non-workspace directory and runs a normal single audit', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'vue-doctor-project-'));

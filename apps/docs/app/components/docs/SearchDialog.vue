@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Fuse from 'fuse.js';
-import { Search } from 'lucide-vue-next';
+import { Search } from '@lucide/vue';
 
 const { open, closeSearch } = useDocsSearch();
 const router = useRouter();

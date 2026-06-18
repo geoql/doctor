@@ -58,21 +58,21 @@
     "@geoql/oxlint-plugin-vue-doctor": "workspace:*",
     "cac": "^7.0.0",
     "kolorist": "^1.8.0",
-    "oxlint": "^1.67.0",
+    "oxlint": "^1.70.0",
     "prompts": "^2.4.2"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1",
+    "@types/node": "^25.9.3",
     "@types/prompts": "^2.4.9",
-    "@vue/compiler-core": "^3.5.35",
-    "@vue/compiler-sfc": "^3.5.35",
+    "@vue/compiler-core": "^3.5.38",
+    "@vue/compiler-sfc": "^3.5.38",
     "c12": "^4.0.0-beta.5",
     "oxc-parser": "0.133.0",
     "picocolors": "^1.1.1",
-    "semver": "^7.8.1",
-    "tinyglobby": "^0.2.16",
+    "semver": "^7.8.4",
+    "tinyglobby": "^0.2.17",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.9"
   },
   "engines": {
     "node": ">=24"
