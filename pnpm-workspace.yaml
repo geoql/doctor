@@ -12,14 +12,10 @@ allowBuilds:
   workerd: true
 
 minimumReleaseAgeExclude:
-  - vue-eslint-parser@10.4.1
-  - '@nuxt/icon@2.2.3'
-  - '@nuxt/kit@4.4.7'
-  - '@nuxt/nitro-server@4.4.7'
-  - '@nuxt/schema@4.4.7'
-  - '@nuxt/vite-builder@4.4.7'
-  - miniflare@4.20260601.0
-  - nuxt@4.4.7
-  - reka-ui@2.9.9
-  - wrangler@4.97.0
-  - '@lucide/vue@1.21.0'
+  - vue-eslint-parser
+  - '@nuxt/*'
+  - miniflare
+  - nuxt
+  - reka-ui
+  - wrangler
+  - '@lucide/*'
