@@ -29,6 +29,7 @@ export default createConfigForNuxt({
     settings: {
       'better-tailwindcss': {
         entryPoint: 'app/assets/css/main.css',
+        rootFontSize: 16,
       },
     },
   })

@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import Fuse from 'fuse.js';
 import { Search } from '@lucide/vue';
+import type { SearchSection } from '~/types';
 
 const { open, closeSearch } = useDocsSearch();
 const router = useRouter();
-
-interface SearchSection {
-  id: string;
-  title: string;
-  titles: string[];
-  level: number;
-  content: string;
-}
 
 // Not awaited + client-only: a top-level await would make this an async
 // component needing <Suspense>, which prevents it mounting inside the layout.
@@ -100,7 +93,7 @@ function onKeydown(event: KeyboardEvent) {
           role="dialog"
           aria-modal="true"
           aria-label="Search docs"
-          class="relative w-full max-w-[560px] overflow-hidden rounded-xl border border-border bg-surface shadow-[0_24px_60px_-12px_color-mix(in_oklch,var(--bg)_80%,#000)]"
+          class="relative w-full max-w-140 overflow-hidden rounded-xl border border-border bg-surface shadow-[0_24px_60px_-12px_color-mix(in_oklch,var(--bg)_80%,#000)]"
         >
           <div class="flex items-center gap-3 border-b border-border-soft px-4">
             <Search class="size-4 shrink-0 text-ink-dim" />

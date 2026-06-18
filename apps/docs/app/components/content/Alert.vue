@@ -7,6 +7,7 @@ import {
   XCircle,
 } from '@lucide/vue';
 import { computed } from 'vue';
+import type { AlertConfig } from '~/types';
 
 const props = withDefaults(
   defineProps<{
@@ -14,13 +15,6 @@ const props = withDefaults(
   }>(),
   { type: 'info' },
 );
-
-interface AlertConfig {
-  icon: typeof Info;
-  label: string;
-  labelColor: string;
-  tint: string;
-}
 
 const config = computed<AlertConfig>(() => {
   switch (props.type) {

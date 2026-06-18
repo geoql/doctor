@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Info, AlertTriangle, Lightbulb, CheckCircle } from '@lucide/vue';
 import { computed } from 'vue';
+import type { CalloutConfig } from '~/types';
 
 const props = withDefaults(
   defineProps<{
@@ -8,15 +9,6 @@ const props = withDefaults(
   }>(),
   { type: 'info' },
 );
-
-interface CalloutConfig {
-  icon: typeof Info;
-  bg: string;
-  border: string;
-  borderLeft: string;
-  label: string;
-  labelColor: string;
-}
 
 const config = computed<CalloutConfig>(() => {
   switch (props.type) {
@@ -72,7 +64,7 @@ const config = computed<CalloutConfig>(() => {
 <template>
   <aside
     :class="[
-      'my-6 rounded-md px-4 py-3.5 pl-[18px] text-[14.5px] leading-[1.55] text-ink border',
+      'my-6 rounded-md px-4 py-3.5 pl-4.5 text-[14.5px] leading-[1.55] text-ink border',
       config.bg,
       config.border,
       config.borderLeft,

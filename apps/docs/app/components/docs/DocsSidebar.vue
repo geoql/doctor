@@ -12,7 +12,7 @@ const isActive = (path: string): boolean => route.path === path;
 
 <template>
   <aside
-    class="sticky top-[76px] max-h-[calc(100dvh-92px)] overflow-y-auto py-6 pl-0 pr-4"
+    class="sticky top-19 max-h-[calc(100dvh-92px)] overflow-y-auto py-6 pl-0 pr-4"
     aria-label="Documentation"
   >
     <nav class="space-y-6">
@@ -22,7 +22,7 @@ const isActive = (path: string): boolean => route.path === path;
         >
           <span
             aria-hidden="true"
-            class="inline-block size-[5px] rounded-full bg-ink-dim"
+            class="inline-block size-1.25 rounded-full bg-ink-dim"
           />
           {{ section.title }}
         </h6>

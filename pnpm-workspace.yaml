@@ -19,3 +19,12 @@ minimumReleaseAgeExclude:
   - reka-ui
   - wrangler
   - '@lucide/*'
+
+overrides:
+  # Force the workspace onto Vite 8. apps/docs is a Nuxt 4.4.x app whose
+  # @nuxt/vite-builder declares a "vite": "^7" peer, and vitest (the test
+  # runner under the vite-plus packages) accepts ^6 || ^7 || ^8 — without this
+  # pin pnpm drifts the real npm `vite` to 7.x on a clean install. This does
+  # NOT touch vite-plus's own "vite": "npm:@voidzero-dev/vite-plus-core" alias,
+  # which resolves to the vite-plus native core (a different package).
+  vite: ^8.0.16

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import type { TocLink } from '~/types';
 
 const route = useRoute();
 
@@ -63,14 +64,6 @@ const crumbs = computed(() => {
   return out;
 });
 
-// Extract H2 + H3 from rendered content for the TOC.
-// Nuxt Content provides `body.toc.links`; fall back to []
-interface TocLink {
-  id: string;
-  text: string;
-  depth: number;
-  children?: TocLink[];
-}
 const headings = computed(() => {
   const toc = (page.value?.body as { toc?: { links?: TocLink[] } } | undefined)
     ?.toc;
@@ -105,7 +98,7 @@ usePageSeo({
 
 <template>
   <div v-if="page" class="grid gap-12 xl:grid-cols-[minmax(0,1fr)_220px]">
-    <article class="min-w-0 max-w-[760px]">
+    <article class="min-w-0 max-w-190">
       <DocsPageHeader
         :title="page.title ?? 'Untitled'"
         :description="page.description"

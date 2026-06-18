@@ -34,12 +34,10 @@ watch(
   <div class="min-h-dvh bg-bg text-ink">
     <!-- ═══ Top nav ═══ -->
     <header class="sticky top-0 z-50 nav-blur border-b border-border-soft">
-      <div
-        class="mx-auto flex h-[60px] max-w-[1440px] items-center gap-6 px-5 sm:px-8"
-      >
+      <div class="mx-auto flex h-15 max-w-360 items-center gap-6 px-5 sm:px-8">
         <NuxtLink to="/" class="flex items-center gap-2.5">
           <span
-            class="grid size-[22px] place-items-center rounded-sm bg-accent text-ink-on-accent font-mono text-xs font-bold shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_50%,transparent),0_0_0_4px_color-mix(in_oklch,var(--accent)_14%,transparent)]"
+            class="grid size-5.5 place-items-center rounded-sm bg-accent text-ink-on-accent font-mono text-xs font-bold shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_50%,transparent),0_0_0_4px_color-mix(in_oklch,var(--accent)_14%,transparent)]"
             aria-hidden="true"
             >+</span
           >
@@ -49,7 +47,7 @@ watch(
             >
           </span>
           <span
-            class="inline-flex items-center gap-1.5 h-[22px] rounded-full border border-border bg-surface px-2 font-mono text-[11px] text-ink-muted"
+            class="inline-flex items-center gap-1.5 h-5.5 rounded-full border border-border bg-surface px-2 font-mono text-[11px] text-ink-muted"
           >
             <span
               aria-hidden="true"
@@ -61,7 +59,7 @@ watch(
 
         <button
           type="button"
-          class="hidden md:inline-flex md:items-center md:gap-2.5 h-8 min-w-[220px] rounded-md border border-border bg-surface px-2.5 text-[13px] text-ink-dim transition-[border-color,color] duration-120 hover:border-ink-muted hover:text-ink-muted"
+          class="hidden md:inline-flex md:items-center md:gap-2.5 h-8 min-w-55 rounded-md border border-border bg-surface px-2.5 text-[13px] text-ink-dim transition-[border-color,color] duration-120 hover:border-ink-muted hover:text-ink-muted"
           aria-label="Search docs"
           @click="openSearch"
         >
@@ -110,7 +108,7 @@ watch(
     />
     <aside
       :class="[
-        'fixed top-[60px] bottom-0 z-40 w-64 overflow-y-auto border-r border-border-soft bg-bg px-4 py-6 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden',
+        'fixed top-15 bottom-0 z-40 w-64 overflow-y-auto border-r border-border-soft bg-bg px-4 py-6 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full',
       ]"
       aria-label="Documentation (mobile)"
@@ -120,7 +118,7 @@ watch(
 
     <!-- ═══ 2-column shell (sidebar + page) ═══ -->
     <div
-      class="mx-auto grid max-w-[1440px] grid-cols-1 gap-12 px-5 sm:px-8 md:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]"
+      class="mx-auto grid max-w-360 grid-cols-1 gap-12 px-5 sm:px-8 md:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]"
     >
       <!-- LEFT: sidebar (md+) -->
       <div class="hidden md:block">

@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { useState } from '#app';
-
-interface Heading {
-  id: string;
-  text: string;
-  level: number;
-}
+import type { Heading } from '~/types';
 
 const props = defineProps<{
   headings: Heading[];
@@ -43,7 +38,7 @@ onMounted(() => {
 
 <template>
   <aside
-    class="sticky top-[76px] max-h-[calc(100dvh-92px)] overflow-y-auto py-10"
+    class="sticky top-19 max-h-[calc(100dvh-92px)] overflow-y-auto py-10"
     aria-label="On this page"
   >
     <h6
@@ -56,7 +51,7 @@ onMounted(() => {
         <a
           :href="`#${h.id}`"
           :class="[
-            'block py-[5px] text-[13px] leading-snug transition-[color,border-color] duration-120 ease-[cubic-bezier(0.16,1,0.3,1)]',
+            'block py-1.25 text-[13px] leading-snug transition-[color,border-color] duration-120 ease-[cubic-bezier(0.16,1,0.3,1)]',
             h.level === 3 ? 'pl-6 text-[12.5px]' : 'pl-3',
             activeId === h.id
               ? 'text-ink border-l-2 border-accent font-medium'

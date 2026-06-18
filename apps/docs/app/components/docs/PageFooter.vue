@@ -19,7 +19,7 @@ defineProps<{
         v-if="prev"
         :to="prev.path"
         :aria-label="`Previous: ${prev.title}`"
-        class="group block rounded-lg border border-border bg-surface px-[18px] py-4 transition-[border-color,box-shadow,background] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-accent hover:bg-[color-mix(in_oklch,var(--accent)_3%,var(--surface))] hover:shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_30%,transparent)]"
+        class="group block rounded-lg border border-border bg-surface px-4.5 py-4 transition-[border-color,box-shadow,background] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-accent hover:bg-[color-mix(in_oklch,var(--accent)_3%,var(--surface))] hover:shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_30%,transparent)]"
       >
         <div
           class="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-dim"
@@ -36,7 +36,7 @@ defineProps<{
         v-if="next"
         :to="next.path"
         :aria-label="`Next: ${next.title}`"
-        class="group block rounded-lg border border-border bg-surface px-[18px] py-4 text-right transition-[border-color,box-shadow,background] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-accent hover:bg-[color-mix(in_oklch,var(--accent)_3%,var(--surface))] hover:shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_30%,transparent)]"
+        class="group block rounded-lg border border-border bg-surface px-4.5 py-4 text-right transition-[border-color,box-shadow,background] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-accent hover:bg-[color-mix(in_oklch,var(--accent)_3%,var(--surface))] hover:shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_30%,transparent)]"
       >
         <div
           class="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-dim"
