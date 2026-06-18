@@ -98,6 +98,7 @@ export {
   type LoadRuleDocOptions,
   type RuleDoc,
 } from './rule-docs.js';
+export { renderAgentPlaybook, renderRulePrompt } from './rule-prompt.js';
 export {
   listRules,
   RULE_REGISTRY,
