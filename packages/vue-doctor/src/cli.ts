@@ -37,6 +37,13 @@ import {
 } from '@geoql/doctor-core';
 import { cac } from 'cac';
 import prompts from 'prompts';
+import { runInstallSkill } from './install/install-skill.js';
+
+interface InstallCliFlags {
+  yes?: boolean;
+  force?: boolean;
+  dryRun?: boolean;
+}
 
 function readVersion(): string {
   try {
@@ -974,6 +981,31 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         await runInit(dir ?? '.', flags);
       } catch (err) {
         process.stderr.write(`${err instanceof Error ? err.message : err}\n`);
+        process.exitCode = 2;
+      }
+    });
+
+  cli
+    .command(
+      'install [dir]',
+      'Scaffold the vue-doctor agent skill so AI agents run doctor after changes',
+    )
+    .option('-y, --yes', 'Non-interactive, write defaults without prompting')
+    .option('--force', 'Overwrite an existing skill')
+    .option('--dry-run', 'Print what would be written, touch nothing')
+    .action(async (dir: string | undefined, flags: InstallCliFlags) => {
+      try {
+        await runInstallSkill({
+          dir: dir ?? '.',
+          version: readVersion(),
+          yes: flags.yes,
+          force: flags.force,
+          dryRun: flags.dryRun,
+        });
+      } catch (err) {
+        process.stderr.write(
+          `vue-doctor install: ${err instanceof Error ? err.message : err}\n`,
+        );
         process.exitCode = 2;
       }
     });
