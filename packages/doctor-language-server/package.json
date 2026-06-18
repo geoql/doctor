@@ -1,0 +1,73 @@
+{
+  "name": "@geoql/doctor-language-server",
+  "version": "0.1.0",
+  "private": false,
+  "description": "LSP server that runs the @geoql/doctor audit engine over Vue 3 + Nuxt 4 files and publishes diagnostics to any LSP-capable editor. TypeScript, ESM, stdio.",
+  "keywords": [
+    "audit",
+    "doctor",
+    "geoql",
+    "language-server",
+    "lint",
+    "lsp",
+    "nuxt",
+    "vue",
+    "vue3"
+  ],
+  "homepage": "https://github.com/geoql/doctor#readme",
+  "bugs": {
+    "url": "https://github.com/geoql/doctor/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Vinayak Kulkarni",
+    "email": "inbox.vinayak@gmail.com",
+    "url": "https://vinayakkulkarni.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geoql/doctor.git",
+    "directory": "packages/doctor-language-server"
+  },
+  "bin": {
+    "doctor-language-server": "./bin/doctor-language-server.mjs"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "vp lint src",
+    "lint:fix": "vp lint src --fix",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
+    "build": "vp pack",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@geoql/doctor-core": "workspace:^",
+    "vscode-languageserver": "^10.0.0",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-uri": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.13.0"
+  }
+}

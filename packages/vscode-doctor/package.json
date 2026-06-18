@@ -1,0 +1,97 @@
+{
+  "name": "vscode-doctor",
+  "displayName": "Doctor (Vue/Nuxt)",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Doctor diagnostics for Vue 3 + Nuxt 4 codebases, in your editor.",
+  "categories": [
+    "Linters",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "diagnostics",
+    "doctor",
+    "lint",
+    "lsp",
+    "nuxt",
+    "vue"
+  ],
+  "homepage": "https://github.com/geoql/doctor#readme",
+  "bugs": {
+    "url": "https://github.com/geoql/doctor/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geoql/doctor.git",
+    "directory": "packages/vscode-doctor"
+  },
+  "publisher": "geoql",
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js",
+    "dev": "esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js --watch",
+    "typecheck": "tsc --noEmit",
+    "package": "pnpm run build && pnpm dlx @vscode/vsce package --no-dependencies -o doctor.vsix"
+  },
+  "dependencies": {
+    "@geoql/doctor-language-server": "workspace:^",
+    "vscode-languageclient": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^6.0.3"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "doctor.restart",
+        "title": "Doctor: Restart Server"
+      },
+      {
+        "command": "doctor.showOutput",
+        "title": "Doctor: Show Output"
+      }
+    ],
+    "configuration": {
+      "title": "Doctor",
+      "properties": {
+        "doctor.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Doctor diagnostics for Vue/Nuxt files."
+        },
+        "doctor.serverPath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine-overridable",
+          "description": "Optional path to the doctor-language-server executable. When empty, the project's local install is used, falling back to `npx @geoql/doctor-language-server@latest`."
+        },
+        "doctor.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "scope": "window",
+          "description": "Trace the communication between the editor and the Doctor language server."
+        }
+      }
+    }
+  },
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:vue"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.13.0",
+    "vscode": "^1.85.0"
+  }
+}
