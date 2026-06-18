@@ -75,5 +75,8 @@
   "peerDependencies": {
     "knip": "^6.14.2",
     "oxlint": "^1.66.0"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

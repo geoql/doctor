@@ -87,7 +87,7 @@ jobs:
           fi
 
       - name: Sync JSR versions
-        run: node scripts/bump-jsr-version.mjs
+        run: node scripts/bump-jsr-version.ts
 
       - name: Publish to JSR
         run: |

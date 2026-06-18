@@ -5,8 +5,8 @@
   "description": "Benchmark suite for @geoql/doctor — measures doctor vs eslint-plugin-vue on a synthetic Vue/Nuxt corpus using mitata.",
   "type": "module",
   "scripts": {
-    "gen-fixtures": "node generate-fixtures.mjs",
-    "bench": "node bench.mjs"
+    "gen-fixtures": "node generate-fixtures.ts",
+    "bench": "node bench.ts"
   },
   "dependencies": {
     "@geoql/doctor-core": "workspace:*",

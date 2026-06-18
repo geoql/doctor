@@ -60,5 +60,8 @@
   },
   "peerDependencies": {
     "oxlint": "^1.66.0"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

@@ -35,7 +35,7 @@ The author of this repo is also the primary downstream consumer; correctness > c
 | Package manager | **pnpm v11.4.0** (pinned)                               | `.nvmrc` = `24`. Never use `bunx`, never use `npm` for tasks.                                                                                                                                                               |
 | Commit linting  | commitlint + husky + lint-staged                        | Husky `commit-msg` runs `pnpm exec commitlint --edit` and injects a `Signed-off-by` trailer from `git config user.{name,email}`.                                                                                            |
 | Release         | release-please (manifest mode, `node-workspace` plugin) | One PR per release, covers all 5 packages.                                                                                                                                                                                  |
-| Publishing      | **npm** + **JSR** in parallel                           | `pnpm pack` + `npm publish <tarball> --provenance --access public --tag <tag>` for npm. Per-package `jsr.json` synced via `scripts/bump-jsr-version.mjs`.                                                                   |
+| Publishing      | **npm** + **JSR** in parallel                           | `pnpm pack` + `npm publish <tarball> --provenance --access public --tag <tag>` for npm. Per-package `jsr.json` synced via `scripts/bump-jsr-version.ts`.                                                                    |
 | Provenance      | GitHub OIDC                                             | `--provenance` REQUIRES the GH repo to be public and the package to already exist on npm (OIDC cannot create never-published packages).                                                                                     |
 | Linter runtime  | oxlint 1.67.0                                           | Bundled by vite-plus. The bare `node_modules/.bin/oxlint` is the vite-plus IDE wrapper and hard-exits 1 — always invoke `vp lint` or call the real `oxlint@<ver>/node_modules/oxlint/bin/oxlint` from a pnpm-resolved path. |
 
@@ -168,7 +168,7 @@ This is the **opposite** of the convention in the author's Vue/Nuxt app repos �
 - **`--provenance` requires the GH repo to be public** and the package to already exist on npm. **OIDC cannot create a never-published package** — bootstrap once with a personal npm token, then configure a Trusted Publisher on npmjs.com (GitHub Actions · `geoql/doctor` · workflow `release-please.yml` · env `npm`).
 - **Prerelease versions REQUIRE `--tag`** (e.g. `alpha`, `next`).
 - **oxlint-plugin `publishConfig` is `{ "access": "public" }` only** — no `provenance: true` locally (OIDC env supplies it).
-- **JSR**: each package has a `jsr.json` synced by `scripts/bump-jsr-version.mjs` (covers all 5). Packages must be manually created + linked on jsr.io before first publish. The two CLI packages need an `imports` map (`"@geoql/doctor-core": "jsr:@geoql/doctor-core@^x"`) in `jsr.json`, plus doctor-core's static deps added as their `devDependencies` so deno's byonm resolver finds the transitive npm deps.
+- **JSR**: each package has a `jsr.json` synced by `scripts/bump-jsr-version.ts` (covers all 5). Packages must be manually created + linked on jsr.io before first publish. The two CLI packages need an `imports` map (`"@geoql/doctor-core": "jsr:@geoql/doctor-core@^x"`) in `jsr.json`, plus doctor-core's static deps added as their `devDependencies` so deno's byonm resolver finds the transitive npm deps.
 - **Add postinstall-having deps to `pnpm-workspace.yaml` `allowBuilds`** (`@parcel/watcher`, `esbuild`, `unrs-resolver`) — frozen-install CI fails otherwise.
 
 ### 🚨 Rule #12: SPEC.md Is the Locked Spec
@@ -198,7 +198,7 @@ geoql/doctor/
 │   ├── vue-doctor/                        # @geoql/vue-doctor — CLI (bin/vue-doctor.mjs)
 │   ├── nuxt-doctor/                        # @geoql/nuxt-doctor — CLI (bin/nuxt-doctor.mjs)
 │   └── benchmark/                          # perf workspace (excluded from coverage gate)
-├── scripts/bump-jsr-version.mjs            # sync 5 × jsr.json from package.json
+├── scripts/bump-jsr-version.ts            # sync 5 × jsr.json from package.json
 ├── docs/SPEC.md                           # the single locked spec — do NOT normalize away
 ├── .github/workflows/                      # OIDC publish + CI (SSH-only writes)
 ├── .husky/{commit-msg,pre-commit}
@@ -221,7 +221,7 @@ pnpm run build               # vp pack per package
 pnpm run test                # all package tests
 pnpm run coverage            # vitest run --coverage — READ THE OUTPUT (Rule #7)
 pnpm --filter @geoql/doctor-core test spawn-hardening   # isolated flake triage
-node scripts/bump-jsr-version.mjs                        # sync jsr.json before release
+node scripts/bump-jsr-version.ts                        # sync jsr.json before release
 pnpm dlx taze major -l -w -r                             # dependency bump
 ```
 

@@ -36,7 +36,7 @@
     "format": "vp fmt",
     "format:check": "vp fmt --check",
     "build": "pnpm -r --filter './packages/*' run build",
-    "schema:generate": "node scripts/generate-schema.mjs",
+    "schema:generate": "node scripts/generate-schema.ts",
     "test": "pnpm -r --filter './packages/*' run test",
     "coverage": "vitest run --coverage",
     "typecheck": "pnpm -r --filter './packages/*' run typecheck",

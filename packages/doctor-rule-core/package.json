@@ -53,5 +53,8 @@
     "oxc-parser": "0.133.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.7"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

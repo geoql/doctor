@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 const scriptPath = fileURLToPath(
-  new URL('./bump-jsr-version.mjs', import.meta.url),
+  new URL('./bump-jsr-version.ts', import.meta.url),
 );
 
 function writeJson(path, value) {
