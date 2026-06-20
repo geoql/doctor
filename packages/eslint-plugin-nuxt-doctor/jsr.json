@@ -7,7 +7,8 @@
     ".": "./src/index.ts"
   },
   "imports": {
-    "@geoql/doctor-rule-core": "jsr:@geoql/doctor-rule-core@^1.0.0"
+    "@geoql/doctor-rule-core": "jsr:@geoql/doctor-rule-core@^1.0.0",
+    "@geoql/eslint-plugin-vue-doctor": "jsr:@geoql/eslint-plugin-vue-doctor@^1.0.0"
   },
   "publish": {
     "include": [
