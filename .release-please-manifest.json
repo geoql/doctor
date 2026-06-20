@@ -6,6 +6,6 @@
   "packages/oxlint-plugin-nuxt-doctor": "1.1.0",
   "packages/eslint-plugin-vue-doctor": "1.1.0",
   "packages/eslint-plugin-nuxt-doctor": "1.1.0",
-  "packages/nuxt-doctor": "1.2.0",
-  "packages/vue-doctor": "1.2.0"
+  "packages/nuxt-doctor": "1.2.1",
+  "packages/vue-doctor": "1.2.1"
 }
