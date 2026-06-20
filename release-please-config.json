@@ -9,6 +9,22 @@
       "draft": false,
       "prerelease": false
     },
+    "packages/doctor-rule-core": {
+      "release-type": "node",
+      "changelog-path": "CHANGELOG.md",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "draft": false,
+      "prerelease": false
+    },
+    "packages/doctor-language-server": {
+      "release-type": "node",
+      "changelog-path": "CHANGELOG.md",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "draft": false,
+      "prerelease": false
+    },
     "packages/oxlint-plugin-vue-doctor": {
       "release-type": "node",
       "changelog-path": "CHANGELOG.md",

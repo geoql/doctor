@@ -55,7 +55,10 @@ jobs:
       - name: Pack tarballs (rewrites workspace:^ to real versions)
         run: |
           rm -rf .release && mkdir -p .release
-          for dir in packages/doctor-core packages/oxlint-plugin-vue-doctor packages/oxlint-plugin-nuxt-doctor packages/nuxt-doctor packages/vue-doctor; do
+          # npm set is derived from disk (every package with private !== true) so it
+          # can never drift from the package list again — a hardcoded list here is
+          # exactly why the eslint plugins were version-bumped but never published.
+          for dir in $(node -e "const f=require('node:fs');for(const p of f.readdirSync('packages')){const j='packages/'+p+'/package.json';if(f.existsSync(j)&&JSON.parse(f.readFileSync(j,'utf8')).private!==true)console.log('packages/'+p)}"); do
             (cd "$dir" && pnpm pack --pack-destination "$GITHUB_WORKSPACE/.release")
           done
 
@@ -92,7 +95,10 @@ jobs:
       - name: Publish to JSR
         run: |
           failed=""
-          for dir in packages/doctor-core packages/oxlint-plugin-vue-doctor packages/oxlint-plugin-nuxt-doctor packages/nuxt-doctor packages/vue-doctor; do
+          # JSR set is every package that ships a jsr.json. This lets npm-only
+          # packages (e.g. doctor-language-server, whose vscode-* deps are
+          # npm-only) opt out simply by not having a jsr.json — no hardcoded list.
+          for dir in $(node -e "const f=require('node:fs');for(const p of f.readdirSync('packages')){if(f.existsSync('packages/'+p+'/jsr.json'))console.log('packages/'+p)}"); do
             name=$(node -p "require('./$dir/package.json').name")
             version=$(node -p "require('./$dir/package.json').version")
             if curl -fsS "https://jsr.io/$name/$version/package.json" >/dev/null 2>&1; then
