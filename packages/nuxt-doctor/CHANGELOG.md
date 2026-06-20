@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.2.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.1.2...nuxt-doctor-v1.2.0) (2026-06-20)
+
+
+### Features
+
+* **core:** zod v4 config schema as single source of truth ([0cb3de1](https://github.com/geoql/doctor/commit/0cb3de11779e87ac2f542e0d66aeb6ba7565a4b2))
+* **vue-cli,nuxt-cli:** add install command scaffolding the doctor agent skill ([9739ac6](https://github.com/geoql/doctor/commit/9739ac6a183d42c3dc8832302c4589034eac834f))
+* **vue-cli,nuxt-cli:** add why/rules aliases for react.doctor parity ([0040477](https://github.com/geoql/doctor/commit/00404775bec79f4aa6d1d4d50699fbcd79bfe82c))
+
+
+### Miscellaneous
+
+* **deps:** bump dependencies, migrate lucide-vue-next to @lucide/vue ([f1e8f4a](https://github.com/geoql/doctor/commit/f1e8f4aa7e684ef7d8104150deee794f4ad3a204))
+
+
+### Code Refactoring
+
+* **monorepo:** migrate authored .mjs scripts to .ts and pin engines to node &gt;=24 ([ae3ec8d](https://github.com/geoql/doctor/commit/ae3ec8d9a10c8773c2d98478309b205a92b1c9ae))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.2.0
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 1.1.0
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.1.0
+
 ## [1.1.2](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.1.1...nuxt-doctor-v1.1.2) (2026-06-10)
 
 

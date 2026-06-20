@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.2.0](https://github.com/geoql/doctor/compare/doctor-core-v1.1.1...doctor-core-v1.2.0) (2026-06-20)
+
+
+### Features
+
+* **core,docs:** per-rule prompt endpoints + agent playbook ([408c4dd](https://github.com/geoql/doctor/commit/408c4dd90252476cddc1c2478ade82ba4584069a))
+* **core:** zod v4 config schema as single source of truth ([0cb3de1](https://github.com/geoql/doctor/commit/0cb3de11779e87ac2f542e0d66aeb6ba7565a4b2))
+* **monorepo:** add security and design rule families ([eab410e](https://github.com/geoql/doctor/commit/eab410ea90ca9839de5f7648a499134409299160))
+
+
+### Miscellaneous
+
+* **deps:** bump dependencies, migrate lucide-vue-next to @lucide/vue ([f1e8f4a](https://github.com/geoql/doctor/commit/f1e8f4aa7e684ef7d8104150deee794f4ad3a204))
+
+
+### Code Refactoring
+
+* **monorepo:** migrate authored .mjs scripts to .ts and pin engines to node &gt;=24 ([ae3ec8d](https://github.com/geoql/doctor/commit/ae3ec8d9a10c8773c2d98478309b205a92b1c9ae))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 1.1.0
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.1.0
+
 ## [1.1.1](https://github.com/geoql/doctor/compare/doctor-core-v1.1.0...doctor-core-v1.1.1) (2026-06-10)
 
 
