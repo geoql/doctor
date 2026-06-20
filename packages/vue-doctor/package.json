@@ -62,14 +62,14 @@
     "prompts": "^2.4.2"
   },
   "devDependencies": {
-    "@types/node": "^25.9.3",
+    "@types/node": "^25.9.4",
     "@types/prompts": "^2.4.9",
     "@vue/compiler-core": "^3.5.38",
     "@vue/compiler-sfc": "^3.5.38",
     "c12": "^4.0.0-beta.5",
-    "oxc-parser": "0.133.0",
+    "oxc-parser": "^0.137.0",
     "picocolors": "^1.1.1",
-    "semver": "^7.8.4",
+    "semver": "^7.8.5",
     "tinyglobby": "^0.2.17",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9",

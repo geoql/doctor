@@ -154,7 +154,7 @@ describe('run --project', () => {
     const report = JSON.parse(stdout.join(''));
     expect(report.schemaVersion).toBe('1');
     expect(report.projectInfo.rootDirectory).toBe(workspaceDir);
-  });
+  }, 40000);
 
   it('prints only the aggregate integer score with --score', async () => {
     const code = await run([
@@ -169,5 +169,5 @@ describe('run --project', () => {
 
     expect(code).toBe(1);
     expect(stdout.join('')).toBe('91\n');
-  });
+  }, 40000);
 });

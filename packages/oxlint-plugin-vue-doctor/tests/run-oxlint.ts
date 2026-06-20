@@ -16,13 +16,17 @@ const PLUGIN_DIST = resolve(import.meta.dirname, '../dist/index.js');
 
 const OXLINT_BIN = (() => {
   const rootDir = resolve(import.meta.dirname, '../../..');
+  // Resolve whichever oxlint version vite-plus currently bundles — every vite-plus
+  // bump moves oxlint (e.g. 1.67 -> 1.70), so a hardcoded version silently breaks
+  // these e2e tests. Anchor on `.pnpm/oxlint@` so eslint-plugin-oxlint and
+  // oxlint-tsgolint dirs are excluded; take the highest version present.
   const found = execSync(
-    `find ${rootDir}/node_modules/.pnpm -path '*oxlint@1.67.0*/node_modules/oxlint/bin/oxlint' | head -1`,
+    `find ${rootDir}/node_modules/.pnpm -path '*/.pnpm/oxlint@*/node_modules/oxlint/bin/oxlint' | sort -V | tail -1`,
     { encoding: 'utf-8' },
   ).trim();
   if (!found) {
     throw new Error(
-      'Real oxlint 1.67 binary not found. E2E tests require the actual oxlint runtime.',
+      'Real oxlint binary not found. E2E tests require the actual oxlint runtime.',
     );
   }
   return found;

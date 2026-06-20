@@ -39,9 +39,9 @@
     "vscode-languageclient": "^10.0.0"
   },
   "devDependencies": {
-    "@types/node": "^25.9.3",
-    "@types/vscode": "^1.120.0",
-    "esbuild": "^0.25.12",
+    "@types/node": "^25.9.4",
+    "@types/vscode": "^1.125.0",
+    "esbuild": "^0.28.1",
     "typescript": "^6.0.3"
   },
   "contributes": {
@@ -92,6 +92,6 @@
   ],
   "engines": {
     "node": "^20.19.0 || >=22.13.0",
-    "vscode": "^1.120.0"
+    "vscode": "^1.125.0"
   }
 }

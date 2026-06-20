@@ -57,15 +57,15 @@
     "@vue/compiler-sfc": "^3.5.38",
     "c12": "^4.0.0-beta.5",
     "kolorist": "^1.8.0",
-    "oxc-parser": "0.133.0",
+    "oxc-parser": "^0.137.0",
     "oxlint": "^1.70.0",
     "picocolors": "^1.1.1",
-    "semver": "^7.8.4",
+    "semver": "^7.8.5",
     "tinyglobby": "^0.2.17",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^25.9.3",
+    "@types/node": "^25.9.4",
     "@types/semver": "^7.7.1",
     "@vue/compiler-core": "^3.5.38",
     "knip": "^6.17.1",
