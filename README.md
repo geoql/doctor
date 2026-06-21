@@ -6,12 +6,17 @@
 [![npm](https://img.shields.io/npm/v/@geoql/nuxt-doctor?label=nuxt-doctor)](https://www.npmjs.com/package/@geoql/nuxt-doctor)
 [![JSR](https://jsr.io/badges/@geoql/vue-doctor)](https://jsr.io/@geoql/vue-doctor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![dashboard](https://img.shields.io/badge/dashboard-the--doctor.report-c2410c)](https://the-doctor.report/?utm_source=github&utm_medium=readme&utm_campaign=repo-badge)
 
 ## What is this?
 
-A pnpm monorepo of CLIs and oxlint plugins that audit Vue 3 and Nuxt 4 apps for performance, correctness, security, and AI-agent anti-patterns. It does not scaffold or generate. It critiques the code your agent just wrote and gives it a deterministic 0-100 health score. The audit runs fully local and offline: same code in, same score out.
+A pnpm monorepo of CLIs, oxlint + eslint plugins, and a language server that audit Vue 3 and Nuxt 4 apps for performance, correctness, security, and AI-agent anti-patterns. It does not scaffold or generate. It critiques the code your agent just wrote and gives it a deterministic 0-100 health score. The audit runs fully local and offline: same code in, same score out.
 
 Full docs, rule reference, config, and scoring live at [docs.the-doctor.report](https://docs.the-doctor.report).
+
+## Hosted dashboard (optional)
+
+The CLI is the whole product and stays free. If you want the score tracked over time instead of just printed once, [the-doctor.report](https://the-doctor.report/?utm_source=github&utm_medium=readme&utm_campaign=repo-pitch) is a hosted dashboard: push a run from CI with `--push`, and it keeps the score trend, per-rule findings, and per-branch history for each project. It stores rule IDs, severities, and file paths only — never your source, snippets, or messages. Nothing about local CLI usage phones home; the dashboard is opt-in and gated behind your own API key.
 
 ## Ecosystem
 
@@ -24,15 +29,19 @@ Full docs, rule reference, config, and scoring live at [docs.the-doctor.report](
 
 ## Packages
 
-| Package                                                                  | Version                                                                                                                                 | Description                                                |
-| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| [`@geoql/doctor-core`](packages/doctor-core)                             | [![npm](https://img.shields.io/npm/v/@geoql/doctor-core)](https://www.npmjs.com/package/@geoql/doctor-core)                             | Audit engine: scoring, reporters, hybrid two-pass analysis |
-| [`@geoql/vue-doctor`](packages/vue-doctor)                               | [![npm](https://img.shields.io/npm/v/@geoql/vue-doctor)](https://www.npmjs.com/package/@geoql/vue-doctor)                               | CLI for Vue 3 projects                                     |
-| [`@geoql/nuxt-doctor`](packages/nuxt-doctor)                             | [![npm](https://img.shields.io/npm/v/@geoql/nuxt-doctor)](https://www.npmjs.com/package/@geoql/nuxt-doctor)                             | CLI for Nuxt 4 projects                                    |
-| [`@geoql/oxlint-plugin-vue-doctor`](packages/oxlint-plugin-vue-doctor)   | [![npm](https://img.shields.io/npm/v/@geoql/oxlint-plugin-vue-doctor)](https://www.npmjs.com/package/@geoql/oxlint-plugin-vue-doctor)   | oxlint JS plugin: Vue 3 rules                              |
-| [`@geoql/oxlint-plugin-nuxt-doctor`](packages/oxlint-plugin-nuxt-doctor) | [![npm](https://img.shields.io/npm/v/@geoql/oxlint-plugin-nuxt-doctor)](https://www.npmjs.com/package/@geoql/oxlint-plugin-nuxt-doctor) | oxlint JS plugin: Nuxt 4 rules                             |
+| Package                                                                  | Version                                                                                                                                 | Description                                                   |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| [`@geoql/vue-doctor`](packages/vue-doctor)                               | [![npm](https://img.shields.io/npm/v/@geoql/vue-doctor)](https://www.npmjs.com/package/@geoql/vue-doctor)                               | CLI for Vue 3 projects                                        |
+| [`@geoql/nuxt-doctor`](packages/nuxt-doctor)                             | [![npm](https://img.shields.io/npm/v/@geoql/nuxt-doctor)](https://www.npmjs.com/package/@geoql/nuxt-doctor)                             | CLI for Nuxt 4 projects                                       |
+| [`@geoql/doctor-core`](packages/doctor-core)                             | [![npm](https://img.shields.io/npm/v/@geoql/doctor-core)](https://www.npmjs.com/package/@geoql/doctor-core)                             | Audit engine: scoring, reporters, hybrid two-pass analysis    |
+| [`@geoql/doctor-rule-core`](packages/doctor-rule-core)                   | [![npm](https://img.shields.io/npm/v/@geoql/doctor-rule-core)](https://www.npmjs.com/package/@geoql/doctor-rule-core)                   | Linter-neutral rule cores shared by the oxlint/eslint plugins |
+| [`@geoql/oxlint-plugin-vue-doctor`](packages/oxlint-plugin-vue-doctor)   | [![npm](https://img.shields.io/npm/v/@geoql/oxlint-plugin-vue-doctor)](https://www.npmjs.com/package/@geoql/oxlint-plugin-vue-doctor)   | oxlint JS plugin: Vue 3 rules                                 |
+| [`@geoql/oxlint-plugin-nuxt-doctor`](packages/oxlint-plugin-nuxt-doctor) | [![npm](https://img.shields.io/npm/v/@geoql/oxlint-plugin-nuxt-doctor)](https://www.npmjs.com/package/@geoql/oxlint-plugin-nuxt-doctor) | oxlint JS plugin: Nuxt 4 rules                                |
+| [`@geoql/eslint-plugin-vue-doctor`](packages/eslint-plugin-vue-doctor)   | [![npm](https://img.shields.io/npm/v/@geoql/eslint-plugin-vue-doctor)](https://www.npmjs.com/package/@geoql/eslint-plugin-vue-doctor)   | ESLint flat-config plugin: Vue 3 rules                        |
+| [`@geoql/eslint-plugin-nuxt-doctor`](packages/eslint-plugin-nuxt-doctor) | [![npm](https://img.shields.io/npm/v/@geoql/eslint-plugin-nuxt-doctor)](https://www.npmjs.com/package/@geoql/eslint-plugin-nuxt-doctor) | ESLint flat-config plugin: Nuxt 4 rules                       |
+| [`@geoql/doctor-language-server`](packages/doctor-language-server)       | [![npm](https://img.shields.io/npm/v/@geoql/doctor-language-server)](https://www.npmjs.com/package/@geoql/doctor-language-server)       | LSP server for editor integration (npm-only)                  |
 
-The two CLIs ship at `1.1.1`, published on [npm](https://www.npmjs.com/org/geoql) and [JSR](https://jsr.io/@geoql) with OIDC provenance.
+The two CLIs ship at `1.2.2`. All nine packages publish to [npm](https://www.npmjs.com/org/geoql) with OIDC provenance; the eight library/plugin packages also publish to [JSR](https://jsr.io/@geoql) (the language server is npm-only — it is a stdio binary run via `npx`, with npm-only `vscode-*` deps).
 
 ## Quick start
 
@@ -56,10 +65,15 @@ Both CLIs print a health score with grouped diagnostics and exit non-zero when f
 geoql/doctor/
 ├── packages/
 │   ├── doctor-core/                  # @geoql/doctor-core — audit engine
+│   ├── doctor-rule-core/             # @geoql/doctor-rule-core — shared rule cores
 │   ├── vue-doctor/                   # @geoql/vue-doctor — Vue 3 CLI
 │   ├── nuxt-doctor/                  # @geoql/nuxt-doctor — Nuxt 4 CLI
 │   ├── oxlint-plugin-vue-doctor/     # Vue 3 oxlint rules
 │   ├── oxlint-plugin-nuxt-doctor/    # Nuxt 4 oxlint rules
+│   ├── eslint-plugin-vue-doctor/     # Vue 3 eslint rules
+│   ├── eslint-plugin-nuxt-doctor/    # Nuxt 4 eslint rules
+│   ├── doctor-language-server/       # LSP server (npm-only)
+│   ├── vscode-doctor/                # VS Code extension (not published to npm)
 │   └── benchmark/                    # perf workspace (not published)
 ├── apps/docs/                        # docs.the-doctor.report (Nuxt)
 └── docs/SPEC.md                      # the locked spec
@@ -102,7 +116,7 @@ pnpm run build       # vp pack per package
 pnpm run coverage    # vitest run --coverage (100% gate)
 ```
 
-Requires Node `>=24` and pnpm `11.4.0`.
+Requires Node `>=24.11.0` and pnpm `11.8.0`.
 
 ## License
 
