@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.1](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.1.0...eslint-plugin-vue-doctor-v1.1.1) (2026-06-21)
+
+
+### Miscellaneous
+
+* remove committed qa scratch from eslint plugins ([a78a9e3](https://github.com/geoql/doctor/commit/a78a9e3813a6ea0dc27f563ae94dd161c0774033))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @geoql/doctor-core bumped to 1.2.1
+
 ## [1.1.0](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.0.0...eslint-plugin-vue-doctor-v1.1.0) (2026-06-20)
 
 
