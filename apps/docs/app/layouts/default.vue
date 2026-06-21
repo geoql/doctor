@@ -34,7 +34,9 @@ watch(
   <div class="min-h-dvh bg-bg text-ink">
     <!-- ═══ Top nav ═══ -->
     <header class="sticky top-0 z-50 nav-blur border-b border-border-soft">
-      <div class="mx-auto flex h-15 max-w-360 items-center gap-6 px-5 sm:px-8">
+      <div
+        class="mx-auto flex h-15 max-w-360 items-center gap-3 px-5 sm:gap-6 sm:px-8"
+      >
         <NuxtLink to="/" class="flex items-center gap-2.5">
           <span
             class="grid size-5.5 place-items-center rounded-sm bg-accent text-ink-on-accent font-mono text-xs font-bold shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--accent)_50%,transparent),0_0_0_4px_color-mix(in_oklch,var(--accent)_14%,transparent)]"
@@ -83,7 +85,7 @@ watch(
             to="/getting-started/installation"
             aria-label="Docs"
             title="Docs"
-            class="md:hidden flex size-8 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color] duration-120 hover:text-ink hover:border-ink-muted"
+            class="md:hidden flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color] duration-120 hover:text-ink hover:border-ink-muted"
           >
             <Icon name="lucide:book-open" class="size-4" />
           </NuxtLink>
@@ -99,7 +101,7 @@ watch(
             rel="noopener noreferrer"
             aria-label="GitHub"
             title="GitHub"
-            class="md:hidden flex size-8 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color] duration-120 hover:text-ink hover:border-ink-muted"
+            class="md:hidden flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color] duration-120 hover:text-ink hover:border-ink-muted"
           >
             <Icon name="lucide:github" class="size-4" />
           </NuxtLink>
@@ -116,7 +118,7 @@ watch(
 
         <button
           type="button"
-          class="md:hidden ml-2 size-8 inline-flex items-center justify-center rounded-md border border-border bg-surface text-ink-muted"
+          class="md:hidden size-8 shrink-0 inline-flex items-center justify-center rounded-md border border-border bg-surface text-ink-muted"
           aria-label="Toggle navigation"
           @click="toggleSidebar"
         >
