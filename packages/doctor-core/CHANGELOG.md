@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/geoql/doctor/compare/doctor-core-v1.2.0...doctor-core-v1.2.1) (2026-06-21)
+
+
+### Bug Fixes
+
+* **core:** republish to align oxc-parser ^0.137.0 for CLI JSR byonm ([60a58af](https://github.com/geoql/doctor/commit/60a58af01b45dadb41842476db146db96ecc6c62))
+
 ## [1.2.0](https://github.com/geoql/doctor/compare/doctor-core-v1.1.1...doctor-core-v1.2.0) (2026-06-20)
 
 
