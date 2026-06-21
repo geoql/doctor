@@ -74,17 +74,25 @@ watch(
         <nav class="ml-auto flex items-center gap-1" aria-label="primary">
           <NuxtLink
             to="/getting-started/installation"
-            class="rounded-md px-2.5 py-1.5 text-[13.5px] text-ink-muted transition-[color,background] duration-120 hover:text-ink hover:bg-surface"
-            >Docs</NuxtLink
+            aria-label="Docs"
+            title="Docs"
+            class="flex size-8 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color,background] duration-120 hover:text-ink hover:border-ink-muted md:size-auto md:border-0 md:bg-transparent md:px-2.5 md:py-1.5 md:text-[13.5px] md:hover:bg-surface"
           >
+            <Icon name="lucide:book-open" class="size-4 md:hidden" />
+            <span class="hidden md:inline">Docs</span>
+          </NuxtLink>
           <NuxtLink
             to="https://github.com/geoql/doctor"
             external
             target="_blank"
             rel="noopener noreferrer"
-            class="rounded-md px-2.5 py-1.5 text-[13.5px] text-ink-muted transition-[color,background] duration-120 hover:text-ink hover:bg-surface"
-            >GitHub</NuxtLink
+            aria-label="GitHub"
+            title="GitHub"
+            class="flex size-8 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color,background] duration-120 hover:text-ink hover:border-ink-muted md:size-auto md:border-0 md:bg-transparent md:px-2.5 md:py-1.5 md:text-[13.5px] md:hover:bg-surface"
           >
+            <Icon name="lucide:github" class="size-4 md:hidden" />
+            <span class="hidden md:inline">GitHub</span>
+          </NuxtLink>
           <DocsThemeToggle />
         </nav>
 
