@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.2.0...nuxt-doctor-v1.2.1) (2026-06-20)
+
+
+### Bug Fixes
+
+* **monorepo:** add zod to CLI byonm devDeps for JSR publish ([a87913a](https://github.com/geoql/doctor/commit/a87913a85041d40258fb8bc627274ce6aa9fa810))
+
 ## [1.2.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.1.2...nuxt-doctor-v1.2.0) (2026-06-20)
 
 
