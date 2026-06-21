@@ -72,15 +72,26 @@ watch(
         </button>
 
         <nav class="ml-auto flex items-center gap-1" aria-label="primary">
+          <!-- Mobile: icon buttons (md:hidden, mirrors the hamburger). Desktop:
+               text pills (hidden md:inline-flex, mirrors the search button).
+               Two single-purpose elements avoid two cascade traps: iconify's
+               UNLAYERED :where(.i-lucide) display rule beats a layered
+               md:hidden on the icon, and a duplicate .hidden utility sorts
+               after md:inline. The proven md:hidden / hidden md:inline-flex
+               patterns sidestep both. -->
           <NuxtLink
             to="/getting-started/installation"
             aria-label="Docs"
             title="Docs"
-            class="flex size-8 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color,background] duration-120 hover:text-ink hover:border-ink-muted md:size-auto md:border-0 md:bg-transparent md:px-2.5 md:py-1.5 md:text-[13.5px] md:hover:bg-surface"
+            class="md:hidden flex size-8 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color] duration-120 hover:text-ink hover:border-ink-muted"
           >
-            <Icon name="lucide:book-open" class="size-4 md:hidden" />
-            <span class="hidden md:inline">Docs</span>
+            <Icon name="lucide:book-open" class="size-4" />
           </NuxtLink>
+          <NuxtLink
+            to="/getting-started/installation"
+            class="hidden md:inline-flex items-center rounded-md px-2.5 py-1.5 text-[13.5px] text-ink-muted transition-[color,background] duration-120 hover:text-ink hover:bg-surface"
+            >Docs</NuxtLink
+          >
           <NuxtLink
             to="https://github.com/geoql/doctor"
             external
@@ -88,11 +99,18 @@ watch(
             rel="noopener noreferrer"
             aria-label="GitHub"
             title="GitHub"
-            class="flex size-8 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color,background] duration-120 hover:text-ink hover:border-ink-muted md:size-auto md:border-0 md:bg-transparent md:px-2.5 md:py-1.5 md:text-[13.5px] md:hover:bg-surface"
+            class="md:hidden flex size-8 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color] duration-120 hover:text-ink hover:border-ink-muted"
           >
-            <Icon name="lucide:github" class="size-4 md:hidden" />
-            <span class="hidden md:inline">GitHub</span>
+            <Icon name="lucide:github" class="size-4" />
           </NuxtLink>
+          <NuxtLink
+            to="https://github.com/geoql/doctor"
+            external
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hidden md:inline-flex items-center rounded-md px-2.5 py-1.5 text-[13.5px] text-ink-muted transition-[color,background] duration-120 hover:text-ink hover:bg-surface"
+            >GitHub</NuxtLink
+          >
           <DocsThemeToggle />
         </nav>
 
