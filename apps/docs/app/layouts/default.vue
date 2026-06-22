@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Button } from '~/components/ui/button';
+
 const { sections } = useDocsNavigation();
 
 const version = useRuntimeConfig().public.version;
@@ -59,10 +61,10 @@ watch(
           </span>
         </NuxtLink>
 
-        <button
-          type="button"
-          class="hidden md:inline-flex md:items-center md:gap-2.5 h-8 min-w-55 rounded-md border border-border bg-surface px-2.5 text-[13px] text-ink-dim transition-[border-color,color] duration-120 hover:border-ink-muted hover:text-ink-muted"
+        <Button
+          variant="outline"
           aria-label="Search docs"
+          class="hidden md:inline-flex md:items-center md:gap-2.5 h-8 min-w-55 justify-start bg-surface px-2.5 text-[13px] font-normal text-ink-dim hover:text-ink-muted"
           @click="openSearch"
         >
           <Icon name="lucide:search" class="size-3.5 opacity-80" />
@@ -71,7 +73,7 @@ watch(
             class="font-mono text-[11px] text-ink-muted border border-border bg-bg px-1.5 h-5 inline-flex items-center rounded-sm"
             >⌘K</span
           >
-        </button>
+        </Button>
 
         <nav class="ml-auto flex items-center gap-1" aria-label="primary">
           <!-- Mobile: icon buttons (md:hidden, mirrors the hamburger). Desktop:
@@ -116,15 +118,16 @@ watch(
           <DocsThemeToggle />
         </nav>
 
-        <button
-          type="button"
-          class="md:hidden size-8 shrink-0 inline-flex items-center justify-center rounded-md border border-border bg-surface text-ink-muted"
+        <Button
+          variant="outline"
+          size="icon"
+          class="md:hidden bg-surface text-ink-muted hover:text-ink hover:border-ink-muted"
           aria-label="Toggle navigation"
           @click="toggleSidebar"
         >
           <Icon v-if="!sidebarOpen" name="lucide:menu" class="size-4" />
           <Icon v-else name="lucide:x" class="size-4" />
-        </button>
+        </Button>
       </div>
     </header>
 

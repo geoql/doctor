@@ -58,9 +58,18 @@ export default defineNuxtConfig({
     fallback: 'dark',
   },
 
+  // provider:'server' + local bundle keeps icons same-origin (no runtime
+  // api.iconify.design call) — matches apps/web + apps/marketing and avoids a
+  // CSP-blocked third-party fetch.
+  icon: {
+    provider: 'server',
+    serverBundle: 'local',
+    clientBundle: { scan: true, sizeLimitKb: 512 },
+  },
+
   app: {
     head: {
-      htmlAttrs: { lang: 'en' },
+      htmlAttrs: { lang: 'en', 'data-theme': 'dark' },
       title: 'the-doctor.report — Vue 3 / Nuxt 4 Code Audit',
       meta: [
         { charset: 'utf-8' },

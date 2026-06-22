@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -22,12 +23,18 @@
   --ok: oklch(0.72 0.16 165);
   --accent: oklch(0.64 0.22 27);
   --ink-on-accent: oklch(0.99 0 0);
+  --chart-1: oklch(0.7 0.2 27);
+  --chart-2: oklch(0.64 0.22 27);
+  --chart-3: oklch(0.56 0.21 30);
+  --chart-4: oklch(0.48 0.18 33);
+  --chart-5: oklch(0.4 0.14 36);
 
   --d-fast: 120ms;
   --d-base: 200ms;
   --d-slow: 360ms;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --r: 6px;
+  --maxw: 1320px;
 }
 
 :root:not(.dark) {
@@ -44,6 +51,11 @@
   --info: oklch(0.52 0.16 250);
   --ok: oklch(0.55 0.15 162);
   --accent: oklch(0.55 0.22 27);
+  --chart-1: oklch(0.62 0.21 27);
+  --chart-2: oklch(0.55 0.22 27);
+  --chart-3: oklch(0.49 0.2 30);
+  --chart-4: oklch(0.43 0.17 33);
+  --chart-5: oklch(0.37 0.13 36);
 }
 
 @theme inline {
@@ -61,6 +73,11 @@
   --color-ok: var(--ok);
   --color-accent: var(--accent);
   --color-ink-on-accent: var(--ink-on-accent);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
   --font-sans:
     'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -99,6 +116,7 @@
     background: var(--bg);
     color: var(--ink);
     font-family: var(--font-sans);
+    font-feature-settings: 'ss01', 'cv11';
     font-size: 16px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
@@ -142,8 +160,8 @@
   }
 }
 
-@layer utilities {
-  .font-mono-tabular {
+@layer components {
+  .data-value {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.01em;
@@ -157,10 +175,10 @@
 
   .reveal {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px);
     transition:
-      opacity 600ms var(--ease),
-      transform 600ms var(--ease);
+      opacity 700ms var(--ease),
+      transform 700ms var(--ease);
   }
   .reveal.in {
     opacity: 1;

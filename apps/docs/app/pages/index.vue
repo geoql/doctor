@@ -93,7 +93,7 @@ const sections = [
     <!-- ═══ The score card ═══ -->
     <section class="reveal mb-16 border border-border bg-surface p-6 sm:px-8">
       <div class="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-center">
-        <div class="font-mono-tabular">
+        <div class="data-value">
           <div
             class="text-[clamp(56px,7vw,84px)] font-bold leading-none tracking-[-0.04em] text-ink"
           >

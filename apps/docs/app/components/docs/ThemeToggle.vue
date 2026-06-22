@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { Button } from '~/components/ui/button';
+
 const { isDark, toggle: toggleTheme } = useThemeToggle();
 </script>
 
 <template>
-  <button
-    type="button"
-    class="flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-surface text-ink-muted transition-[color,border-color] duration-120 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-ink hover:border-ink-muted"
+  <Button
+    variant="outline"
+    size="icon"
+    class="bg-surface text-ink-muted hover:text-ink hover:border-ink-muted"
     :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
     :title="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
     @click="toggleTheme"
@@ -17,5 +20,5 @@ const { isDark, toggle: toggleTheme } = useThemeToggle();
         <span class="block size-4" />
       </template>
     </ClientOnly>
-  </button>
+  </Button>
 </template>
