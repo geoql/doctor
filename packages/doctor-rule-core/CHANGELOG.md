@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.1.0...doctor-rule-core-v1.2.0) (2026-06-23)
+
+
+### Features
+
+* **core:** react.doctor parity — perf rules, dimension filters, sub-score ([a184d70](https://github.com/geoql/doctor/commit/a184d70d8e5edf4a6d5e1975cf5cfce394740140))
+
 ## [1.1.0](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.0.0...doctor-rule-core-v1.1.0) (2026-06-20)
 
 

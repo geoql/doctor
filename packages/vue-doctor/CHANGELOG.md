@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.0](https://github.com/geoql/doctor/compare/vue-doctor-v1.2.2...vue-doctor-v1.3.0) (2026-06-23)
+
+
+### Features
+
+* **core:** react.doctor parity — perf rules, dimension filters, sub-score ([a184d70](https://github.com/geoql/doctor/commit/a184d70d8e5edf4a6d5e1975cf5cfce394740140))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.3.0
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.2.0
+
 ## [1.2.2](https://github.com/geoql/doctor/compare/vue-doctor-v1.2.1...vue-doctor-v1.2.2) (2026-06-21)
 
 
