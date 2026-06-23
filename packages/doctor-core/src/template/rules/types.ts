@@ -14,4 +14,8 @@ export interface TemplateRuleResult {
 export interface TemplateRule {
   id: string;
   check: (ctx: TemplateRuleContext) => TemplateRuleResult;
+  /** Capability tokens that must ALL be present for the rule to run. */
+  requires?: readonly string[];
+  /** Capability tokens that suppress the rule when ANY is present. */
+  disabledBy?: readonly string[];
 }

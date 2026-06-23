@@ -4,6 +4,8 @@ import { check as vMemoOnLargeList } from './v-memo-on-large-list.js';
 import { check as noInlineObjectPropInList } from './no-inline-object-prop-in-list.js';
 import { check as noComputedGetterInTemplateLoop } from './no-computed-getter-in-template-loop.js';
 import { check as avoidDeepVBindSpreadInList } from './avoid-deep-v-bind-spread-in-list.js';
+import { check as noRandomKey } from './no-random-key.js';
+import { check as noVMemoInVapor } from './no-v-memo-in-vapor.js';
 import { check as noVHtml } from './no-v-html.js';
 import { check as noTargetBlankWithoutRel } from './no-target-blank-without-rel.js';
 import { check as noJavascriptUri } from './no-javascript-uri.js';
@@ -19,7 +21,11 @@ import type { TemplateRule } from './types.js';
 export const TEMPLATE_RULES: TemplateRule[] = [
   { id: 'vue-doctor/template/v-for-has-key', check: vForHasKey },
   { id: 'vue-doctor/template/v-if-v-for-precedence', check: vIfVForPrecedence },
-  { id: 'vue-doctor/template/v-memo-on-large-list', check: vMemoOnLargeList },
+  {
+    id: 'vue-doctor/template/v-memo-on-large-list',
+    check: vMemoOnLargeList,
+    disabledBy: ['vue:vapor'],
+  },
   {
     id: 'vue-doctor/template/no-inline-object-prop-in-list',
     check: noInlineObjectPropInList,
@@ -31,6 +37,12 @@ export const TEMPLATE_RULES: TemplateRule[] = [
   {
     id: 'vue-doctor/template/avoid-deep-v-bind-spread-in-list',
     check: avoidDeepVBindSpreadInList,
+  },
+  { id: 'vue-doctor/template/no-random-key', check: noRandomKey },
+  {
+    id: 'vue-doctor/template/no-v-memo-in-vapor',
+    check: noVMemoInVapor,
+    requires: ['vue:vapor'],
   },
   { id: 'vue-doctor/security/no-v-html', check: noVHtml },
   {

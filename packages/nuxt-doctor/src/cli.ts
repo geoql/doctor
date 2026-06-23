@@ -21,6 +21,8 @@ import {
   renderVerboseTrace,
   scoreDiagnostics,
   filterReportByRules,
+  filterRuleIdsByCategory,
+  resolveCategoryScope,
   type AuditReport,
   type ConfigSource,
   type InitConfigFormat,
@@ -309,11 +311,14 @@ interface CliFlags {
   pushUrl: string;
   apiKey?: string;
   pushProject?: string;
+  category?: string | string[];
+  dimension?: string | string[];
 }
 
 interface PreparedOptions {
   ruleOverrides: Record<string, Severity | 'off'> | undefined;
   threshold: number | undefined;
+  categoryScope: ReadonlySet<RuleCategory> | undefined;
 }
 
 function toArray(value: string | string[] | undefined): string[] | undefined {
@@ -420,7 +425,13 @@ async function runSingleAudit(
     fix: flags.fix,
     ...(merged.fixExcludes ? { fixExcludes: merged.fixExcludes } : {}),
   });
-  const allowedRuleIds = new Set(Object.keys(merged.rules));
+  let allowedRuleIds = new Set(Object.keys(merged.rules));
+  if (prepared.categoryScope) {
+    allowedRuleIds = filterRuleIdsByCategory(
+      allowedRuleIds,
+      prepared.categoryScope,
+    );
+  }
   const filtered = filterReportByRules(report, allowedRuleIds, merged.failOn);
   return { report: filtered, source: resolved.source };
 }
@@ -741,6 +752,14 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     )
     .option('--include <glob>', 'Glob of files to include (repeatable)')
     .option('--exclude <glob>', 'Glob of files to exclude (repeatable)')
+    .option(
+      '--category <name>',
+      'Only score rules in this category (repeatable)',
+    )
+    .option(
+      '--dimension <name>',
+      'Only score this dimension: performance|correctness|security|maintainability|nuxt|design (repeatable)',
+    )
     .option('--no-dead-code', 'Skip the dead-code (knip) analysis pass')
     .option('--no-lint', 'Skip the lint passes (template/SFC/oxlint)')
     .option(
@@ -835,7 +854,15 @@ export async function run(argv: string[] = process.argv): Promise<number> {
             'nuxt-doctor: --fix-exclude is not enforced for built-in vue/* rules (oxlint applies their fixes globally); it currently scopes only future doctor plugin fixes.\n',
           );
         }
-        const prepared: PreparedOptions = { ruleOverrides, threshold };
+        const categoryScope = resolveCategoryScope({
+          categories: toArray(flags.category),
+          dimensions: toArray(flags.dimension),
+        });
+        const prepared: PreparedOptions = {
+          ruleOverrides,
+          threshold,
+          categoryScope,
+        };
 
         const workspacePackages = flags.project
           ? await listWorkspacePackages(rootDir)

@@ -109,7 +109,23 @@ export {
 } from './rule-registry.js';
 export { scoreDiagnostics } from './score.js';
 export { filterReportByRules } from './audit-filter.js';
-export type { ScoreBreakdownEntry, ScoreConfig, ScoreResult } from './score.js';
+export type {
+  DimensionScore,
+  ScoreBreakdownEntry,
+  ScoreConfig,
+  ScoreResult,
+} from './score.js';
+export {
+  SCORE_DIMENSIONS,
+  categoriesForDimension,
+  dimensionForCategory,
+  isScoreDimension,
+} from './score-dimensions.js';
+export type { ScoreDimension } from './score-dimensions.js';
+export {
+  filterRuleIdsByCategory,
+  resolveCategoryScope,
+} from './config/category-filter.js';
 export {
   buildPushPayload,
   pushFindings,

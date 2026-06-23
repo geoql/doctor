@@ -1604,4 +1604,38 @@ describe('run', () => {
       report.score.bySeverity.info;
     expect(sum).toBe(arrayCount);
   });
+
+  it('--category security drops the v-for-has-key correctness finding', async () => {
+    const code = await run([
+      'node',
+      'nuxt-doctor',
+      violationDir,
+      '--category',
+      'security',
+      '--format',
+      'json',
+    ]);
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join('')) as {
+      diagnostics: Array<{ ruleId: string }>;
+    };
+    expect(
+      report.diagnostics.some(
+        (d) => d.ruleId === 'vue-doctor/template/v-for-has-key',
+      ),
+    ).toBe(false);
+  });
+
+  it('exits 2 on an unknown --dimension', async () => {
+    const code = await run([
+      'node',
+      'nuxt-doctor',
+      cleanDir,
+      '--dimension',
+      'nope',
+      '--format',
+      'json',
+    ]);
+    expect(code).toBe(2);
+  });
 });

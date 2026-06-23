@@ -253,6 +253,13 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
     source: 'doctor',
     recommended: false,
   },
+  {
+    id: 'vue-doctor/reactivity/no-fresh-deps-in-watch',
+    severity: 'warn',
+    category: 'reactivity',
+    source: 'doctor',
+    recommended: true,
+  },
 
   {
     id: 'vue-doctor/composition/prefer-script-setup-for-new-files',
@@ -268,6 +275,13 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
     source: 'doctor',
     recommended: true,
   },
+  {
+    id: 'vue-doctor/composition/no-pinia-store-in-setup',
+    severity: 'warn',
+    category: 'composition',
+    source: 'doctor',
+    recommended: true,
+  },
 
   {
     id: 'vue-doctor/performance/prefer-defineAsyncComponent-on-route',
@@ -275,6 +289,27 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
     category: 'performance',
     source: 'doctor',
     recommended: false,
+  },
+  {
+    id: 'vue-doctor/performance/prefer-module-scope-static-value',
+    severity: 'info',
+    category: 'performance',
+    source: 'doctor',
+    recommended: false,
+  },
+  {
+    id: 'vue-doctor/performance/prefer-module-scope-pure-function',
+    severity: 'info',
+    category: 'performance',
+    source: 'doctor',
+    recommended: false,
+  },
+  {
+    id: 'vue-doctor/performance/prefer-stable-empty-fallback',
+    severity: 'warn',
+    category: 'performance',
+    source: 'doctor',
+    recommended: true,
   },
 
   {
@@ -315,6 +350,20 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
   {
     id: 'vue-doctor/template/avoid-deep-v-bind-spread-in-list',
     severity: 'info',
+    category: 'template-perf',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/template/no-random-key',
+    severity: 'warn',
+    category: 'performance',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/template/no-v-memo-in-vapor',
+    severity: 'warn',
     category: 'template-perf',
     source: 'doctor',
     recommended: true,

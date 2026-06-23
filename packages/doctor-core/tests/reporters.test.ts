@@ -65,6 +65,8 @@ function makeInput(overrides: InputOverrides = {}): ReporterInput {
   };
 }
 
+const EMPTY_BY_DIMENSION = scoreDiagnostics([]).byDimension;
+
 function fixedScore(score: number): ScoreResult {
   return {
     score,
@@ -75,6 +77,7 @@ function fixedScore(score: number): ScoreResult {
     warnCount: 0,
     infoCount: 0,
     breakdown: [],
+    byDimension: EMPTY_BY_DIMENSION,
   };
 }
 
@@ -375,6 +378,21 @@ describe('json reporter', () => {
       weightPerOccurrence: 5,
       penalty: 5,
     });
+    expect(Object.keys(parsed.score.byDimension).sort()).toEqual([
+      'correctness',
+      'design',
+      'maintainability',
+      'nuxt',
+      'performance',
+      'security',
+    ]);
+    expect(parsed.score.byDimension.performance).toEqual({
+      score: 100,
+      totalFindings: 0,
+      error: 0,
+      warn: 0,
+      info: 0,
+    });
     expect(parsed.timing).toEqual({ elapsedMs: 1234, analyzedFileCount: 47 });
   });
 
@@ -499,6 +517,7 @@ describe('renderVerboseTrace', () => {
         warnCount: 0,
         infoCount: 0,
         breakdown: [],
+        byDimension: EMPTY_BY_DIMENSION,
       },
     };
     const out = renderVerboseTrace(report, {});
@@ -524,6 +543,7 @@ describe('renderVerboseTrace', () => {
         warnCount: 1,
         infoCount: 0,
         breakdown: [],
+        byDimension: EMPTY_BY_DIMENSION,
       },
     };
     const out = renderVerboseTrace(report, {});
@@ -546,6 +566,7 @@ describe('renderVerboseTrace', () => {
         warnCount: 0,
         infoCount: 0,
         breakdown: [],
+        byDimension: EMPTY_BY_DIMENSION,
       },
     };
     const out = renderVerboseTrace(report, { configSource: 'ts' });
@@ -567,6 +588,7 @@ describe('renderVerboseTrace', () => {
         warnCount: 0,
         infoCount: 0,
         breakdown: [],
+        byDimension: EMPTY_BY_DIMENSION,
       },
     };
     const out = renderVerboseTrace(report, {});

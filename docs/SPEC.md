@@ -377,6 +377,39 @@ function score(findings: Finding[]): number {
 
 Weights are overridable per rule in `doctor.config.ts`. The √-scaling prevents one chatty rule from dominating the score, which matters because the **score is the user-facing artifact**.
 
+### 7.1 Per-dimension sub-scores (additive)
+
+The single 0–100 `score` above is unchanged and remains the **authoritative** value. In addition, `ScoreResult` carries `byDimension`: a per-dimension sub-score that lets a consumer see where a project is strong or weak (e.g. a high overall score that hides a poor performance dimension).
+
+Every `RuleCategory` maps to exactly one of six dimensions (a partition):
+
+| Dimension         | Categories                                                                   |
+| ----------------- | ---------------------------------------------------------------------------- |
+| `performance`     | `performance`, `template-perf`                                               |
+| `correctness`     | `reactivity`, `composition`, `template`, `sfc`, `vue-builtin`, `hydration`   |
+| `security`        | `security`                                                                   |
+| `maintainability` | `ai-slop`, `dead-code`, `build-quality`, `deps`, `structure`, `modules-deps` |
+| `nuxt`            | `nitro`, `seo`, `cloudflare`, `server-routes`, `data-fetching`               |
+| `design`          | `design`                                                                     |
+
+Each dimension score uses the **same √-decay formula** isolated to that dimension's diagnostics:
+
+```ts
+function dimensionScore(diagnosticsInDimension: Finding[]): number {
+  const byRule = groupBy(diagnosticsInDimension, (f) => f.ruleId);
+  let penalty = 0;
+  for (const [, list] of byRule) {
+    const weight = list[0].config?.weight ?? SEVERITY_WEIGHTS[list[0].severity];
+    for (let i = 0; i < list.length; i++) {
+      penalty += weight * (i === 0 ? 1 : 1 / Math.sqrt(i + 1));
+    }
+  }
+  return Math.max(0, Math.round(100 - penalty));
+}
+```
+
+Because the dimensions partition the categories, each ruleId belongs to exactly one dimension, so the per-dimension **penalties** sum to the overall penalty (before clamping/rounding). The per-dimension **scores** do **not** sum to 100 — `max(0, …)` and `round()` are applied independently per dimension. Sub-scores are diagnostic aids, not components that combine into the overall score. Dimensions with no findings score 100. `byDimension` is additive to `ScoreResult` and to the JSON reporter's `score` object (schema version stays `1`); it does not alter the single-score contract or the external score-API push payload.
+
 ---
 
 ## 8. Config file

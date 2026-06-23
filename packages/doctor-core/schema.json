@@ -172,6 +172,10 @@
           "type": "string",
           "enum": ["error", "warn", "info", "off"]
         },
+        "vue-doctor/reactivity/no-fresh-deps-in-watch": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
         "vue-doctor/composition/prefer-script-setup-for-new-files": {
           "type": "string",
           "enum": ["error", "warn", "info", "off"]
@@ -180,7 +184,23 @@
           "type": "string",
           "enum": ["error", "warn", "info", "off"]
         },
+        "vue-doctor/composition/no-pinia-store-in-setup": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
         "vue-doctor/performance/prefer-defineAsyncComponent-on-route": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/performance/prefer-module-scope-static-value": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/performance/prefer-module-scope-pure-function": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/performance/prefer-stable-empty-fallback": {
           "type": "string",
           "enum": ["error", "warn", "info", "off"]
         },
@@ -205,6 +225,14 @@
           "enum": ["error", "warn", "info", "off"]
         },
         "vue-doctor/template/avoid-deep-v-bind-spread-in-list": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/template/no-random-key": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/template/no-v-memo-in-vapor": {
           "type": "string",
           "enum": ["error", "warn", "info", "off"]
         },

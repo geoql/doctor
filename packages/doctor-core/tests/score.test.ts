@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { scoreDiagnostics } from '../src/score.js';
+import { SCORE_DIMENSIONS } from '../src/score-dimensions.js';
 import type { Diagnostic } from '../src/types.js';
 
 function diag(
@@ -166,5 +167,76 @@ describe('scoreDiagnostics', () => {
     const expectedPenalty = 5 + 5 / Math.sqrt(2);
     expect(result.score).toBe(Math.max(0, Math.round(100 - expectedPenalty)));
     expect(result.breakdown[0]?.occurrences).toBe(2);
+  });
+
+  describe('byDimension', () => {
+    it('always populates all six dimensions at 100 for empty diagnostics', () => {
+      const { byDimension } = scoreDiagnostics([]);
+      for (const dim of SCORE_DIMENSIONS) {
+        expect(byDimension[dim].score).toBe(100);
+        expect(byDimension[dim].totalFindings).toBe(0);
+      }
+    });
+
+    it('isolates a security finding to the security dimension', () => {
+      const { byDimension } = scoreDiagnostics([
+        diag('error', { ruleId: 'vue-doctor/security/no-eval-like' }),
+      ]);
+      expect(byDimension.security.score).toBe(95);
+      expect(byDimension.security.errorCount).toBe(1);
+      expect(byDimension.security.totalFindings).toBe(1);
+      expect(byDimension.performance.score).toBe(100);
+      expect(byDimension.correctness.score).toBe(100);
+    });
+
+    it('routes performance + template-perf rules into the performance dimension', () => {
+      const { byDimension } = scoreDiagnostics([
+        diag('warn', { ruleId: 'vue-doctor/template/no-random-key' }),
+        diag('warn', {
+          ruleId: 'vue-doctor/template/no-computed-getter-in-template-loop',
+        }),
+      ]);
+      expect(byDimension.performance.totalFindings).toBe(2);
+      expect(byDimension.performance.warnCount).toBe(2);
+      expect(byDimension.security.score).toBe(100);
+    });
+
+    it('counts each severity within a dimension', () => {
+      const { byDimension } = scoreDiagnostics([
+        diag('error', { ruleId: 'vue-doctor/security/no-eval-like' }),
+        diag('warn', { ruleId: 'vue-doctor/security/no-secrets-in-source' }),
+      ]);
+      expect(byDimension.security.errorCount).toBe(1);
+      expect(byDimension.security.warnCount).toBe(1);
+      expect(byDimension.security.infoCount).toBe(0);
+    });
+
+    it('applies the same √-decay isolated per dimension', () => {
+      const { byDimension } = scoreDiagnostics([
+        diag('error', { ruleId: 'vue-doctor/security/no-eval-like' }),
+        diag('error', { ruleId: 'vue-doctor/security/no-eval-like' }),
+      ]);
+      const expected = Math.max(0, Math.round(100 - (5 + 5 / Math.sqrt(2))));
+      expect(byDimension.security.score).toBe(expected);
+    });
+
+    it('ignores ruleIds not in the registry (no dimension bucket)', () => {
+      const { byDimension } = scoreDiagnostics([
+        diag('error', { ruleId: 'totally/unknown' }),
+      ]);
+      for (const dim of SCORE_DIMENSIONS) {
+        expect(byDimension[dim].totalFindings).toBe(0);
+      }
+    });
+
+    it('honors per-rule weight overrides inside a dimension', () => {
+      const { byDimension } = scoreDiagnostics(
+        [diag('warn', { ruleId: 'vue-doctor/security/no-secrets-in-source' })],
+        {
+          rules: { 'vue-doctor/security/no-secrets-in-source': { weight: 10 } },
+        },
+      );
+      expect(byDimension.security.score).toBe(90);
+    });
   });
 });

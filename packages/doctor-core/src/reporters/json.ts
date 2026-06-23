@@ -40,6 +40,16 @@ export interface DoctorReport {
     passed: boolean;
     bySeverity: { error: number; warn: number; info: number };
     breakdown: DoctorReportBreakdownEntry[];
+    byDimension: Record<
+      string,
+      {
+        score: number;
+        totalFindings: number;
+        error: number;
+        warn: number;
+        info: number;
+      }
+    >;
   };
   diagnostics: DoctorReportDiagnostic[];
   timing: { elapsedMs: number; analyzedFileCount: number };
@@ -71,6 +81,18 @@ export function buildDoctorReport(input: ReporterInput): DoctorReport {
         weightPerOccurrence: entry.weightPerOccurrence,
         penalty: entry.penalty,
       })),
+      byDimension: Object.fromEntries(
+        Object.entries(input.score.byDimension).map(([dim, d]) => [
+          dim,
+          {
+            score: d.score,
+            totalFindings: d.totalFindings,
+            error: d.errorCount,
+            warn: d.warnCount,
+            info: d.infoCount,
+          },
+        ]),
+      ),
     },
     diagnostics: input.diagnostics.map((d) => ({
       file: relative(input.rootDirectory, d.file).replaceAll('\\', '/'),

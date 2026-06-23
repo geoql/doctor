@@ -1536,4 +1536,59 @@ describe('run', () => {
       report.score.bySeverity.info;
     expect(sum).toBe(arrayCount);
   });
+
+  it('--dimension performance keeps perf findings and drops the v-for-has-key error', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      vMemoLargeListDir,
+      '--dimension',
+      'performance',
+      '--format',
+      'json',
+    ]);
+    // The fixture has a v-for-has-key error (correctness) + v-memo warn
+    // (performance). Scoping to performance drops the error -> exit 0.
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join('')) as {
+      diagnostics: Array<{ ruleId: string }>;
+    };
+    const ruleIds = report.diagnostics.map((d) => d.ruleId);
+    expect(ruleIds).toContain('vue-doctor/template/v-memo-on-large-list');
+    expect(ruleIds).not.toContain('vue-doctor/template/v-for-has-key');
+  });
+
+  it('--category security drops a non-security template finding', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      violationDir,
+      '--category',
+      'security',
+      '--format',
+      'json',
+    ]);
+    expect(code).toBe(0);
+    const report = JSON.parse(stdout.join('')) as {
+      diagnostics: Array<{ ruleId: string }>;
+    };
+    expect(
+      report.diagnostics.some(
+        (d) => d.ruleId === 'vue-doctor/template/v-for-has-key',
+      ),
+    ).toBe(false);
+  });
+
+  it('exits 2 on an unknown --dimension', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      cleanDir,
+      '--dimension',
+      'nope',
+      '--format',
+      'json',
+    ]);
+    expect(code).toBe(2);
+  });
 });
