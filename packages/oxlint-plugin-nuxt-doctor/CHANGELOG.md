@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1](https://github.com/geoql/doctor/compare/oxlint-plugin-nuxt-doctor-v1.1.0...oxlint-plugin-nuxt-doctor-v1.1.1) (2026-06-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.2.0
+
 ## [1.1.0](https://github.com/geoql/doctor/compare/oxlint-plugin-nuxt-doctor-v1.0.0...oxlint-plugin-nuxt-doctor-v1.1.0) (2026-06-20)
 
 
