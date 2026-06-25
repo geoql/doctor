@@ -19,6 +19,12 @@ minimumReleaseAgeExclude:
   - reka-ui
   - wrangler
   - '@lucide/*'
+  - '@cloudflare/workerd-darwin-64@1.20260625.1'
+  - '@cloudflare/workerd-darwin-arm64@1.20260625.1'
+  - '@cloudflare/workerd-linux-64@1.20260625.1'
+  - '@cloudflare/workerd-linux-arm64@1.20260625.1'
+  - '@cloudflare/workerd-windows-64@1.20260625.1'
+  - workerd@1.20260625.1
 
 overrides:
   # Force the workspace onto Vite 8. apps/docs is a Nuxt 4.4.x app whose
@@ -27,4 +33,4 @@ overrides:
   # pin pnpm drifts the real npm `vite` to 7.x on a clean install. This does
   # NOT touch vite-plus's own "vite": "npm:@voidzero-dev/vite-plus-core" alias,
   # which resolves to the vite-plus native core (a different package).
-  vite: ^8.0.16
+  vite: ^8.1.0
