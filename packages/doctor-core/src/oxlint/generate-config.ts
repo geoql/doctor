@@ -9,6 +9,7 @@ export interface GenerateConfigInput {
   ruleOverrides?: Record<string, Severity | 'off'>;
   rootDir?: string;
   framework?: 'vue' | 'nuxt';
+  exclude?: string[];
 }
 
 export interface GeneratedConfig {
@@ -184,6 +185,9 @@ export async function generateOxlintConfig(
     ...(userConfig ? { extends: [userConfig] } : {}),
     plugins: ['vue'],
     jsPlugins: input.pluginPaths,
+    ...(input.exclude && input.exclude.length > 0
+      ? { ignorePatterns: input.exclude }
+      : {}),
     rules,
   };
   const configPath = join(dir, '.oxlintrc.json');

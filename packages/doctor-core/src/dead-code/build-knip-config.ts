@@ -1,3 +1,5 @@
+import { readFile, stat } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 import type { ProjectInfo } from '../types/project-info.js';
 import type { ResolvedDoctorConfig } from '../config/types.js';
 
@@ -21,10 +23,139 @@ export interface KnipConfig {
 // `workspaces` map only ADDS to auto-discovery, never replaces it).
 const DEMO_WORKSPACES = ['example', 'playground'];
 
-export function buildKnipConfig(
+interface PackageJson {
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  peerDependencies?: Record<string, string>;
+  optionalDependencies?: Record<string, string>;
+}
+
+async function findPnpmWorkspaceYaml(startDir: string): Promise<string | null> {
+  let dir = startDir;
+  for (let i = 0; i < 5; i++) {
+    const candidate = join(dir, 'pnpm-workspace.yaml');
+    try {
+      const s = await stat(candidate);
+      if (s.isFile()) return candidate;
+    } catch {
+      /* empty */
+    }
+    const parent = dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return null;
+}
+
+function collectCatalogNames(packageJson: PackageJson): Set<string> {
+  const names = new Set<string>();
+  const fields = [
+    packageJson.dependencies,
+    packageJson.devDependencies,
+    packageJson.peerDependencies,
+    packageJson.optionalDependencies,
+  ];
+  for (const field of fields) {
+    if (!field) continue;
+    for (const version of Object.values(field)) {
+      if (typeof version === 'string' && version.startsWith('catalog:')) {
+        names.add(version.slice('catalog:'.length));
+      }
+    }
+  }
+  return names;
+}
+
+function extractCatalogDependencies(
+  workspaceYaml: string,
+  catalogName: string,
+): string[] {
+  const lines = workspaceYaml.split(/\r?\n/);
+  const deps: string[] = [];
+  let inCatalogs = false;
+  let inTargetBlock = false;
+  let blockIndent = -1;
+
+  const escapedCatalogName = catalogName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const catalogPattern = new RegExp(`^${escapedCatalogName}\\s*:\\s*$`);
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed === '' || trimmed.startsWith('#')) continue;
+
+    if (!inCatalogs) {
+      if (/^catalogs\s*:/.test(trimmed)) {
+        inCatalogs = true;
+      }
+      continue;
+    }
+
+    const indent = line.length - line.trimStart().length;
+
+    if (inTargetBlock) {
+      if (indent <= blockIndent) {
+        break;
+      }
+      const match = line.match(/^[ \t]*["']?([@a-zA-Z0-9_./-]+)["']?[ \t]*:/);
+      if (match) {
+        deps.push(match[1]);
+      }
+      continue;
+    }
+
+    if (catalogPattern.test(trimmed)) {
+      inTargetBlock = true;
+      blockIndent = indent;
+    } else if (
+      indent === 0 &&
+      /^\w+/.test(trimmed) &&
+      !/^catalogs\b/.test(trimmed)
+    ) {
+      break;
+    }
+  }
+
+  return deps;
+}
+
+async function resolveCatalogDependencies(
+  rootDirectory: string,
+): Promise<string[]> {
+  const workspacePath = await findPnpmWorkspaceYaml(rootDirectory);
+  if (!workspacePath) return [];
+
+  let packageJson: PackageJson;
+  try {
+    packageJson = JSON.parse(
+      await readFile(join(rootDirectory, 'package.json'), 'utf8'),
+    );
+  } catch {
+    return [];
+  }
+
+  const catalogNames = collectCatalogNames(packageJson);
+  if (catalogNames.size === 0) return [];
+
+  let workspaceYaml: string;
+  try {
+    workspaceYaml = await readFile(workspacePath, 'utf8');
+  } catch {
+    return [];
+  }
+
+  const resolved = new Set<string>();
+  for (const catalogName of catalogNames) {
+    for (const dep of extractCatalogDependencies(workspaceYaml, catalogName)) {
+      resolved.add(dep);
+    }
+  }
+  return [...resolved];
+}
+
+export async function buildKnipConfig(
   projectInfo: ProjectInfo,
   doctorConfig: ResolvedDoctorConfig,
-): KnipConfig {
+): Promise<KnipConfig> {
   const isNuxt = projectInfo.framework === 'nuxt';
 
   // Files registered by build-time plugins (unplugin-auto-import,
@@ -60,6 +191,10 @@ export function buildKnipConfig(
           : []),
       ];
 
+  const catalogDependencies = await resolveCatalogDependencies(
+    projectInfo.rootDirectory,
+  );
+
   const config: KnipConfig = {
     cwd: projectInfo.rootDirectory,
     entry,
@@ -72,9 +207,12 @@ export function buildKnipConfig(
     ],
     ignoreFiles: [...doctorConfig.exclude, 'knip.config.mjs'],
     ignoreDependencies: [
-      'vite-plus',
-      '@geoql/vue-doctor',
-      '@geoql/nuxt-doctor',
+      ...new Set([
+        'vite-plus',
+        '@geoql/vue-doctor',
+        '@geoql/nuxt-doctor',
+        ...catalogDependencies,
+      ]),
     ],
     ignoreWorkspaces: [...DEMO_WORKSPACES],
   };

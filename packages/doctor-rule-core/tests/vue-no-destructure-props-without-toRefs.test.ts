@@ -70,4 +70,51 @@ describe('no-destructure-props-without-toRefs', () => {
     const reports = runRule(rule, `const { a } = defineProps();`);
     expect(reports[0]!.message).toContain('vuejs.org');
   });
+
+  it('does NOT fire when destructuring props inside a computed() getter', () => {
+    // Getter re-runs and re-reads props.* fresh, so reactivity is preserved.
+    const reports = runRule(
+      rule,
+      `const props = defineProps();\nconst delegated = computed(() => {\n  const { class: _, ...rest } = props;\n  return rest;\n});`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire when destructuring props inside a watch callback', () => {
+    const reports = runRule(
+      rule,
+      `const props = defineProps();\nwatch(foo, () => {\n  const { a } = props;\n});`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire when destructuring props inside a plain handler function', () => {
+    const reports = runRule(
+      rule,
+      `const props = defineProps();\nfunction onClick() {\n  const { a } = props;\n}`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire when destructuring defineProps() result inside a nested function', () => {
+    const reports = runRule(
+      rule,
+      `const dp = computed(() => {\n  const { a } = defineProps();\n  return a;\n});`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('still fires on a nested computed inside Options API setup', () => {
+    // Destructure directly in setup body = one-time snapshot (BAD); nested in a computed = reactive (OK).
+    const bad = runRule(
+      rule,
+      `export default { setup(props) { const { a } = props; return {}; } };`,
+    );
+    expect(bad).toHaveLength(1);
+    const ok = runRule(
+      rule,
+      `export default { setup(props) { const c = computed(() => { const { a } = props; return a; }); return { c }; } };`,
+    );
+    expect(ok).toEqual([]);
+  });
 });
