@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.1](https://github.com/geoql/doctor/compare/oxlint-plugin-vue-doctor-v1.2.0...oxlint-plugin-vue-doctor-v1.2.1) (2026-06-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.2.1
+
 ## [1.2.0](https://github.com/geoql/doctor/compare/oxlint-plugin-vue-doctor-v1.1.0...oxlint-plugin-vue-doctor-v1.2.0) (2026-06-23)
 
 

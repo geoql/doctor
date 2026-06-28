@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.1](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.2.0...doctor-rule-core-v1.2.1) (2026-06-28)
+
+
+### Bug Fixes
+
+* false-positive rules + oxlint exclude support ([614d39d](https://github.com/geoql/doctor/commit/614d39d160f3527828f91fac997617bdb44647a9))
+* **rule:** no-destructure-props-without-to-refs skips reactive nested scopes ([65a838a](https://github.com/geoql/doctor/commit/65a838af4345f4aaa0f15f525bcce2d1147f795d))
+* **rule:** no-document-in-setup ignores type-level keys and import.meta.client guards ([81034dc](https://github.com/geoql/doctor/commit/81034dcc419d338d7435a9de1a1448e5c4d674c0))
+
 ## [1.2.0](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.1.0...doctor-rule-core-v1.2.0) (2026-06-23)
 
 
