@@ -16,6 +16,7 @@ export interface ScriptPassOptions {
   framework?: 'vue' | 'nuxt';
   fix?: boolean;
   fixExcludes?: string[];
+  exclude?: string[];
 }
 
 export interface ScriptPassResult {
@@ -41,6 +42,7 @@ export async function runScriptPass(
     ruleOverrides: opts.ruleOverrides,
     rootDir: opts.rootDir,
     framework: opts.framework,
+    exclude: opts.exclude,
   });
   try {
     const raw = await runOxlint({

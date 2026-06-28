@@ -88,6 +88,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
         framework: project.framework === 'nuxt' ? 'nuxt' : 'vue',
         fix: config.fix === true && config.scopeFiles === undefined,
         fixExcludes: config.fixExcludes,
+        exclude,
       });
       scriptDiagnostics = result.diagnostics;
       oxlintStderr = result.stderr;

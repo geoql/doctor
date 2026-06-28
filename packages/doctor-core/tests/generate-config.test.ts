@@ -6,6 +6,7 @@ interface WrittenConfig {
   plugins: string[];
   jsPlugins: string[];
   rules: Record<string, 'error' | 'warn'>;
+  ignorePatterns?: string[];
 }
 
 async function readConfig(path: string): Promise<WrittenConfig> {
@@ -13,6 +14,25 @@ async function readConfig(path: string): Promise<WrittenConfig> {
 }
 
 describe('generateOxlintConfig', () => {
+  it('writes exclude globs into ignorePatterns so the oxlint pass honors config.exclude', async () => {
+    const { configPath, cleanup } = await generateOxlintConfig({
+      pluginPaths: ['/some/plugin.js'],
+      exclude: ['app/components/ui/**', 'dist'],
+    });
+    const cfg = await readConfig(configPath);
+    expect(cfg.ignorePatterns).toEqual(['app/components/ui/**', 'dist']);
+    await cleanup();
+  });
+
+  it('omits ignorePatterns when no exclude is provided', async () => {
+    const { configPath, cleanup } = await generateOxlintConfig({
+      pluginPaths: ['/some/plugin.js'],
+    });
+    const cfg = await readConfig(configPath);
+    expect('ignorePatterns' in cfg).toBe(false);
+    await cleanup();
+  });
+
   it('writes a config with default rules, vue plugin, and jsPlugin path', async () => {
     const { configPath, cleanup } = await generateOxlintConfig({
       pluginPaths: ['/some/plugin.js'],
