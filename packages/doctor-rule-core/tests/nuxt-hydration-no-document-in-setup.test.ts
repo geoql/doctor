@@ -89,4 +89,57 @@ describe('hydration/no-document-in-setup', () => {
     );
     expect(reports).toEqual([]);
   });
+
+  it('does NOT fire on `document:` interface property key', () => {
+    const reports = runRule(
+      rule,
+      `interface BrowserContext { document: { title: string } }`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on `window:` type literal property key', () => {
+    const reports = runRule(rule, `type T = { window: { location: string } }`);
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on `document` inside `if (import.meta.client) { ... }`', () => {
+    const reports = runRule(
+      rule,
+      `if (import.meta.client) { const t = document.title; }`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on `window` inside nested block guarded by `import.meta.client`', () => {
+    const reports = runRule(
+      rule,
+      `function foo() { if (import.meta.client) { function bar() { return window; } } }`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire with a compound guard mixing a non-meta .client member', () => {
+    const reports = runRule(
+      rule,
+      `if (svc.client && import.meta.client) { const t = document.title; }`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire when import.meta.client sits inside a call-argument guard', () => {
+    const reports = runRule(
+      rule,
+      `if (check(import.meta.client)) { const t = document.title; }`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('still fires when a compound guard does NOT include import.meta.client', () => {
+    const reports = runRule(
+      rule,
+      `if (ready && other.flag) { const t = document.title; }`,
+    );
+    expect(reports).toHaveLength(1);
+  });
 });
