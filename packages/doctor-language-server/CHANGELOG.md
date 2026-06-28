@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.4](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.3...doctor-language-server-v0.1.4) (2026-06-28)
+
+
+### Miscellaneous
+
+* **monorepo:** bump vite 8.1, oxlint/oxfmt 1.71/0.56, knip 6.20, wrangler 4.105 ([828dbe6](https://github.com/geoql/doctor/commit/828dbe6b7c6e5287b7d2231b32169d59e0cdcebb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.3.1
+
 ## [0.1.3](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.2...doctor-language-server-v0.1.3) (2026-06-23)
 
 

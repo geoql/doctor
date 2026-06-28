@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.1](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.3.0...nuxt-doctor-v1.3.1) (2026-06-28)
+
+
+### Miscellaneous
+
+* **monorepo:** bump vite 8.1, oxlint/oxfmt 1.71/0.56, knip 6.20, wrangler 4.105 ([828dbe6](https://github.com/geoql/doctor/commit/828dbe6b7c6e5287b7d2231b32169d59e0cdcebb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.3.1
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 1.1.2
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.2.1
+
 ## [1.3.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.2.2...nuxt-doctor-v1.3.0) (2026-06-23)
 
 
