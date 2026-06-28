@@ -142,7 +142,10 @@ export async function checkDeadCode(
 ): Promise<Diagnostic[]> {
   if (!options.enabled) return [];
 
-  const config = buildKnipConfig(options.projectInfo, options.doctorConfig);
+  const config = await buildKnipConfig(
+    options.projectInfo,
+    options.doctorConfig,
+  );
   const timeoutMs = options.timeoutMs ?? 30_000;
 
   let createOptions: (opts: {
