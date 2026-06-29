@@ -12,6 +12,15 @@ const MESSAGE =
 const RECOMMENDATION =
   'Add ogImage: "/path/to/image.png" to useSeoMeta / useHead, or install @nuxtjs/og-image.';
 
+const SEO_PRIMITIVES = new Set(['useSeoMeta', 'useHead']);
+
+// A `use…Seo…` wrapper composable (e.g. usePageSeo) sets the og:image
+// internally, so the page is covered even without a direct primitive call.
+function isSeoWrapperName(name: string): boolean {
+  if (SEO_PRIMITIVES.has(name)) return false;
+  return /^use[a-z]*seo/i.test(name);
+}
+
 function hasOgImageInCall(
   program: ReturnType<typeof parseSync>['program'],
 ): boolean {
@@ -21,6 +30,7 @@ function hasOgImageInCall(
     if (call.type !== 'CallExpression') continue;
     if (call.callee.type !== 'Identifier') continue;
     const name = call.callee.name;
+    if (isSeoWrapperName(name)) return true;
     if (name !== 'useSeoMeta' && name !== 'useHead') continue;
     const firstArg = call.arguments[0];
     if (!firstArg || firstArg.type !== 'ObjectExpression') continue;

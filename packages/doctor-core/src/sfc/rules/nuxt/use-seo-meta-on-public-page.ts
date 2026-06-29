@@ -11,6 +11,15 @@ const MESSAGE =
 const RECOMMENDATION =
   'Call useSeoMeta({ title: "..." }) in<script setup> to define page title and meta tags for search engines and social previews.';
 
+const SEO_PRIMITIVES = new Set(['useSeoMeta', 'useHead', 'definePageMeta']);
+
+// A `use…Seo…` wrapper composable (e.g. usePageSeo) calls the SEO primitives
+// internally, so the page is covered even without a direct primitive call.
+function isSeoWrapperName(name: string): boolean {
+  if (SEO_PRIMITIVES.has(name)) return false;
+  return /^use[a-z]*seo/i.test(name);
+}
+
 function hasTitleInCall(
   program: ReturnType<typeof parseSync>['program'],
 ): boolean {
@@ -20,6 +29,7 @@ function hasTitleInCall(
     if (call.type !== 'CallExpression') continue;
     if (call.callee.type !== 'Identifier') continue;
     const name = call.callee.name;
+    if (isSeoWrapperName(name)) return true;
     if (
       name !== 'useSeoMeta' &&
       name !== 'useHead' &&
