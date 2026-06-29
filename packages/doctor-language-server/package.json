@@ -1,6 +1,6 @@
 {
   "name": "@geoql/doctor-language-server",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": false,
   "description": "LSP server that runs the @geoql/doctor audit engine over Vue 3 + Nuxt 4 files and publishes diagnostics to any LSP-capable editor. TypeScript, ESM, stdio.",
   "keywords": [
