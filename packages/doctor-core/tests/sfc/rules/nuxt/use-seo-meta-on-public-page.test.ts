@@ -220,4 +220,22 @@ describe('useSeoMeta-on-public-page — does not fire', () => {
     const diags = check(ctx).diagnostics;
     expect(diags).toHaveLength(0);
   });
+
+  it('does not fire on a page using a use*Seo* wrapper composable', async () => {
+    const { ctx } = await pageFixture(
+      'pages/index.vue',
+      '<script setup lang="ts">usePageSeo({ title: "Home", description: "d", path: "/" });</script>\n<template><div>home</div></template>',
+    );
+    const diags = check(ctx).diagnostics;
+    expect(diags).toHaveLength(0);
+  });
+
+  it('still fires on a page calling a non-SEO wrapper composable', async () => {
+    const { ctx } = await pageFixture(
+      'pages/index.vue',
+      '<script setup lang="ts">useFetchData({ title: "Home" });</script>\n<template><div>home</div></template>',
+    );
+    const diags = check(ctx).diagnostics;
+    expect(diags).toHaveLength(1);
+  });
 });
