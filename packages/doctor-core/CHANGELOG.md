@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.2](https://github.com/geoql/doctor/compare/doctor-core-v1.3.1...doctor-core-v1.3.2) (2026-06-29)
+
+
+### Bug Fixes
+
+* **seo:** recognize use*Seo* wrapper composables in page rules ([248bf15](https://github.com/geoql/doctor/commit/248bf156d689b24959cde50feb31411f6b1afee3))
+* **seo:** recognize use*Seo* wrapper composables in SEO rules ([6ddc83c](https://github.com/geoql/doctor/commit/6ddc83c3a2a63df61b4d7cda63f9debd9d987abe))
+
 ## [1.3.1](https://github.com/geoql/doctor/compare/doctor-core-v1.3.0...doctor-core-v1.3.1) (2026-06-28)
 
 
