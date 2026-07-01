@@ -1,11 +1,11 @@
 {
-  "packages/doctor-core": "1.3.2",
+  "packages/doctor-core": "1.3.3",
   "packages/doctor-rule-core": "1.2.1",
-  "packages/doctor-language-server": "0.1.5",
+  "packages/doctor-language-server": "0.1.6",
   "packages/oxlint-plugin-vue-doctor": "1.2.1",
   "packages/oxlint-plugin-nuxt-doctor": "1.1.2",
-  "packages/eslint-plugin-vue-doctor": "1.1.4",
-  "packages/eslint-plugin-nuxt-doctor": "1.1.4",
-  "packages/nuxt-doctor": "1.3.2",
-  "packages/vue-doctor": "1.3.2"
+  "packages/eslint-plugin-vue-doctor": "1.1.5",
+  "packages/eslint-plugin-nuxt-doctor": "1.1.5",
+  "packages/nuxt-doctor": "1.3.3",
+  "packages/vue-doctor": "1.3.3"
 }
