@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.5](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.1.4...eslint-plugin-vue-doctor-v1.1.5) (2026-07-01)
+
+
+### Miscellaneous
+
+* **monorepo:** bump oxlint/knip/eslint/vite + raise audit-test timeouts for oxlint 1.72 ([b65f7bf](https://github.com/geoql/doctor/commit/b65f7bfeff602f7881707191d0b5b01866b6e3da))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @geoql/doctor-core bumped to 1.3.3
+
 ## [1.1.4](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.1.3...eslint-plugin-vue-doctor-v1.1.4) (2026-06-29)
 
 
