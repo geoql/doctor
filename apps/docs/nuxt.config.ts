@@ -24,6 +24,11 @@ export default defineNuxtConfig({
   },
 
   modules: [
+    // Order is load-bearing: robots before sitemap (injects the sitemap URL
+    // into robots.txt), and sitemap before @nuxt/content (v8 sitemap only
+    // enumerates Content v3 collections registered before it).
+    '@nuxtjs/robots',
+    '@nuxtjs/sitemap',
     '@nuxt/content',
     '@nuxt/eslint',
     '@nuxt/icon',
@@ -101,6 +106,10 @@ export default defineNuxtConfig({
       baseUrl:
         process.env.NUXT_PUBLIC_BASE_URL || 'https://docs.the-doctor.report',
     },
+  },
+
+  site: {
+    url: process.env.NUXT_PUBLIC_BASE_URL || 'https://docs.the-doctor.report',
   },
 
   content: {

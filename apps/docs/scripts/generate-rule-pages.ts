@@ -135,6 +135,10 @@ for (const rule of RULE_REGISTRY) {
     '',
     `See the [category overview](${overviewHref}) for the full rule catalogue.`,
     '',
+    '::callout{type="tip"}',
+    `Want this rule enforced on every push? [the-doctor.report](https://app.the-doctor.report/?utm_source=docs&utm_medium=rule-page&utm_campaign=rule-cta) tracks your score over time, gates PRs on \`${rule.id}\`, and shows the trend across every branch — free while in early access.`,
+    '::',
+    '',
   ].join('\n');
 
   writeFileSync(rulePath, body, 'utf8');
