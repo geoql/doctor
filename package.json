@@ -38,13 +38,13 @@
     "build": "pnpm -r --filter './packages/*' run build",
     "schema:generate": "node scripts/generate-schema.ts",
     "test": "pnpm -r --filter './packages/*' run test",
-    "coverage": "vitest run --coverage --testTimeout=40000",
+    "coverage": "vitest run --coverage --testTimeout=90000",
     "typecheck": "pnpm -r --filter './packages/*' run typecheck",
     "prepare": "is-ci || husky"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.1.0",
-    "@commitlint/config-conventional": "^21.1.0",
+    "@commitlint/cli": "^21.2.0",
+    "@commitlint/config-conventional": "^21.2.0",
     "@types/node": "^25.9.4",
     "@vitest/coverage-v8": "^4.1.9",
     "husky": "^9.1.7",

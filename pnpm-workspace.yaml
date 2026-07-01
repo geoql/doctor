@@ -33,4 +33,4 @@ overrides:
   # pin pnpm drifts the real npm `vite` to 7.x on a clean install. This does
   # NOT touch vite-plus's own "vite": "npm:@voidzero-dev/vite-plus-core" alias,
   # which resolves to the vite-plus native core (a different package).
-  vite: ^8.1.0
+  vite: ^8.1.1
