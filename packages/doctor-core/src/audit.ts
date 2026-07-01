@@ -31,11 +31,11 @@ const DEFAULT_INCLUDE = [
   '**/*.jsx',
 ];
 const DEFAULT_EXCLUDE = [
-  'node_modules',
-  'dist',
-  '.nuxt',
-  '.output',
-  'coverage',
+  '**/node_modules/**',
+  '**/dist/**',
+  '**/.nuxt/**',
+  '**/.output/**',
+  '**/coverage/**',
 ];
 
 function countRuleCounts(diagnostics: Diagnostic[]): Record<string, number> {

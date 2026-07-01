@@ -30,6 +30,27 @@ describe('listSourceFiles', () => {
     expect(files.some((f) => f.includes('node_modules'))).toBe(false);
   });
 
+  it('excludes NESTED node_modules (monorepo apps/*/node_modules), not just root', async () => {
+    const root = await tmp();
+    await writeFile(join(root, 'src.ts'), 'export const x = 1;');
+    await mkdir(join(root, 'apps', 'docs', 'node_modules', 'dep', 'dist'), {
+      recursive: true,
+    });
+    await writeFile(
+      join(root, 'apps', 'docs', 'node_modules', 'dep', 'dist', 'leak.vue'),
+      '<template><div /></template>',
+    );
+
+    const files = await listSourceFiles({
+      rootDir: root,
+      include: ['**/*.vue', '**/*.ts'],
+      exclude: ['**/node_modules/**'],
+    });
+
+    expect(files).toEqual([resolve(root, 'src.ts')]);
+    expect(files.some((f) => f.includes('node_modules'))).toBe(false);
+  });
+
   it('returns an empty array when nothing matches', async () => {
     const root = await tmp();
     const files = await listSourceFiles({

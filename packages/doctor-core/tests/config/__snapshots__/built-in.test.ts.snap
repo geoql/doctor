@@ -3,11 +3,11 @@
 exports[`BUILT_IN_RECOMMENDED > matches the locked snapshot 1`] = `
 {
   "exclude": [
-    "node_modules",
-    "dist",
-    ".nuxt",
-    ".output",
-    "coverage",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/.nuxt/**",
+    "**/.output/**",
+    "**/coverage/**",
   ],
   "failOn": "error",
   "include": [

@@ -18,11 +18,11 @@ describe('BUILT_IN_RECOMMENDED', () => {
 
   it('has the correct exclude patterns', () => {
     expect(BUILT_IN_RECOMMENDED.exclude).toEqual([
-      'node_modules',
-      'dist',
-      '.nuxt',
-      '.output',
-      'coverage',
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.nuxt/**',
+      '**/.output/**',
+      '**/coverage/**',
     ]);
   });
 

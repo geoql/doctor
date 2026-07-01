@@ -43,6 +43,20 @@ describe('audit', () => {
     ).toBe(true);
   });
 
+  it('never scans NESTED node_modules with the default exclude (no config)', async () => {
+    const dir = await fixture({
+      'clean.vue': '<template><div /></template>\n',
+      'apps/docs/node_modules/dep/dist/leak.vue':
+        '<template><li v-for="i in items">{{ i }}</li></template>\n',
+    });
+    const report = await audit({ rootDir: dir });
+    expect(
+      report.diagnostics.some((d) => d.file.includes('node_modules')),
+    ).toBe(false);
+    expect(report.score).toBe(100);
+    expect(report.exitCode).toBe(0);
+  });
+
   it('fires new vue builtin rules through the real oxlint script pass', async () => {
     const dir = await fixture({
       'Computed.vue': [

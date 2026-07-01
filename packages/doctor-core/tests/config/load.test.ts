@@ -37,11 +37,11 @@ describe('loadDoctorConfig', () => {
       '**/*.jsx',
     ]);
     expect(result.exclude).toEqual([
-      'node_modules',
-      'dist',
-      '.nuxt',
-      '.output',
-      'coverage',
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.nuxt/**',
+      '**/.output/**',
+      '**/coverage/**',
     ]);
     expect(result.preset).toBe('recommended');
     // recommended preset includes error + warn rules from RULE_REGISTRY
@@ -286,11 +286,11 @@ describe('loadDoctorConfig', () => {
     expect(result.threshold).toBe(80);
     expect(result.failOn).toBe('warn');
     expect(result.exclude).toEqual([
-      'node_modules',
-      'dist',
-      '.nuxt',
-      '.output',
-      'coverage',
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.nuxt/**',
+      '**/.output/**',
+      '**/coverage/**',
     ]);
   });
 
