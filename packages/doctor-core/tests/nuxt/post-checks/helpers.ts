@@ -20,6 +20,7 @@ export function makeNuxtProject(
 ): ProjectInfo {
   return {
     framework: 'nuxt',
+    frameworkDetected: true,
     rootDirectory: '/x',
     packageJsonPath: '/x/package.json',
     vueVersion: null,

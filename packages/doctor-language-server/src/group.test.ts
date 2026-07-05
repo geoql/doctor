@@ -27,6 +27,7 @@ const makeReport = (
   },
   projectInfo: {
     framework: 'vue',
+    frameworkDetected: true,
     vueVersion: '3.5.0',
     nuxtVersion: null,
     capabilities: [],
@@ -35,6 +36,7 @@ const makeReport = (
   elapsedMs: 1,
   timings: { template: 0, sfc: 0, script: 0, deadCode: 0, total: 1 },
   ruleCounts: {},
+  incomplete: false,
 });
 
 const diag = (overrides: Partial<CoreDiagnostic> = {}): CoreDiagnostic => ({

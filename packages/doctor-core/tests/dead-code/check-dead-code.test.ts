@@ -17,6 +17,7 @@ vi.mock('node:fs/promises', () => ({
 
 const vueProjectInfo: ProjectInfo = {
   framework: 'vue',
+  frameworkDetected: true,
   rootDirectory: '/project/vue-app',
   packageJsonPath: '/project/vue-app/package.json',
   vueVersion: '3.5.0',
@@ -34,6 +35,7 @@ const vueProjectInfo: ProjectInfo = {
 
 const nuxtProjectInfo: ProjectInfo = {
   framework: 'nuxt',
+  frameworkDetected: true,
   rootDirectory: '/project/nuxt-app',
   packageJsonPath: '/project/nuxt-app/package.json',
   vueVersion: null,

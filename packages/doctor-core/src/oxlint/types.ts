@@ -30,6 +30,7 @@ export interface OxlintRunOptions {
   timeoutMs?: number;
   maxOutputBytes?: number;
   fix?: boolean;
+  signal?: AbortSignal;
 }
 
 export interface OxlintRunResult {

@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -18,6 +18,7 @@ import {
   normalizeInitAnswers,
   planInit,
   pushFindings,
+  scaffoldCiWorkflow,
   renderVerboseTrace,
   scoreDiagnostics,
   filterReportByRules,
@@ -42,6 +43,15 @@ import prompts from 'prompts';
 import { runInstallSkill } from './install/install-skill.js';
 
 interface InstallCliFlags {
+  yes?: boolean;
+  force?: boolean;
+  dryRun?: boolean;
+}
+
+interface CiInstallCliFlags {
+  pr?: boolean;
+  comments?: boolean;
+  provider?: string;
   yes?: boolean;
   force?: boolean;
   dryRun?: boolean;
@@ -305,12 +315,14 @@ interface CliFlags {
   pushProject?: string;
   category?: string | string[];
   dimension?: string | string[];
+  maxDuration?: string | number;
 }
 
 interface PreparedOptions {
   ruleOverrides: Record<string, Severity | 'off'> | undefined;
   threshold: number | undefined;
   categoryScope: ReadonlySet<RuleCategory> | undefined;
+  maxDurationMs: number | undefined;
 }
 
 function toArray(value: string | string[] | undefined): string[] | undefined {
@@ -378,6 +390,19 @@ function isFailOnLevel(v: string): v is 'error' | 'warn' | 'none' {
   return v === 'error' || v === 'warn' || v === 'none';
 }
 
+function parseMaxDurationMs(
+  value: string | number | undefined,
+): number | undefined {
+  if (value === undefined) return undefined;
+  const seconds = Number(value);
+  if (!Number.isInteger(seconds) || seconds < 0) {
+    throw new Error(
+      `--max-duration must be a non-negative integer number of seconds, got "${value}".`,
+    );
+  }
+  return seconds * 1000;
+}
+
 async function runSingleAudit(
   rootDir: string,
   flags: CliFlags,
@@ -416,6 +441,9 @@ async function runSingleAudit(
     scopeFiles,
     fix: flags.fix,
     ...(merged.fixExcludes ? { fixExcludes: merged.fixExcludes } : {}),
+    ...(prepared.maxDurationMs !== undefined
+      ? { maxDurationMs: prepared.maxDurationMs }
+      : {}),
   });
   let allowedRuleIds = new Set(Object.keys(merged.rules));
   if (prepared.categoryScope) {
@@ -449,6 +477,9 @@ function aggregateReports(
   const scoreResult = scoreDiagnostics(diagnostics, {
     threshold: first.scoreResult.threshold,
   });
+  const skippedCheckReasons = reports.flatMap(
+    (r) => r.skippedCheckReasons ?? [],
+  );
   return {
     rootDir: rootDirectory,
     filesScanned,
@@ -463,6 +494,8 @@ function aggregateReports(
     elapsedMs,
     timings: first.timings,
     ruleCounts,
+    incomplete: reports.some((r) => r.incomplete),
+    ...(skippedCheckReasons.length > 0 ? { skippedCheckReasons } : {}),
   };
 }
 
@@ -480,6 +513,10 @@ function emitReport(
     diagnostics: report.diagnostics,
     score: report.scoreResult,
     projectInfo: report.projectInfo,
+    incomplete: report.incomplete,
+    ...(report.skippedCheckReasons
+      ? { skippedCheckReasons: report.skippedCheckReasons }
+      : {}),
   };
   const out = format(input, reporter, {
     color: flags.color,
@@ -712,6 +749,79 @@ async function runInteractiveInit(defaultFormat: InitConfigFormat): Promise<{
   });
 }
 
+const VALID_CI_PROVIDERS = new Set(['github', 'gitlab', 'auto']);
+
+async function runCiInstall(
+  dir: string,
+  flags: CiInstallCliFlags,
+): Promise<void> {
+  const targetDir = resolve(dir);
+  const provider = flags.provider ?? 'auto';
+  if (!VALID_CI_PROVIDERS.has(provider)) {
+    process.stderr.write(
+      `vue-doctor ci install: --provider must be github | gitlab | auto, got '${flags.provider}'\n`,
+    );
+    process.exitCode = 2;
+    return;
+  }
+
+  const plan = await scaffoldCiWorkflow({
+    bin: 'vue-doctor',
+    framework: 'vue',
+    dir: targetDir,
+    provider: provider as 'github' | 'gitlab' | 'auto',
+    pr: flags.pr === true,
+    noComments: flags.comments === false,
+    force: flags.force === true,
+  });
+
+  if (plan.conflict) {
+    process.stderr.write(
+      `vue-doctor ci install: ${plan.conflictPath} already exists. Run with --force to overwrite.\n`,
+    );
+    process.exitCode = 2;
+    return;
+  }
+
+  if (flags.dryRun) {
+    for (const write of plan.writes) {
+      process.stdout.write(`[dry-run] would write ${write.path}\n`);
+      process.stdout.write(`${write.content}\n`);
+    }
+    process.exitCode = 0;
+    return;
+  }
+
+  if (!flags.yes) {
+    const answers = await prompts(
+      {
+        type: 'confirm',
+        name: 'confirm',
+        message: `Scaffold the ${plan.provider} CI workflow at ${plan.writes[0]?.path}?`,
+        initial: true,
+      },
+      {
+        onCancel: () => {
+          process.exitCode = 2;
+        },
+      },
+    );
+    if (process.exitCode === 2) return;
+    if (!answers.confirm) {
+      process.stdout.write('vue-doctor ci install: cancelled\n');
+      process.exitCode = 0;
+      return;
+    }
+  }
+
+  for (const write of plan.writes) {
+    mkdirSync(dirname(write.path), { recursive: true });
+    writeFileSync(write.path, write.content, 'utf8');
+    process.stdout.write(`vue-doctor ci install: wrote ${write.path}\n`);
+  }
+  process.exitCode = 0;
+}
+
 export async function run(argv: string[] = process.argv): Promise<number> {
   const cli = cac('vue-doctor');
 
@@ -799,6 +909,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       '--push-project <slug>',
       'SaaS dashboard project slug for --push (e.g. owner/repo). Defaults to the audited directory name.',
     )
+    .option(
+      '--max-duration <seconds>',
+      'Abort remaining audit passes after N seconds; the report gains incomplete=true + skippedCheckReasons',
+    )
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
       if (flags.failOn !== undefined && !isFailOnLevel(flags.failOn)) {
@@ -854,6 +968,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           ruleOverrides,
           threshold,
           categoryScope,
+          maxDurationMs: parseMaxDurationMs(flags.maxDuration),
         };
 
         const workspacePackages = flags.project
@@ -1036,6 +1151,44 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         process.exitCode = 2;
       }
     });
+
+  cli
+    .command(
+      'ci <action> [dir]',
+      "CI integrations. Action 'install' scaffolds a workflow referencing geoql/doctor-action@v2",
+    )
+    .option('--pr', 'Also scaffold a PR-review workflow')
+    .option('--no-comments', 'Disable PR comments (sets pr-comment=false)')
+    .option(
+      '--provider <name>',
+      'CI provider: github | gitlab | auto (default: auto)',
+    )
+    .option('-y, --yes', 'Non-interactive, write defaults without prompting')
+    .option('--force', 'Overwrite an existing workflow')
+    .option('--dry-run', 'Print what would be written, touch nothing')
+    .action(
+      async (
+        action: string,
+        dir: string | undefined,
+        flags: CiInstallCliFlags,
+      ) => {
+        if (action !== 'install') {
+          process.stderr.write(
+            `vue-doctor ci: unknown action '${action}' (expected: install)\n`,
+          );
+          process.exitCode = 2;
+          return;
+        }
+        try {
+          await runCiInstall(dir ?? '.', flags);
+        } catch (err) {
+          process.stderr.write(
+            `vue-doctor ci install: ${err instanceof Error ? err.message : err}\n`,
+          );
+          process.exitCode = 2;
+        }
+      },
+    );
 
   cli.help();
   cli.version(readVersion());

@@ -18,6 +18,7 @@ vi.mock('node:fs/promises', () => ({
 
 const vueProjectInfo: ProjectInfo = {
   framework: 'vue',
+  frameworkDetected: true,
   rootDirectory: '/project/vue-app',
   packageJsonPath: '/project/vue-app/package.json',
   vueVersion: '3.5.0',

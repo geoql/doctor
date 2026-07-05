@@ -17,6 +17,7 @@ export interface ScriptPassOptions {
   fix?: boolean;
   fixExcludes?: string[];
   exclude?: string[];
+  signal?: AbortSignal;
 }
 
 export interface ScriptPassResult {
@@ -52,6 +53,7 @@ export async function runScriptPass(
       oxlintBin,
       timeoutMs: opts.timeoutMs,
       fix: opts.fix,
+      signal: opts.signal,
     });
     return {
       diagnostics: toCanonicalDiagnostics(raw.diagnostics, opts.rootDir),

@@ -5,6 +5,7 @@ import type { ProjectInfo } from '../../src/types/project-info.js';
 function makeProject(overrides: Partial<ProjectInfo>): ProjectInfo {
   return {
     framework: 'vue',
+    frameworkDetected: true,
     rootDirectory: '/x',
     packageJsonPath: '/x/package.json',
     vueVersion: '3.5.34',

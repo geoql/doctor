@@ -1,5 +1,5 @@
 import { relative } from 'node:path';
-import type { Severity } from '../types.js';
+import type { Severity, SkippedCheckReason } from '../types.js';
 import type { ReporterInput } from './types.js';
 
 export const DOCTOR_REPORT_SCHEMA_VERSION = '1';
@@ -29,6 +29,7 @@ export interface DoctorReport {
   tool: { name: string; version: string };
   projectInfo: {
     framework: string;
+    frameworkDetected: boolean;
     vueVersion: string | null;
     nuxtVersion: string | null;
     capabilities: string[];
@@ -53,6 +54,8 @@ export interface DoctorReport {
   };
   diagnostics: DoctorReportDiagnostic[];
   timing: { elapsedMs: number; analyzedFileCount: number };
+  incomplete?: boolean;
+  skippedCheckReasons?: SkippedCheckReason[];
 }
 
 export function buildDoctorReport(input: ReporterInput): DoctorReport {
@@ -61,6 +64,7 @@ export function buildDoctorReport(input: ReporterInput): DoctorReport {
     tool: { name: input.toolName, version: input.toolVersion },
     projectInfo: {
       framework: input.projectInfo.framework,
+      frameworkDetected: input.projectInfo.frameworkDetected,
       vueVersion: input.projectInfo.vueVersion,
       nuxtVersion: input.projectInfo.nuxtVersion,
       capabilities: [...input.projectInfo.capabilities].sort(),
@@ -110,6 +114,17 @@ export function buildDoctorReport(input: ReporterInput): DoctorReport {
       elapsedMs: input.elapsedMs,
       analyzedFileCount: input.analyzedFileCount,
     },
+    ...(input.incomplete !== undefined && input.incomplete
+      ? {
+          incomplete: input.incomplete,
+          skippedCheckReasons: input.skippedCheckReasons?.map((r) => ({
+            kind: r.kind,
+            deadlineMs: r.deadlineMs,
+            elapsedMs: r.elapsedMs,
+            skippedPasses: [...r.skippedPasses],
+          })),
+        }
+      : {}),
   };
 }
 

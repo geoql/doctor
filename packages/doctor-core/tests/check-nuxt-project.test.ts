@@ -23,6 +23,7 @@ function makeProject(
 ): ProjectInfo {
   return {
     framework: 'nuxt',
+    frameworkDetected: true,
     rootDirectory,
     packageJsonPath: join(rootDirectory, 'package.json'),
     vueVersion: null,

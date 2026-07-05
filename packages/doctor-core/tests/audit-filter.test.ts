@@ -47,6 +47,7 @@ function makeReport(
     },
     projectInfo: {
       framework: 'vue',
+      frameworkDetected: true,
       vueVersion: '3',
       nuxtVersion: null,
       capabilities: [],

@@ -22,8 +22,10 @@ export function makeProjectInfo(
     packageJsonPath?: string | null;
   } = {},
 ): ProjectInfo {
+  const framework = overrides.framework ?? 'vue';
   return {
-    framework: overrides.framework ?? 'vue',
+    framework,
+    frameworkDetected: framework === 'vue' || framework === 'nuxt',
     rootDirectory,
     packageJsonPath:
       overrides.packageJsonPath === undefined
