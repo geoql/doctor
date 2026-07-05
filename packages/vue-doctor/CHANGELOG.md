@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0](https://github.com/geoql/doctor/compare/vue-doctor-v1.3.3...vue-doctor-v1.4.0) (2026-07-05)
+
+
+### Features
+
+* react-doctor parity — frameworkDetected, ci install, --max-duration ([545bbb8](https://github.com/geoql/doctor/commit/545bbb8fc2d608e3be182dfad729edd34928f6e3))
+* **vue-cli:** add `vue-doctor ci install` subcommand ([2d6c1c6](https://github.com/geoql/doctor/commit/2d6c1c6f5f1714d52749c3ec6db38648289bec3b))
+* **vue-cli:** thread --max-duration &lt;seconds&gt; through vue-doctor audit ([950a5e8](https://github.com/geoql/doctor/commit/950a5e86cf01fe8ae8603e02ed536dc0703a6f2a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.4.0
+
 ## [1.3.3](https://github.com/geoql/doctor/compare/vue-doctor-v1.3.2...vue-doctor-v1.3.3) (2026-07-01)
 
 

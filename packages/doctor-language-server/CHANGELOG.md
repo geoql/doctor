@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.7](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.6...doctor-language-server-v0.1.7) (2026-07-05)
+
+
+### Features
+
+* **core:** add --max-duration deadline with additive incomplete + skippedCheckReasons ([ac5894c](https://github.com/geoql/doctor/commit/ac5894c42c1ad17eeca59f153dd3ac443a539f23))
+* **core:** expose frameworkDetected on ProjectInfo + JSON reporter ([01a71ae](https://github.com/geoql/doctor/commit/01a71aeb983320d29de80e0086bbf8adde64113a))
+* react-doctor parity — frameworkDetected, ci install, --max-duration ([545bbb8](https://github.com/geoql/doctor/commit/545bbb8fc2d608e3be182dfad729edd34928f6e3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.4.0
+
 ## [0.1.6](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.5...doctor-language-server-v0.1.6) (2026-07-01)
 
 

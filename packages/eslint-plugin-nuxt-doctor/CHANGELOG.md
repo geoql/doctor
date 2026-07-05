@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.6](https://github.com/geoql/doctor/compare/eslint-plugin-nuxt-doctor-v1.1.5...eslint-plugin-nuxt-doctor-v1.1.6) (2026-07-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/eslint-plugin-vue-doctor bumped to 1.1.6
+  * devDependencies
+    * @geoql/doctor-core bumped to 1.4.0
+
 ## [1.1.5](https://github.com/geoql/doctor/compare/eslint-plugin-nuxt-doctor-v1.1.4...eslint-plugin-nuxt-doctor-v1.1.5) (2026-07-01)
 
 

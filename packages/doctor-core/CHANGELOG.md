@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.0](https://github.com/geoql/doctor/compare/doctor-core-v1.3.3...doctor-core-v1.4.0) (2026-07-05)
+
+
+### Features
+
+* **core:** add --max-duration deadline with additive incomplete + skippedCheckReasons ([ac5894c](https://github.com/geoql/doctor/commit/ac5894c42c1ad17eeca59f153dd3ac443a539f23))
+* **core:** expose frameworkDetected on ProjectInfo + JSON reporter ([01a71ae](https://github.com/geoql/doctor/commit/01a71aeb983320d29de80e0086bbf8adde64113a))
+* **core:** scaffold doctor-action@v2 workflows from doctor-core ([136c488](https://github.com/geoql/doctor/commit/136c48871d21c2d8572cbf3fc6b7ddb33a40d3f6))
+* react-doctor parity — frameworkDetected, ci install, --max-duration ([545bbb8](https://github.com/geoql/doctor/commit/545bbb8fc2d608e3be182dfad729edd34928f6e3))
+
 ## [1.3.3](https://github.com/geoql/doctor/compare/doctor-core-v1.3.2...doctor-core-v1.3.3) (2026-07-01)
 
 
