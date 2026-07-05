@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.3.3...nuxt-doctor-v1.4.0) (2026-07-05)
+
+
+### Features
+
+* **nuxt-cli:** add `nuxt-doctor ci install` subcommand ([135419d](https://github.com/geoql/doctor/commit/135419dfff7ff26c25476a5fabed4c93d1c5cf1e))
+* **nuxt-cli:** thread --max-duration &lt;seconds&gt; through nuxt-doctor audit ([107869b](https://github.com/geoql/doctor/commit/107869b17e59d7e32c59e670230e3f837a726c3e))
+* react-doctor parity — frameworkDetected, ci install, --max-duration ([545bbb8](https://github.com/geoql/doctor/commit/545bbb8fc2d608e3be182dfad729edd34928f6e3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.4.0
+
 ## [1.3.3](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.3.2...nuxt-doctor-v1.3.3) (2026-07-01)
 
 
