@@ -71,7 +71,8 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "draft": false,
-      "prerelease": false
+      "prerelease": false,
+      "release-as": "1.4.1"
     }
   },
   "changelog-sections": [
