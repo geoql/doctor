@@ -45,6 +45,12 @@ export {
   type RawInitAnswers,
   type ResolvedInitAnswers,
 } from './init/index.js';
+export { detectCiProvider, type CiProvider } from './ci/provider-detect.js';
+export {
+  scaffoldCiWorkflow,
+  type CiScaffoldOptions,
+  type CiScaffoldPlan,
+} from './ci/scaffold-workflow.js';
 export {
   findMonorepoRoot,
   type MonorepoResult,
