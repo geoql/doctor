@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -18,6 +18,7 @@ import {
   normalizeInitAnswers,
   planInit,
   pushFindings,
+  scaffoldCiWorkflow,
   renderVerboseTrace,
   scoreDiagnostics,
   filterReportByRules,
@@ -42,6 +43,15 @@ import prompts from 'prompts';
 import { runInstallSkill } from './install/install-skill.js';
 
 interface InstallCliFlags {
+  yes?: boolean;
+  force?: boolean;
+  dryRun?: boolean;
+}
+
+interface CiInstallCliFlags {
+  pr?: boolean;
+  comments?: boolean;
+  provider?: string;
   yes?: boolean;
   force?: boolean;
   dryRun?: boolean;
@@ -720,6 +730,79 @@ async function runInteractiveInit(defaultFormat: InitConfigFormat): Promise<{
   });
 }
 
+const VALID_CI_PROVIDERS = new Set(['github', 'gitlab', 'auto']);
+
+async function runCiInstall(
+  dir: string,
+  flags: CiInstallCliFlags,
+): Promise<void> {
+  const targetDir = resolve(dir);
+  const provider = flags.provider ?? 'auto';
+  if (!VALID_CI_PROVIDERS.has(provider)) {
+    process.stderr.write(
+      `nuxt-doctor ci install: --provider must be github | gitlab | auto, got '${flags.provider}'\n`,
+    );
+    process.exitCode = 2;
+    return;
+  }
+
+  const plan = await scaffoldCiWorkflow({
+    bin: 'nuxt-doctor',
+    framework: 'nuxt',
+    dir: targetDir,
+    provider: provider as 'github' | 'gitlab' | 'auto',
+    pr: flags.pr === true,
+    noComments: flags.comments === false,
+    force: flags.force === true,
+  });
+
+  if (plan.conflict) {
+    process.stderr.write(
+      `nuxt-doctor ci install: ${plan.conflictPath} already exists. Run with --force to overwrite.\n`,
+    );
+    process.exitCode = 2;
+    return;
+  }
+
+  if (flags.dryRun) {
+    for (const write of plan.writes) {
+      process.stdout.write(`[dry-run] would write ${write.path}\n`);
+      process.stdout.write(`${write.content}\n`);
+    }
+    process.exitCode = 0;
+    return;
+  }
+
+  if (!flags.yes) {
+    const answers = await prompts(
+      {
+        type: 'confirm',
+        name: 'confirm',
+        message: `Scaffold the ${plan.provider} CI workflow at ${plan.writes[0]?.path}?`,
+        initial: true,
+      },
+      {
+        onCancel: () => {
+          process.exitCode = 2;
+        },
+      },
+    );
+    if (process.exitCode === 2) return;
+    if (!answers.confirm) {
+      process.stdout.write('nuxt-doctor ci install: cancelled\n');
+      process.exitCode = 0;
+      return;
+    }
+  }
+
+  for (const write of plan.writes) {
+    mkdirSync(dirname(write.path), { recursive: true });
+    writeFileSync(write.path, write.content, 'utf8');
+    process.stdout.write(`nuxt-doctor ci install: wrote ${write.path}\n`);
+  }
+  process.exitCode = 0;
+}
+
 export async function run(argv: string[] = process.argv): Promise<number> {
   const cli = cac('nuxt-doctor');
 
@@ -1044,6 +1127,43 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         process.exitCode = 2;
       }
     });
+
+  cli
+    .command(
+      'ci <action> [dir]',
+      "CI integrations. Action 'install' scaffolds a workflow referencing geoql/doctor-action@v2",
+    )
+    .option('--pr', 'Also scaffold a PR-review workflow')
+    .option('--no-comments', 'Disable PR comments (sets pr-comment=false)')
+    .option('--provider <name>', 'CI provider: github | gitlab | auto', {
+      default: 'auto',
+    })
+    .option('-y, --yes', 'Non-interactive, write defaults without prompting')
+    .option('--force', 'Overwrite an existing workflow')
+    .option('--dry-run', 'Print what would be written, touch nothing')
+    .action(
+      async (
+        action: string,
+        dir: string | undefined,
+        flags: CiInstallCliFlags,
+      ) => {
+        if (action !== 'install') {
+          process.stderr.write(
+            `nuxt-doctor ci: unknown action '${action}' (expected: install)\n`,
+          );
+          process.exitCode = 2;
+          return;
+        }
+        try {
+          await runCiInstall(dir ?? '.', flags);
+        } catch (err) {
+          process.stderr.write(
+            `nuxt-doctor ci install: ${err instanceof Error ? err.message : err}\n`,
+          );
+          process.exitCode = 2;
+        }
+      },
+    );
 
   cli.help();
   cli.version(readVersion());
