@@ -12,6 +12,7 @@ async function tmp(): Promise<string> {
 
 const vueProjectInfo: ProjectInfo = {
   framework: 'vue',
+  frameworkDetected: true,
   rootDirectory: '/project/vue-app',
   packageJsonPath: '/project/vue-app/package.json',
   vueVersion: '3.5.0',
@@ -30,6 +31,7 @@ const vueProjectInfo: ProjectInfo = {
 const nuxtProjectInfo: ProjectInfo = {
   ...vueProjectInfo,
   framework: 'nuxt',
+  frameworkDetected: true,
   rootDirectory: '/project/nuxt-app',
   nuxtVersion: '4.4.0',
   nuxtCompatibilityVersion: 4,

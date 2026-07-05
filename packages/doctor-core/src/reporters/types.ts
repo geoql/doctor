@@ -4,6 +4,7 @@ import type { Framework } from '../types/project-info.js';
 
 export interface ProjectInfoLite {
   readonly framework: Framework;
+  readonly frameworkDetected: boolean;
   readonly vueVersion: string | null;
   readonly nuxtVersion: string | null;
   readonly capabilities: readonly string[];

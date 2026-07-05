@@ -190,6 +190,7 @@ export async function detectProject(
 
   return {
     framework,
+    frameworkDetected: framework === 'vue' || framework === 'nuxt',
     rootDirectory,
     packageJsonPath,
     vueVersion,

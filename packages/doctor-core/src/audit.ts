@@ -229,6 +229,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
 
   const projectInfo: ProjectInfoLite = {
     framework: project.framework,
+    frameworkDetected: project.frameworkDetected,
     vueVersion: project.vueVersion,
     nuxtVersion: project.nuxtVersion,
     capabilities: [...project.capabilities].sort(),

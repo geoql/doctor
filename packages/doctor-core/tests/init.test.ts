@@ -14,6 +14,7 @@ import type { ProjectInfo } from '../src/types/project-info.js';
 function projectInfo(overrides: Partial<ProjectInfo> = {}): ProjectInfo {
   return {
     framework: 'vue',
+    frameworkDetected: true,
     rootDirectory: '/proj',
     packageJsonPath: '/proj/package.json',
     vueVersion: '3.5.0',

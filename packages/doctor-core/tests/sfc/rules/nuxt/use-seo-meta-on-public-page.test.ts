@@ -30,6 +30,7 @@ async function pageFixture(
   const relativePath = relative(rootDir, path).replace(/\\/g, '/');
   const projectInfo: ProjectInfo = {
     framework: 'nuxt',
+    frameworkDetected: true,
     rootDirectory: rootDir,
     packageJsonPath: join(rootDir, 'package.json'),
     vueVersion: '3.5.0',

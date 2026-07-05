@@ -29,6 +29,7 @@ export interface DoctorReport {
   tool: { name: string; version: string };
   projectInfo: {
     framework: string;
+    frameworkDetected: boolean;
     vueVersion: string | null;
     nuxtVersion: string | null;
     capabilities: string[];
@@ -61,6 +62,7 @@ export function buildDoctorReport(input: ReporterInput): DoctorReport {
     tool: { name: input.toolName, version: input.toolVersion },
     projectInfo: {
       framework: input.projectInfo.framework,
+      frameworkDetected: input.projectInfo.frameworkDetected,
       vueVersion: input.projectInfo.vueVersion,
       nuxtVersion: input.projectInfo.nuxtVersion,
       capabilities: [...input.projectInfo.capabilities].sort(),

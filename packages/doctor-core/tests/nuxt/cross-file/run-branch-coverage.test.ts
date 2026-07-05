@@ -11,6 +11,7 @@ const SSR_RULE = 'nuxt-doctor/data-fetching/ssr-safe-onMounted-only-for-client';
 function makeProject(rootDir: string): ProjectInfo {
   return {
     framework: 'nuxt',
+    frameworkDetected: true,
     rootDirectory: rootDir,
     packageJsonPath: join(rootDir, 'package.json'),
     vueVersion: '3.5.0',

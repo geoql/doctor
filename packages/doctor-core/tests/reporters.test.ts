@@ -53,6 +53,7 @@ function makeInput(overrides: InputOverrides = {}): ReporterInput {
     score: overrides.score ?? scoreDiagnostics(diagnostics),
     projectInfo: {
       framework: 'vue',
+      frameworkDetected: true,
       vueVersion: '3.5.0',
       nuxtVersion: null,
       capabilities: overrides.capabilities ?? [

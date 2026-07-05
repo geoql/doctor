@@ -6,6 +6,7 @@ export type MonorepoKind = 'pnpm' | 'yarn' | 'npm' | 'turbo' | null;
 
 export interface ProjectInfo {
   readonly framework: Framework;
+  readonly frameworkDetected: boolean;
   readonly rootDirectory: string;
   readonly packageJsonPath: string | null;
   readonly vueVersion: string | null;

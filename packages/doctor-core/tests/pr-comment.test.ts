@@ -32,6 +32,7 @@ function makeInput(
     score: scoreDiagnostics(diagnostics),
     projectInfo: {
       framework: 'vue',
+      frameworkDetected: true,
       vueVersion: '3.5.0',
       nuxtVersion: null,
       capabilities: ['vue:3'],
