@@ -323,12 +323,14 @@ interface CliFlags {
   pushProject?: string;
   category?: string | string[];
   dimension?: string | string[];
+  maxDuration?: string | number;
 }
 
 interface PreparedOptions {
   ruleOverrides: Record<string, Severity | 'off'> | undefined;
   threshold: number | undefined;
   categoryScope: ReadonlySet<RuleCategory> | undefined;
+  maxDurationMs: number | undefined;
 }
 
 function toArray(value: string | string[] | undefined): string[] | undefined {
@@ -396,6 +398,19 @@ function isFailOnLevel(v: string): v is 'error' | 'warn' | 'none' {
   return v === 'error' || v === 'warn' || v === 'none';
 }
 
+function parseMaxDurationMs(
+  value: string | number | undefined,
+): number | undefined {
+  if (value === undefined) return undefined;
+  const seconds = Number(value);
+  if (!Number.isInteger(seconds) || seconds < 0) {
+    throw new Error(
+      `--max-duration must be a non-negative integer number of seconds, got "${value}".`,
+    );
+  }
+  return seconds * 1000;
+}
+
 async function runSingleAudit(
   rootDir: string,
   flags: CliFlags,
@@ -434,6 +449,9 @@ async function runSingleAudit(
     scopeFiles,
     fix: flags.fix,
     ...(merged.fixExcludes ? { fixExcludes: merged.fixExcludes } : {}),
+    ...(prepared.maxDurationMs !== undefined
+      ? { maxDurationMs: prepared.maxDurationMs }
+      : {}),
   });
   let allowedRuleIds = new Set(Object.keys(merged.rules));
   if (prepared.categoryScope) {
@@ -467,6 +485,9 @@ function aggregateReports(
   const scoreResult = scoreDiagnostics(diagnostics, {
     threshold: first.scoreResult.threshold,
   });
+  const skippedCheckReasons = reports.flatMap(
+    (r) => r.skippedCheckReasons ?? [],
+  );
   return {
     rootDir: rootDirectory,
     filesScanned,
@@ -481,6 +502,8 @@ function aggregateReports(
     elapsedMs,
     timings: first.timings,
     ruleCounts,
+    incomplete: reports.some((r) => r.incomplete),
+    ...(skippedCheckReasons.length > 0 ? { skippedCheckReasons } : {}),
   };
 }
 
@@ -498,6 +521,10 @@ function emitReport(
     diagnostics: report.diagnostics,
     score: report.scoreResult,
     projectInfo: report.projectInfo,
+    incomplete: report.incomplete,
+    ...(report.skippedCheckReasons
+      ? { skippedCheckReasons: report.skippedCheckReasons }
+      : {}),
   };
   const out = format(input, reporter, {
     color: flags.color,
@@ -890,6 +917,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       '--push-project <slug>',
       'SaaS dashboard project slug for --push (e.g. owner/repo). Defaults to the audited directory name.',
     )
+    .option(
+      '--max-duration <seconds>',
+      'Abort remaining audit passes after N seconds; the report gains incomplete=true + skippedCheckReasons',
+    )
     .action(async (path: string | undefined, flags: CliFlags) => {
       const reporter = resolveFormat(flags);
       if (flags.failOn !== undefined && !isFailOnLevel(flags.failOn)) {
@@ -945,6 +976,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           ruleOverrides,
           threshold,
           categoryScope,
+          maxDurationMs: parseMaxDurationMs(flags.maxDuration),
         };
 
         const workspacePackages = flags.project
@@ -1135,9 +1167,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     )
     .option('--pr', 'Also scaffold a PR-review workflow')
     .option('--no-comments', 'Disable PR comments (sets pr-comment=false)')
-    .option('--provider <name>', 'CI provider: github | gitlab | auto', {
-      default: 'auto',
-    })
+    .option(
+      '--provider <name>',
+      'CI provider: github | gitlab | auto (default: auto)',
+    )
     .option('-y, --yes', 'Non-interactive, write defaults without prompting')
     .option('--force', 'Overwrite an existing workflow')
     .option('--dry-run', 'Print what would be written, touch nothing')

@@ -246,6 +246,16 @@ describe('nuxt-doctor ci install', () => {
     }
   });
 
+  it('stringifies a non-Error thrown and exits 2', async () => {
+    mockPromptAdapter.default.mockImplementationOnce(() => {
+      throw { toString: () => 'plain ci failure' };
+    });
+    const { run } = await import('../src/cli.js');
+    const code = await run(['node', 'nuxt-doctor', 'ci', 'install', dir]);
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('plain ci failure');
+  });
+
   it('reports a clear error and exits 2 when the write fails', async () => {
     const { run } = await import('../src/cli.js');
     const blocker = join(dir, 'blocker');
