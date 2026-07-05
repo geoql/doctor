@@ -155,4 +155,5 @@ export type {
   Diagnostic,
   DiagnosticSource,
   Severity,
+  SkippedCheckReason,
 } from './types.js';

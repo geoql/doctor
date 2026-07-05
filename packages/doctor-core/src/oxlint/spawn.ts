@@ -41,12 +41,24 @@ export async function runOxlint(
     let timer: NodeJS.Timeout | undefined;
     const timeoutMs = opts.timeoutMs ?? OXLINT_SPAWN_TIMEOUT_MS;
     const maxOutputBytes = opts.maxOutputBytes ?? OXLINT_MAX_OUTPUT_BYTES;
+    const onAbort = (): void => {
+      child.kill('SIGKILL');
+      finish(() => reject(new Error('oxlint subprocess aborted')));
+    };
     const finish = (fn: () => void): void => {
       if (settled) return;
       settled = true;
       if (timer) clearTimeout(timer);
+      opts.signal?.removeEventListener('abort', onAbort);
       fn();
     };
+    if (opts.signal) {
+      if (opts.signal.aborted) {
+        onAbort();
+        return;
+      }
+      opts.signal.addEventListener('abort', onAbort, { once: true });
+    }
     if (timeoutMs > 0) {
       timer = setTimeout(() => {
         child.kill('SIGKILL');

@@ -38,6 +38,14 @@ export interface AuditConfig {
   respectInlineDisables?: boolean;
   fix?: boolean;
   fixExcludes?: string[];
+  maxDurationMs?: number;
+}
+
+export interface SkippedCheckReason {
+  kind: 'time-budget-exhausted';
+  deadlineMs: number;
+  elapsedMs: number;
+  skippedPasses: readonly string[];
 }
 
 export interface AuditTimings {
@@ -62,4 +70,6 @@ export interface AuditReport {
   elapsedMs: number;
   timings: AuditTimings;
   ruleCounts: Record<string, number>;
+  incomplete: boolean;
+  skippedCheckReasons?: readonly SkippedCheckReason[];
 }

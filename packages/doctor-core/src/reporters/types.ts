@@ -1,5 +1,5 @@
 import type { ScoreResult } from '../score.js';
-import type { Diagnostic } from '../types.js';
+import type { Diagnostic, SkippedCheckReason } from '../types.js';
 import type { Framework } from '../types/project-info.js';
 
 export interface ProjectInfoLite {
@@ -20,6 +20,8 @@ export interface ReporterInput {
   readonly diagnostics: readonly Diagnostic[];
   readonly score: ScoreResult;
   readonly projectInfo: ProjectInfoLite;
+  readonly incomplete?: boolean;
+  readonly skippedCheckReasons?: readonly SkippedCheckReason[];
 }
 
 export interface ReporterOptions {

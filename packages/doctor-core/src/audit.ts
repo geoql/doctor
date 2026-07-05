@@ -21,6 +21,7 @@ import type {
   AuditReport,
   Diagnostic,
   AuditTimings,
+  SkippedCheckReason,
 } from './types.js';
 
 const DEFAULT_INCLUDE = [
@@ -57,47 +58,83 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
   const files = await listSourceFiles({ rootDir, include, exclude });
 
   const overallStart = performance.now();
+  const maxDurationMs = config.maxDurationMs;
+  const deadlineMs = maxDurationMs ?? 0;
+  const budgetExhausted = (): boolean =>
+    maxDurationMs !== undefined &&
+    performance.now() - overallStart >= maxDurationMs;
+  const skippedPasses: string[] = [];
+  const deadlineController = new AbortController();
+  let deadlineTimer: NodeJS.Timeout | undefined;
+  if (maxDurationMs !== undefined) {
+    deadlineTimer = setTimeout(() => deadlineController.abort(), maxDurationMs);
+  }
 
   const project = await detectProject(rootDir);
 
   const templateStart = performance.now();
-  const templateDiagnostics = lintEnabled
-    ? await runTemplatePass({ files, ruleOverrides: config.rules })
-    : [];
+  let templateDiagnostics: Diagnostic[] = [];
+  if (lintEnabled) {
+    if (budgetExhausted()) {
+      skippedPasses.push('template');
+    } else {
+      templateDiagnostics = await runTemplatePass({
+        files,
+        ruleOverrides: config.rules,
+      });
+    }
+  }
   const templateElapsed = performance.now() - templateStart;
 
   const sfcStart = performance.now();
-  const sfcDiagnostics = lintEnabled
-    ? await runSfcPass({
+  let sfcDiagnostics: Diagnostic[] = [];
+  if (lintEnabled) {
+    if (budgetExhausted()) {
+      skippedPasses.push('sfc');
+    } else {
+      sfcDiagnostics = await runSfcPass({
         files,
         ruleOverrides: config.rules,
         projectInfo: project,
-      })
-    : [];
+      });
+    }
+  }
   const sfcElapsed = performance.now() - sfcStart;
 
   let scriptDiagnostics: Diagnostic[] = [];
   let oxlintStderr = '';
   const scriptStart = performance.now();
   if (lintEnabled) {
-    try {
-      const result = await runScriptPass({
-        rootDir,
-        targetPath: rootDir,
-        ruleOverrides: config.rules,
-        framework: project.framework === 'nuxt' ? 'nuxt' : 'vue',
-        fix: config.fix === true && config.scopeFiles === undefined,
-        fixExcludes: config.fixExcludes,
-        exclude,
-      });
-      scriptDiagnostics = result.diagnostics;
-      oxlintStderr = result.stderr;
-    } catch (err) {
-      oxlintStderr = err instanceof Error ? err.message : String(err);
-      if (process.env.DOCTOR_DEBUG) {
-        process.stderr.write(
-          `[doctor-core] script pass failed: ${oxlintStderr}\n`,
-        );
+    if (budgetExhausted()) {
+      skippedPasses.push('lint');
+    } else {
+      try {
+        const result = await runScriptPass({
+          rootDir,
+          targetPath: rootDir,
+          ruleOverrides: config.rules,
+          framework: project.framework === 'nuxt' ? 'nuxt' : 'vue',
+          fix: config.fix === true && config.scopeFiles === undefined,
+          fixExcludes: config.fixExcludes,
+          exclude,
+          signal: deadlineController.signal,
+        });
+        scriptDiagnostics = result.diagnostics;
+        oxlintStderr = result.stderr;
+      } catch (err) {
+        if (deadlineController.signal.aborted) {
+          // Aborted by the --max-duration deadline: record the skip instead of
+          // disguising it as an oxlint failure (which would exit 2).
+          skippedPasses.push('lint');
+          oxlintStderr = 'aborted: time-budget exhausted';
+        } else {
+          oxlintStderr = err instanceof Error ? err.message : String(err);
+          if (process.env.DOCTOR_DEBUG) {
+            process.stderr.write(
+              `[doctor-core] script pass failed: ${oxlintStderr}\n`,
+            );
+          }
+        }
       }
     }
   }
@@ -105,7 +142,10 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
 
   let deadCodeDiagnostics: Diagnostic[] = [];
   let deadCodeElapsed = 0;
-  const deadCodeEnabled = config.deadCode !== false;
+  const deadCodeEnabled = config.deadCode !== false && !budgetExhausted();
+  if (config.deadCode !== false && !deadCodeEnabled) {
+    skippedPasses.push('dead-code');
+  }
   if (deadCodeEnabled) {
     const deadCodeStart = performance.now();
     try {
@@ -138,60 +178,64 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
   }
 
   let buildQualityDiagnostics: Diagnostic[] = [];
-  try {
-    const raw = await checkBuildQuality(project);
-    buildQualityDiagnostics = raw
-      .filter((d) => config.rules?.[d.ruleId] !== 'off')
-      .map((d) => {
-        const override = config.rules?.[d.ruleId];
-        return override ? { ...d, severity: override } : d;
-      });
-  } catch {
-    // build-quality pass failed — diagnostics remain empty for this pass
-  }
-
   let depsDiagnostics: Diagnostic[] = [];
-  try {
-    const raw = await checkDeps(project);
-    depsDiagnostics = raw
-      .filter((d) => config.rules?.[d.ruleId] !== 'off')
-      .map((d) => {
-        const override = config.rules?.[d.ruleId];
-        return override ? { ...d, severity: override } : d;
-      });
-  } catch {
-    // deps pass failed — diagnostics remain empty for this pass
-  }
-
   let nuxtProjectDiagnostics: Diagnostic[] = [];
-  if (project.framework === 'nuxt') {
+  let crossFileDiagnostics: Diagnostic[] = [];
+  if (budgetExhausted()) {
+    skippedPasses.push('project');
+  } else {
     try {
-      const raw = await checkNuxtProject(project);
-      nuxtProjectDiagnostics = raw
+      const raw = await checkBuildQuality(project);
+      buildQualityDiagnostics = raw
         .filter((d) => config.rules?.[d.ruleId] !== 'off')
         .map((d) => {
           const override = config.rules?.[d.ruleId];
           return override ? { ...d, severity: override } : d;
         });
     } catch {
-      // nuxt-project pass failed — diagnostics remain empty for this pass
+      // build-quality pass failed — diagnostics remain empty for this pass
+    }
+
+    try {
+      const raw = await checkDeps(project);
+      depsDiagnostics = raw
+        .filter((d) => config.rules?.[d.ruleId] !== 'off')
+        .map((d) => {
+          const override = config.rules?.[d.ruleId];
+          return override ? { ...d, severity: override } : d;
+        });
+    } catch {
+      // deps pass failed — diagnostics remain empty for this pass
+    }
+
+    if (project.framework === 'nuxt') {
+      try {
+        const raw = await checkNuxtProject(project);
+        nuxtProjectDiagnostics = raw
+          .filter((d) => config.rules?.[d.ruleId] !== 'off')
+          .map((d) => {
+            const override = config.rules?.[d.ruleId];
+            return override ? { ...d, severity: override } : d;
+          });
+      } catch {
+        // nuxt-project pass failed — diagnostics remain empty for this pass
+      }
+
+      try {
+        const raw = await runCrossFilePass({ files, projectInfo: project });
+        crossFileDiagnostics = raw
+          .filter((d) => config.rules?.[d.ruleId] !== 'off')
+          .map((d) => {
+            const override = config.rules?.[d.ruleId];
+            return override ? { ...d, severity: override } : d;
+          });
+      } catch {
+        // cross-file pass failed — diagnostics remain empty for this pass
+      }
     }
   }
 
-  let crossFileDiagnostics: Diagnostic[] = [];
-  if (project.framework === 'nuxt') {
-    try {
-      const raw = await runCrossFilePass({ files, projectInfo: project });
-      crossFileDiagnostics = raw
-        .filter((d) => config.rules?.[d.ruleId] !== 'off')
-        .map((d) => {
-          const override = config.rules?.[d.ruleId];
-          return override ? { ...d, severity: override } : d;
-        });
-    } catch {
-      // cross-file pass failed — diagnostics remain empty for this pass
-    }
-  }
+  if (deadlineTimer) clearTimeout(deadlineTimer);
 
   const elapsedMs = performance.now() - overallStart;
 
@@ -251,6 +295,18 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     if (tripping > 0) exitCode = 1;
   }
 
+  const incomplete = skippedPasses.length > 0;
+  const skippedCheckReasons: SkippedCheckReason[] | undefined = incomplete
+    ? [
+        {
+          kind: 'time-budget-exhausted',
+          deadlineMs,
+          elapsedMs,
+          skippedPasses,
+        },
+      ]
+    : undefined;
+
   return {
     rootDir,
     filesScanned: files.length,
@@ -265,5 +321,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     elapsedMs,
     timings,
     ruleCounts,
+    incomplete,
+    ...(skippedCheckReasons ? { skippedCheckReasons } : {}),
   };
 }
