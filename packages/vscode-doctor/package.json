@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@geoql/doctor-language-server": "workspace:^",
-    "vscode-languageclient": "^10.0.1"
+    "vscode-languageclient": "^10.1.0"
   },
   "devDependencies": {
     "@types/node": "^25.9.4",
