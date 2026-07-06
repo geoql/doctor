@@ -5,6 +5,12 @@ on:
 
 permissions:
   contents: read
+  # id-token: write lets the Codecov step authenticate via OIDC instead of a
+  # secret token. Repository secrets are withheld from Dependabot PRs, so the
+  # token-based upload failed there ("Token required because branch is
+  # protected"); the OIDC token IS available on Dependabot PRs, so this makes
+  # the coverage upload succeed on every PR including Dependabot's.
+  id-token: write
 
 jobs:
   coverage:
@@ -39,7 +45,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
           files: ./coverage/lcov.info
           flags: unittests
           name: geoql-doctor
