@@ -83,24 +83,26 @@ geoql/doctor/
 
 Both `vue-doctor` and `nuxt-doctor` share the same surface. Key flags:
 
-| Flag                             | Purpose                                                                                        |
-| -------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `--preset <name>`                | Base preset: `minimal` \| `recommended` \| `strict` \| `all`                                   |
-| `--format <kind>`                | `agent` (default) \| `pretty` \| `json` \| `json-compact` \| `sarif` \| `html` \| `pr-comment` |
-| `--fail-on <level>`              | Exit non-zero on `error` \| `warn` \| `none` (default `error`)                                 |
-| `--threshold <n>`                | Minimum passing score 0-100                                                                    |
-| `--rule <id:level>`              | Override one rule (repeatable), e.g. `--rule a/b:off`                                          |
-| `--fix`                          | Auto-fix oxlint-pass findings in place (full scan only)                                        |
-| `--diff` / `--staged` / `--full` | Scope to changed, staged, or all files                                                         |
-| `--score`                        | Print only the integer score                                                                   |
-| `--output <file>`                | Write the report to a file                                                                     |
-| `--pr-comment`                   | Emit a Markdown PR-comment body                                                                |
-| `--push`                         | POST privacy-stripped findings to the SaaS (needs `--api-key`)                                 |
-| `--push-url <url>`               | Findings endpoint (default `https://app.the-doctor.report/api/v1/findings`)                    |
-| `--api-key <key>`                | the-doctor.report API key (`doc_…`), sent as the `x-api-key` header                            |
-| `--push-project <slug>`          | Dashboard project slug, e.g. `owner/repo` (defaults to the audited dir name)                   |
+| Flag                                     | Purpose                                                                                        |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `--preset <name>`                        | Base preset: `minimal` \| `recommended` \| `strict` \| `all`                                   |
+| `--format <kind>`                        | `agent` (default) \| `pretty` \| `json` \| `json-compact` \| `sarif` \| `html` \| `pr-comment` |
+| `--fail-on <level>`                      | Exit non-zero on `error` \| `warn` \| `none` (default `error`)                                 |
+| `--threshold <n>`                        | Minimum passing score 0-100                                                                    |
+| `--rule <id:level>`                      | Override one rule (repeatable), e.g. `--rule a/b:off`                                          |
+| `--fix`                                  | Auto-fix oxlint-pass findings in place (full scan only)                                        |
+| `--diff` / `--staged` / `--full`         | Scope to changed, staged, or all files                                                         |
+| `--category <cat>` / `--dimension <dim>` | Score only rules in a category or dimension (repeatable)                                       |
+| `--max-duration <seconds>`               | Soft time budget; on timeout, return partial results (`incomplete` + `skippedCheckReasons`)    |
+| `--score`                                | Print only the integer score                                                                   |
+| `--output <file>`                        | Write the report to a file                                                                     |
+| `--pr-comment`                           | Emit a Markdown PR-comment body                                                                |
+| `--push`                                 | POST privacy-stripped findings to the SaaS (needs `--api-key`)                                 |
+| `--push-url <url>`                       | Findings endpoint (default `https://app.the-doctor.report/api/v1/findings`)                    |
+| `--api-key <key>`                        | the-doctor.report API key (`doc_…`), sent as the `x-api-key` header                            |
+| `--push-project <slug>`                  | Dashboard project slug, e.g. `owner/repo` (defaults to the audited dir name)                   |
 
-Subcommands: `list-rules`, `explain <ruleId>`, `inspect [dir]`, `init [dir]`. Run `vue-doctor --help` for the complete list.
+Subcommands: `list-rules`, `explain <ruleId>`, `inspect [dir]`, `init [dir]`, `ci install [dir]` (scaffold a CI workflow that runs `geoql/doctor-action@v2`). Run `vue-doctor --help` for the complete list. The JSON report's `projectInfo.frameworkDetected` boolean tells a real Vue/Nuxt audit apart from a scan that found no project.
 
 ## Scoring model
 
