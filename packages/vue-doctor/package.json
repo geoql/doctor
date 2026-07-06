@@ -62,7 +62,7 @@
     "prompts": "^2.4.2"
   },
   "devDependencies": {
-    "@types/node": "^25.9.4",
+    "@types/node": "^26.1.0",
     "@types/prompts": "^2.4.9",
     "@vue/compiler-core": "^3.5.39",
     "@vue/compiler-sfc": "^3.5.39",

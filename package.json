@@ -45,7 +45,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.0",
     "@commitlint/config-conventional": "^21.2.0",
-    "@types/node": "^25.9.4",
+    "@types/node": "^26.1.0",
     "@vitest/coverage-v8": "^4.1.9",
     "husky": "^9.1.7",
     "is-ci": "^4.1.0",
