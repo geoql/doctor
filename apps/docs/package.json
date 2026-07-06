@@ -48,7 +48,7 @@
     "@tailwindcss/vite": "^4.3.2",
     "@types/node": "^25.9.4",
     "eslint": "^10.6.0",
-    "eslint-plugin-better-tailwindcss": "^4.6.0",
+    "eslint-plugin-better-tailwindcss": "^4.6.1",
     "eslint-plugin-oxlint": "^1.72.0",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.72.0",
