@@ -21,7 +21,7 @@ It also owns the pieces the CLIs surface: the config loader (`doctor.config.ts` 
 npm i @geoql/doctor-core
 ```
 
-Published on [npm](https://www.npmjs.com/package/@geoql/doctor-core) and [JSR](https://jsr.io/@geoql/doctor-core) at `v0.1.0` with provenance. ESM-only. `knip` and `oxlint` are peer dependencies (the dead-code and script passes shell out to them).
+Published on [npm](https://www.npmjs.com/package/@geoql/doctor-core) and [JSR](https://jsr.io/@geoql/doctor-core) with provenance. ESM-only. `knip` and `oxlint` are peer dependencies (the dead-code and script passes shell out to them).
 
 ## API
 

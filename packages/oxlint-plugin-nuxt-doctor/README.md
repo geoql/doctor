@@ -23,7 +23,7 @@ Script-level Nuxt rules across four categories. Other Nuxt checks (`structure`, 
 npm i @geoql/oxlint-plugin-nuxt-doctor
 ```
 
-Published on [npm](https://www.npmjs.com/package/@geoql/oxlint-plugin-nuxt-doctor) and [JSR](https://jsr.io/@geoql/oxlint-plugin-nuxt-doctor) at `v0.1.0` with provenance. ESM-only, TypeScript. `oxlint` is a peer dependency. Most people never add this dependency themselves; `doctor-core` resolves it for you.
+Published on [npm](https://www.npmjs.com/package/@geoql/oxlint-plugin-nuxt-doctor) and [JSR](https://jsr.io/@geoql/oxlint-plugin-nuxt-doctor) with provenance. ESM-only, TypeScript. `oxlint` is a peer dependency. Most people never add this dependency themselves; `doctor-core` resolves it for you.
 
 ## Scope
 

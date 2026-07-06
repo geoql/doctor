@@ -14,7 +14,7 @@ npx -y @geoql/vue-doctor
 npm i @geoql/vue-doctor
 ```
 
-Published on [npm](https://www.npmjs.com/package/@geoql/vue-doctor) and [JSR](https://jsr.io/@geoql/vue-doctor) at `v0.1.0` with provenance.
+Published on [npm](https://www.npmjs.com/package/@geoql/vue-doctor) and [JSR](https://jsr.io/@geoql/vue-doctor) with provenance.
 
 ## Usage
 

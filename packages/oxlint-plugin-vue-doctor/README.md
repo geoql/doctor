@@ -23,7 +23,7 @@ To see every rule with its id, severity, and preset membership, run `vue-doctor 
 npm i @geoql/oxlint-plugin-vue-doctor
 ```
 
-Published on [npm](https://www.npmjs.com/package/@geoql/oxlint-plugin-vue-doctor) and [JSR](https://jsr.io/@geoql/oxlint-plugin-vue-doctor) at `v0.1.0` with provenance. ESM-only, TypeScript. `oxlint` is a peer dependency. Most people never add this dependency themselves; `doctor-core` resolves it for you.
+Published on [npm](https://www.npmjs.com/package/@geoql/oxlint-plugin-vue-doctor) and [JSR](https://jsr.io/@geoql/oxlint-plugin-vue-doctor) with provenance. ESM-only, TypeScript. `oxlint` is a peer dependency. Most people never add this dependency themselves; `doctor-core` resolves it for you.
 
 ## Scope
 

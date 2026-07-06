@@ -14,7 +14,7 @@ npx -y @geoql/nuxt-doctor
 npm i @geoql/nuxt-doctor
 ```
 
-Published on [npm](https://www.npmjs.com/package/@geoql/nuxt-doctor) and [JSR](https://jsr.io/@geoql/nuxt-doctor) at `v0.1.0` with provenance.
+Published on [npm](https://www.npmjs.com/package/@geoql/nuxt-doctor) and [JSR](https://jsr.io/@geoql/nuxt-doctor) with provenance.
 
 ## Usage
 
