@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.7](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.1.6...eslint-plugin-vue-doctor-v1.1.7) (2026-07-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.2.2
+  * devDependencies
+    * @geoql/doctor-core bumped to 1.4.1
+
 ## [1.1.6](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.1.5...eslint-plugin-vue-doctor-v1.1.6) (2026-07-05)
 
 

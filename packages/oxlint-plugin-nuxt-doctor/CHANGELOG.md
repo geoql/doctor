@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.3](https://github.com/geoql/doctor/compare/oxlint-plugin-nuxt-doctor-v1.1.2...oxlint-plugin-nuxt-doctor-v1.1.3) (2026-07-06)
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.137.0 to 0.138.0 ([#120](https://github.com/geoql/doctor/issues/120)) ([f65c6f2](https://github.com/geoql/doctor/commit/f65c6f2176401736b36fe3b0eefc6c74b716c0fa))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.2.2
+
 ## [1.1.2](https://github.com/geoql/doctor/compare/oxlint-plugin-nuxt-doctor-v1.1.1...oxlint-plugin-nuxt-doctor-v1.1.2) (2026-06-28)
 
 
