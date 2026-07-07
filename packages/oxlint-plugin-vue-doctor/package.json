@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.1.0",
-    "oxc-parser": "^0.138.0",
+    "oxc-parser": "^0.139.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
   },
