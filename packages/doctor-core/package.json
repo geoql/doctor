@@ -70,7 +70,7 @@
     "@vue/compiler-core": "^3.5.39",
     "knip": "^6.24.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "peerDependencies": {
     "knip": "^6.14.2",
