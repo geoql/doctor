@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.4.2](https://github.com/geoql/doctor/compare/vue-doctor-v1.4.1...vue-doctor-v1.4.2) (2026-07-12)
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.138.0 to 0.139.0 ([#127](https://github.com/geoql/doctor/issues/127)) ([e665f80](https://github.com/geoql/doctor/commit/e665f8026fc0485d1c06bb0a6a6519aaab79a287))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump vitest from 4.1.9 to 4.1.10 ([#128](https://github.com/geoql/doctor/issues/128)) ([f2762e0](https://github.com/geoql/doctor/commit/f2762e085e2fadf2e44655c9c41cceb1a370c8fa))
+* **monorepo:** bump deps (oxlint 1.73, vite-plus 0.2.4, vitest coverage 4.1.10, pnpm 11.11) ([6e78255](https://github.com/geoql/doctor/commit/6e7825577a4afff70183fb6ef9d1a3b72836f879))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.5.0
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.3.0
+
 ## [1.4.1](https://github.com/geoql/doctor/compare/vue-doctor-v1.4.0...vue-doctor-v1.4.1) (2026-07-06)
 
 

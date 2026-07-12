@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.2.0](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.1.7...eslint-plugin-vue-doctor-v1.2.0) (2026-07-12)
+
+
+### Features
+
+* **monorepo:** add 4 Vue/Nuxt rules + extend cleanup detection + fix --staged scope ([7b7219b](https://github.com/geoql/doctor/commit/7b7219b92eaafab88629280a53439856188355dd))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @typescript-eslint/parser from 8.62.1 to 8.63.0 ([#123](https://github.com/geoql/doctor/issues/123)) ([3d8ee47](https://github.com/geoql/doctor/commit/3d8ee47246724e30668ef0743e99f02df23d2d3d))
+* **deps-dev:** bump vitest from 4.1.9 to 4.1.10 ([#128](https://github.com/geoql/doctor/issues/128)) ([f2762e0](https://github.com/geoql/doctor/commit/f2762e085e2fadf2e44655c9c41cceb1a370c8fa))
+* **monorepo:** bump deps (oxlint 1.73, vite-plus 0.2.4, vitest coverage 4.1.10, pnpm 11.11) ([6e78255](https://github.com/geoql/doctor/commit/6e7825577a4afff70183fb6ef9d1a3b72836f879))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.3.0
+  * devDependencies
+    * @geoql/doctor-core bumped to 1.5.0
+
 ## [1.1.7](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.1.6...eslint-plugin-vue-doctor-v1.1.7) (2026-07-06)
 
 

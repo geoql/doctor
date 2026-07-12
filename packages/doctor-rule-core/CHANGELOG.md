@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.3.0](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.2.2...doctor-rule-core-v1.3.0) (2026-07-12)
+
+
+### Features
+
+* **monorepo:** add 4 Vue/Nuxt rules + extend cleanup detection + fix --staged scope ([7b7219b](https://github.com/geoql/doctor/commit/7b7219b92eaafab88629280a53439856188355dd))
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.138.0 to 0.139.0 ([#127](https://github.com/geoql/doctor/issues/127)) ([e665f80](https://github.com/geoql/doctor/commit/e665f8026fc0485d1c06bb0a6a6519aaab79a287))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump vitest from 4.1.9 to 4.1.10 ([#128](https://github.com/geoql/doctor/issues/128)) ([f2762e0](https://github.com/geoql/doctor/commit/f2762e085e2fadf2e44655c9c41cceb1a370c8fa))
+* **monorepo:** bump deps (oxlint 1.73, vite-plus 0.2.4, vitest coverage 4.1.10, pnpm 11.11) ([6e78255](https://github.com/geoql/doctor/commit/6e7825577a4afff70183fb6ef9d1a3b72836f879))
+
 ## [1.2.2](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.2.1...doctor-rule-core-v1.2.2) (2026-07-06)
 
 

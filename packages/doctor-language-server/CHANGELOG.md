@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.9](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.8...doctor-language-server-v0.1.9) (2026-07-12)
+
+
+### Miscellaneous
+
+* **deps-dev:** bump vitest from 4.1.9 to 4.1.10 ([#128](https://github.com/geoql/doctor/issues/128)) ([f2762e0](https://github.com/geoql/doctor/commit/f2762e085e2fadf2e44655c9c41cceb1a370c8fa))
+* **monorepo:** bump deps (oxlint 1.73, vite-plus 0.2.4, vitest coverage 4.1.10, pnpm 11.11) ([6e78255](https://github.com/geoql/doctor/commit/6e7825577a4afff70183fb6ef9d1a3b72836f879))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.5.0
+
 ## [0.1.8](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.7...doctor-language-server-v0.1.8) (2026-07-06)
 
 
