@@ -7,6 +7,7 @@ import { noUseStateForServerData } from './ai-slop/no-useState-for-server-data.j
 import { useAsyncDataKeyRequiredInLoop } from './data-fetching/useAsyncData-key-required-in-loop.js';
 import { noUserInputInFetchUrl } from './security/no-user-input-in-fetch-url.js';
 import { clientOnlyForBrowserApis } from './hydration/clientOnly-for-browser-apis.js';
+import { noBrowserGlobalInComputed } from './hydration/no-browser-global-in-computed.js';
 import { noDocumentInSetup } from './hydration/no-document-in-setup.js';
 import { createErrorOnFailure } from './server-routes/createError-on-failure.js';
 import { defineEventHandlerTyped } from './server-routes/defineEventHandler-typed.js';
@@ -85,6 +86,13 @@ export const NUXT_RULES: readonly CoreRule[] = [
     'error',
     true,
     defineRule(noDocumentInSetup),
+  ),
+  coreRule(
+    'hydration/no-browser-global-in-computed',
+    'hydration',
+    'error',
+    true,
+    defineRule(noBrowserGlobalInComputed),
   ),
   coreRule(
     'hydration/clientOnly-for-browser-apis',

@@ -60,4 +60,40 @@ describe('listChangedFiles', () => {
 
     expect(await listChangedFiles({ rootDir: dir, mode: 'diff' })).toEqual([]);
   });
+
+  it('resolves staged paths correctly when rootDir is a monorepo subdirectory', async () => {
+    const pkg = join(dir, 'apps', 'web');
+    mkdirSync(join(pkg, 'src'), { recursive: true });
+    writeFileSync(join(pkg, 'src', 'staged.ts'), 'export const d = 4;\n');
+    git(dir, 'add', 'apps/web/src/staged.ts');
+
+    const files = await listChangedFiles({ rootDir: pkg, mode: 'staged' });
+
+    expect(files).toEqual([resolve(pkg, 'src/staged.ts')]);
+  });
+
+  it('resolves diff paths correctly when rootDir is a monorepo subdirectory', async () => {
+    const pkg = join(dir, 'apps', 'web');
+    mkdirSync(join(pkg, 'src'), { recursive: true });
+    writeFileSync(join(pkg, 'src', 'tracked.ts'), 'export const e = 5;\n');
+    git(dir, 'add', 'apps/web/src/tracked.ts');
+    git(dir, 'commit', '-m', 'tracked');
+    writeFileSync(join(pkg, 'src', 'tracked.ts'), 'export const e = 6;\n');
+
+    const files = await listChangedFiles({ rootDir: pkg, mode: 'diff' });
+
+    expect(files).toEqual([resolve(pkg, 'src/tracked.ts')]);
+  });
+
+  it('only lists files under the subdirectory, not sibling packages', async () => {
+    const pkg = join(dir, 'apps', 'web');
+    mkdirSync(join(pkg, 'src'), { recursive: true });
+    writeFileSync(join(pkg, 'src', 'mine.ts'), 'export const f = 7;\n');
+    writeFileSync(join(dir, 'src', 'other.ts'), 'export const g = 8;\n');
+    git(dir, 'add', '-A');
+
+    const files = await listChangedFiles({ rootDir: pkg, mode: 'staged' });
+
+    expect(files).toEqual([resolve(pkg, 'src/mine.ts')]);
+  });
 });

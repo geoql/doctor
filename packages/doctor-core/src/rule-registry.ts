@@ -260,6 +260,20 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
     source: 'doctor',
     recommended: true,
   },
+  {
+    id: 'vue-doctor/reactivity/no-stale-timer-ref',
+    severity: 'warn',
+    category: 'reactivity',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/reactivity/effect-listener-cleanup-mismatch',
+    severity: 'warn',
+    category: 'reactivity',
+    source: 'doctor',
+    recommended: true,
+  },
 
   {
     id: 'vue-doctor/composition/prefer-script-setup-for-new-files',
@@ -277,6 +291,13 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
   },
   {
     id: 'vue-doctor/composition/no-pinia-store-in-setup',
+    severity: 'warn',
+    category: 'composition',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'vue-doctor/composition/no-prop-callback-in-setup',
     severity: 'warn',
     category: 'composition',
     source: 'doctor',
@@ -649,6 +670,13 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
   },
   {
     id: 'nuxt-doctor/hydration/no-document-in-setup',
+    severity: 'error',
+    category: 'hydration',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
+    id: 'nuxt-doctor/hydration/no-browser-global-in-computed',
     severity: 'error',
     category: 'hydration',
     source: 'doctor',

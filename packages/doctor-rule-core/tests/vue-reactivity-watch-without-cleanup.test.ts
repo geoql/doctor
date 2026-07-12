@@ -55,6 +55,54 @@ describe('reactivity/watch-without-cleanup', () => {
     expect(reports).toHaveLength(1);
   });
 
+  it('fires for new PerformanceObserver without cleanup', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => { new PerformanceObserver(cb); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('fires for new WebSocket without cleanup', () => {
+    const reports = runRule(
+      rule,
+      `watchEffect(() => { new WebSocket('wss://x'); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('fires for new EventSource without cleanup', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => { new EventSource('/sse'); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('fires for new BroadcastChannel without cleanup', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => { new BroadcastChannel('ch'); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('fires for new RTCPeerConnection without cleanup', () => {
+    const reports = runRule(
+      rule,
+      `watchEffect(() => { new RTCPeerConnection(); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('does NOT fire for new WebSocket with a returned cleanup', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => { const ws = new WebSocket('wss://x'); return () => ws.close(); });`,
+    );
+    expect(reports).toEqual([]);
+  });
+
   it('fires for watchEffect that registers a listener without onCleanup', () => {
     const reports = runRule(
       rule,

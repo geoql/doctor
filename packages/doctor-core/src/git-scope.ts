@@ -30,12 +30,16 @@ export async function listChangedFiles(
 ): Promise<string[]> {
   const { rootDir, mode } = options;
 
+  // --relative scopes output to rootDir AND emits rootDir-relative paths, so
+  // monorepo subdirectory runs resolve correctly (repo-root-relative paths
+  // would resolve to nonexistent nested paths). ls-files is already cwd-scoped.
   let relPaths: string[];
   if (mode === 'staged') {
     relPaths = await gitLines(rootDir, [
       'diff',
       '--name-only',
       '--cached',
+      '--relative',
       '--diff-filter=ACMR',
     ]);
   } else {
@@ -43,6 +47,7 @@ export async function listChangedFiles(
       'diff',
       '--name-only',
       'HEAD',
+      '--relative',
       '--diff-filter=ACMR',
     ]);
     const untracked = await gitLines(rootDir, [

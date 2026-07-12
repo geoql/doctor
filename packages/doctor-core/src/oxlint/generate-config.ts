@@ -60,6 +60,7 @@ const NUXT_PLUGIN_RULES: Record<string, Severity> = {
   'nuxt-doctor/server-routes/createError-on-failure': 'warn',
   'nuxt-doctor/hydration/no-document-in-setup': 'error',
   'nuxt-doctor/hydration/clientOnly-for-browser-apis': 'error',
+  'nuxt-doctor/hydration/no-browser-global-in-computed': 'error',
   'nuxt-doctor/security/no-user-input-in-fetch-url': 'warn',
 };
 
@@ -100,9 +101,12 @@ const VUE_OXLINT_RULE_IDS: ReadonlySet<string> = new Set([
   'vue-doctor/reactivity/prefer-shallowRef-for-large-data',
   'vue-doctor/reactivity/prefer-readonly-for-injected',
   'vue-doctor/reactivity/no-fresh-deps-in-watch',
+  'vue-doctor/reactivity/no-stale-timer-ref',
+  'vue-doctor/reactivity/effect-listener-cleanup-mismatch',
   'vue-doctor/composition/prefer-script-setup-for-new-files',
   'vue-doctor/composition/defineProps-typed',
   'vue-doctor/composition/no-pinia-store-in-setup',
+  'vue-doctor/composition/no-prop-callback-in-setup',
   'vue-doctor/performance/prefer-defineAsyncComponent-on-route',
   'vue-doctor/performance/prefer-module-scope-static-value',
   'vue-doctor/performance/prefer-module-scope-pure-function',

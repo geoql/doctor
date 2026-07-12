@@ -7,12 +7,15 @@ import { noImportsFromVueWhenAutoImported } from './ai-slop/no-imports-from-vue-
 import { noNonNullAssertionOnRefValue } from './ai-slop/no-non-null-assertion-on-ref-value.js';
 import { definePropsTyped } from './composition/defineProps-typed.js';
 import { noPiniaStoreInSetup } from './composition/no-pinia-store-in-setup.js';
+import { noPropCallbackInSetup } from './composition/no-prop-callback-in-setup.js';
 import { preferScriptSetupForNewFiles } from './composition/prefer-script-setup-for-new-files.js';
 import { preferDefineAsyncComponentOnRoute } from './performance/prefer-defineAsyncComponent-on-route.js';
 import { preferModuleScopePureFunction } from './performance/prefer-module-scope-pure-function.js';
 import { preferModuleScopeStaticValue } from './performance/prefer-module-scope-static-value.js';
 import { preferStableEmptyFallback } from './performance/prefer-stable-empty-fallback.js';
+import { effectListenerCleanupMismatch } from './reactivity/effect-listener-cleanup-mismatch.js';
 import { noFreshDepsInWatch } from './reactivity/no-fresh-deps-in-watch.js';
+import { noStaleTimerRef } from './reactivity/no-stale-timer-ref.js';
 import { preferReadonlyForInjected } from './reactivity/prefer-readonly-for-injected.js';
 import { preferShallowRefForLargeData } from './reactivity/prefer-shallowRef-for-large-data.js';
 import { watchWithoutCleanup } from './reactivity/watch-without-cleanup.js';
@@ -96,6 +99,20 @@ export const VUE_RULES: readonly CoreRule[] = [
     defineRule(noFreshDepsInWatch),
   ),
   coreRule(
+    'reactivity/no-stale-timer-ref',
+    'reactivity',
+    'warn',
+    true,
+    defineRule(noStaleTimerRef),
+  ),
+  coreRule(
+    'reactivity/effect-listener-cleanup-mismatch',
+    'reactivity',
+    'warn',
+    true,
+    defineRule(effectListenerCleanupMismatch),
+  ),
+  coreRule(
     'composition/prefer-script-setup-for-new-files',
     'composition',
     'warn',
@@ -115,6 +132,13 @@ export const VUE_RULES: readonly CoreRule[] = [
     'warn',
     true,
     defineRule(noPiniaStoreInSetup),
+  ),
+  coreRule(
+    'composition/no-prop-callback-in-setup',
+    'composition',
+    'warn',
+    true,
+    defineRule(noPropCallbackInSetup),
   ),
   coreRule(
     'performance/prefer-defineAsyncComponent-on-route',

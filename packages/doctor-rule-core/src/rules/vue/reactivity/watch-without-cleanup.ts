@@ -10,10 +10,15 @@ const REGISTER_CALLS = new Set([
   'setInterval',
   'setTimeout',
 ]);
-const OBSERVERS = new Set([
+const RETAINED_RESOURCE_CONSTRUCTORS = new Set([
   'IntersectionObserver',
   'MutationObserver',
   'ResizeObserver',
+  'PerformanceObserver',
+  'WebSocket',
+  'EventSource',
+  'BroadcastChannel',
+  'RTCPeerConnection',
 ]);
 const CLEANUP_CALLS = new Set(['onCleanup', 'onWatcherCleanup']);
 
@@ -82,7 +87,7 @@ export const watchWithoutCleanup = defineRule({
         const callee = node.callee as AstNode | undefined;
         if (
           callee?.type === 'Identifier' &&
-          OBSERVERS.has(callee.name as string)
+          RETAINED_RESOURCE_CONSTRUCTORS.has(callee.name as string)
         ) {
           watchStack[watchStack.length - 1]!.hasRegistration = true;
         }
