@@ -54,9 +54,9 @@
   },
   "devDependencies": {
     "@geoql/doctor-core": "workspace:*",
-    "@types/node": "^26.1.0",
+    "@types/node": "^26.1.1",
     "@typescript-eslint/parser": "^8.63.0",
-    "eslint": "^10.6.0",
+    "eslint": "^10.7.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   },
