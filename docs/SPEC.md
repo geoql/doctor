@@ -247,10 +247,12 @@ DIAGNOSTIC SURFACES (toggle layers)
   --no-dead-code           skip dead-code layer
 
 SCOPING (which files to scan)
-  --diff [base]            scan only files changed vs base branch (default base: origin/HEAD)
-                           pass `false` to disable; overridden by --full
+  --diff                   scan only files changed vs HEAD (unions non-ignored untracked)
   --staged                 scan only git-index staged files (pre-commit hooks)
-  --full                   force full scan (overrides --diff in config or CLI)
+  --changed-files-from <ref>  scan only source files changed since <ref> (e.g. origin/main)
+                           unresolvable ref exits 2; mutually exclusive with --diff/--staged
+  --include-untracked      fold non-ignored untracked files into --staged / --changed-files-from
+  --full                   force full scan (overrides all scope flags)
   --project <name>         scan specific workspace project (comma-separated for multiple)
 
 SUPPRESSIONS

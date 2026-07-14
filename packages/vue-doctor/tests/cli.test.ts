@@ -843,6 +843,130 @@ describe('run', () => {
     expect(stderr.join('')).toContain('mutually exclusive');
   });
 
+  it('exits 2 when --changed-files-from is combined with --staged', async () => {
+    const code = await run([
+      'node',
+      'vue-doctor',
+      '--changed-files-from',
+      'HEAD',
+      '--staged',
+      cleanDir,
+    ]);
+
+    expect(code).toBe(2);
+    expect(stderr.join('')).toContain('mutually exclusive');
+  });
+
+  it('scopes findings to files changed since a ref with --changed-files-from', async () => {
+    const gitDir = mkdtempSync(join(tmpdir(), 'cli-changed-from-'));
+    const sh = (...args: string[]) =>
+      execFileSync('git', args, { cwd: gitDir, stdio: 'ignore' });
+    try {
+      sh('init');
+      sh('config', 'user.email', 't@e.com');
+      sh('config', 'user.name', 'T');
+      mkdirSync(join(gitDir, 'src'), { recursive: true });
+      writeFileSync(join(gitDir, 'package.json'), '{"name":"x"}\n');
+      writeFileSync(
+        join(gitDir, 'src', 'Old.vue'),
+        '<template><ul><li v-for="i in items">{{ i }}</li></ul></template>\n',
+      );
+      sh('add', '.');
+      sh('commit', '-m', 'base');
+      const base = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: gitDir })
+        .toString()
+        .trim();
+      writeFileSync(
+        join(gitDir, 'src', 'New.vue'),
+        '<template><ul><li v-for="j in items">{{ j }}</li></ul></template>\n',
+      );
+      sh('add', 'src/New.vue');
+      sh('commit', '-m', 'add new');
+
+      const code = await run([
+        'node',
+        'vue-doctor',
+        '--changed-files-from',
+        base,
+        '--json',
+        gitDir,
+      ]);
+      expect(code).toBe(1);
+      const report = JSON.parse(stdout.join(''));
+      const files = report.diagnostics.map((d: { file: string }) => d.file);
+      expect(files.length).toBeGreaterThan(0);
+      expect(files.every((f: string) => f.endsWith('New.vue'))).toBe(true);
+    } finally {
+      rmSync(gitDir, { recursive: true, force: true });
+    }
+  });
+
+  it('exits 2 for an unresolvable --changed-files-from ref', async () => {
+    const gitDir = mkdtempSync(join(tmpdir(), 'cli-bad-ref-'));
+    const sh = (...args: string[]) =>
+      execFileSync('git', args, { cwd: gitDir, stdio: 'ignore' });
+    try {
+      sh('init');
+      sh('config', 'user.email', 't@e.com');
+      sh('config', 'user.name', 'T');
+      writeFileSync(join(gitDir, 'package.json'), '{"name":"x"}\n');
+      writeFileSync(join(gitDir, 'a.ts'), 'export const a = 1;\n');
+      sh('add', '.');
+      sh('commit', '-m', 'base');
+
+      const code = await run([
+        'node',
+        'vue-doctor',
+        '--changed-files-from',
+        'no-such-ref',
+        gitDir,
+      ]);
+      expect(code).toBe(2);
+      expect(stderr.join('')).toContain('no-such-ref');
+    } finally {
+      rmSync(gitDir, { recursive: true, force: true });
+    }
+  });
+
+  it('folds untracked files into --staged with --include-untracked', async () => {
+    const gitDir = mkdtempSync(join(tmpdir(), 'cli-untracked-'));
+    const sh = (...args: string[]) =>
+      execFileSync('git', args, { cwd: gitDir, stdio: 'ignore' });
+    try {
+      sh('init');
+      sh('config', 'user.email', 't@e.com');
+      sh('config', 'user.name', 'T');
+      mkdirSync(join(gitDir, 'src'), { recursive: true });
+      writeFileSync(join(gitDir, 'package.json'), '{"name":"x"}\n');
+      writeFileSync(
+        join(gitDir, 'src', 'Base.vue'),
+        '<template><div /></template>\n',
+      );
+      sh('add', '.');
+      sh('commit', '-m', 'base');
+      // Brand-new untracked file with a v-for-without-key violation.
+      writeFileSync(
+        join(gitDir, 'src', 'Fresh.vue'),
+        '<template><ul><li v-for="j in items">{{ j }}</li></ul></template>\n',
+      );
+
+      const code = await run([
+        'node',
+        'vue-doctor',
+        '--staged',
+        '--include-untracked',
+        '--json',
+        gitDir,
+      ]);
+      expect(code).toBe(1);
+      const report = JSON.parse(stdout.join(''));
+      const files = report.diagnostics.map((d: { file: string }) => d.file);
+      expect(files.some((f: string) => f.endsWith('Fresh.vue'))).toBe(true);
+    } finally {
+      rmSync(gitDir, { recursive: true, force: true });
+    }
+  });
+
   it('scopes findings to changed files with --diff in a git repo', async () => {
     const gitDir = mkdtempSync(join(tmpdir(), 'cli-diff-'));
     const sh = (...args: string[]) =>

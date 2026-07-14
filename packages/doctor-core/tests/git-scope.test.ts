@@ -96,4 +96,113 @@ describe('listChangedFiles', () => {
 
     expect(files).toEqual([resolve(pkg, 'src/mine.ts')]);
   });
+
+  it('folds non-ignored untracked files into staged mode when includeUntracked', async () => {
+    writeFileSync(join(dir, 'src', 'staged.ts'), 'export const h = 9;\n');
+    writeFileSync(join(dir, 'src', 'brandnew.ts'), 'export const i = 10;\n');
+    git(dir, 'add', 'src/staged.ts');
+
+    const withFlag = await listChangedFiles({
+      rootDir: dir,
+      mode: 'staged',
+      includeUntracked: true,
+    });
+    expect(withFlag).toEqual([
+      resolve(dir, 'src/brandnew.ts'),
+      resolve(dir, 'src/staged.ts'),
+    ]);
+
+    const withoutFlag = await listChangedFiles({
+      rootDir: dir,
+      mode: 'staged',
+    });
+    expect(withoutFlag).toEqual([resolve(dir, 'src/staged.ts')]);
+  });
+
+  it('respects gitignore for untracked files in staged mode', async () => {
+    writeFileSync(join(dir, '.gitignore'), 'src/generated/\n');
+    git(dir, 'add', '.gitignore');
+    mkdirSync(join(dir, 'src', 'generated'), { recursive: true });
+    writeFileSync(
+      join(dir, 'src', 'generated', 'x.ts'),
+      'export const j = 1;\n',
+    );
+    writeFileSync(join(dir, 'src', 'real.ts'), 'export const k = 2;\n');
+
+    const files = await listChangedFiles({
+      rootDir: dir,
+      mode: 'staged',
+      includeUntracked: true,
+    });
+    expect(files).toEqual([resolve(dir, 'src/real.ts')]);
+  });
+
+  it('lists source files changed from an explicit ref in changed-from mode', async () => {
+    writeFileSync(join(dir, 'src', 'base.ts'), 'export const l = 1;\n');
+    git(dir, 'add', 'src/base.ts');
+    git(dir, 'commit', '-m', 'add base');
+    const baseRef = execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: dir,
+    })
+      .toString()
+      .trim();
+    writeFileSync(
+      join(dir, 'src', 'feature.vue'),
+      '<template><i /></template>\n',
+    );
+    git(dir, 'add', 'src/feature.vue');
+    git(dir, 'commit', '-m', 'add feature');
+
+    const files = await listChangedFiles({
+      rootDir: dir,
+      mode: 'changed-from',
+      ref: baseRef,
+    });
+    expect(files).toEqual([resolve(dir, 'src/feature.vue')]);
+  });
+
+  it('folds untracked files into changed-from mode when includeUntracked', async () => {
+    const baseRef = execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: dir,
+    })
+      .toString()
+      .trim();
+    writeFileSync(join(dir, 'src', 'committed.ts'), 'export const m = 1;\n');
+    git(dir, 'add', 'src/committed.ts');
+    git(dir, 'commit', '-m', 'committed change');
+    writeFileSync(join(dir, 'src', 'untracked.ts'), 'export const n = 2;\n');
+
+    const files = await listChangedFiles({
+      rootDir: dir,
+      mode: 'changed-from',
+      ref: baseRef,
+      includeUntracked: true,
+    });
+    expect(files).toEqual([
+      resolve(dir, 'src/committed.ts'),
+      resolve(dir, 'src/untracked.ts'),
+    ]);
+  });
+
+  it('throws GitRefError for an unresolvable ref in changed-from mode', async () => {
+    await expect(
+      listChangedFiles({
+        rootDir: dir,
+        mode: 'changed-from',
+        ref: 'definitely-not-a-real-ref',
+      }),
+    ).rejects.toThrowError(/definitely-not-a-real-ref/);
+  });
+
+  it('defaults changed-from to HEAD when no ref is given', async () => {
+    // src/kept.ts is committed in beforeEach; modifying it makes `git diff HEAD`
+    // (the ref default) list it. An untracked file would not appear.
+    writeFileSync(join(dir, 'src', 'kept.ts'), 'export const a = 99;\n');
+
+    const files = await listChangedFiles({
+      rootDir: dir,
+      mode: 'changed-from',
+    });
+    expect(files).toEqual([resolve(dir, 'src/kept.ts')]);
+  });
 });

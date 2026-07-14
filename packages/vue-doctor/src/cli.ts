@@ -304,6 +304,8 @@ interface CliFlags {
   ci?: boolean;
   diff?: boolean;
   staged?: boolean;
+  changedFilesFrom?: string;
+  includeUntracked?: boolean;
   full?: boolean;
   project?: string;
   prComment?: string | true;
@@ -409,10 +411,20 @@ async function runSingleAudit(
   prepared: PreparedOptions,
 ): Promise<{ report: AuditReport; source: ConfigSource }> {
   let scopeFiles: string[] | undefined;
-  if (!flags.full && (flags.diff || flags.staged)) {
+  const scopeActive =
+    flags.diff === true ||
+    flags.staged === true ||
+    flags.changedFilesFrom !== undefined;
+  if (!flags.full && scopeActive) {
     scopeFiles = await listChangedFiles({
       rootDir,
-      mode: flags.staged ? 'staged' : 'diff',
+      mode: flags.changedFilesFrom
+        ? 'changed-from'
+        : flags.staged
+          ? 'staged'
+          : 'diff',
+      ...(flags.changedFilesFrom ? { ref: flags.changedFilesFrom } : {}),
+      ...(flags.includeUntracked ? { includeUntracked: true } : {}),
     });
   }
   const resolved = await loadDoctorConfig(rootDir, {
@@ -875,7 +887,15 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--no-ci', 'Disable CI auto-detection even when CI env is set')
     .option('--diff', 'Only report findings in files changed vs HEAD')
     .option('--staged', 'Only report findings in staged files')
-    .option('--full', 'Force a complete scan (overrides --diff/--staged)')
+    .option(
+      '--changed-files-from <ref>',
+      'Only report findings in source files changed since <ref> (e.g. origin/main)',
+    )
+    .option(
+      '--include-untracked',
+      'Fold non-ignored untracked files into --staged / --changed-files-from scope',
+    )
+    .option('--full', 'Force a complete scan (overrides scope flags)')
     .option(
       '--project <name>',
       'Comma-separated workspace project names to audit (monorepo)',
@@ -941,15 +961,22 @@ export async function run(argv: string[] = process.argv): Promise<number> {
             `--threshold must be an integer 0-100, got "${flags.threshold}".`,
           );
         }
-        if (flags.diff && flags.staged) {
-          throw new Error('--diff and --staged are mutually exclusive.');
+        const scopeSelectors = [
+          flags.diff === true,
+          flags.staged === true,
+          flags.changedFilesFrom !== undefined,
+        ].filter(Boolean).length;
+        if (scopeSelectors > 1) {
+          throw new Error(
+            '--diff, --staged, and --changed-files-from are mutually exclusive.',
+          );
         }
         if (flags.verbose && flags.quiet) {
           throw new Error('--verbose and --quiet are mutually exclusive.');
         }
         const fixActive = flags.fix === true;
         const fixSkippedForScope =
-          fixActive && !flags.full && (flags.diff || flags.staged);
+          fixActive && !flags.full && scopeSelectors > 0;
         if (fixSkippedForScope) {
           process.stderr.write(
             'vue-doctor: --fix skipped in --diff/--staged mode (auto-fix only runs on a full scan to avoid rewriting files outside the diff).\n',
