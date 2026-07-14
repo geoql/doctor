@@ -1,6 +1,35 @@
 export type Framework = 'vue' | 'nuxt' | 'unknown';
 
-export type Capability = string;
+// The closed set of capability tokens the detectors emit. A strict union (not
+// `string`) so a misspelled token — `'nuxt4'` vs `'nuxt:4'` — fails tsc at the
+// rule's requires/disabledBy gate instead of silently never matching.
+export const CAPABILITIES = [
+  'vue:3',
+  'vue:3.4',
+  'vue:3.5',
+  'vue:vapor',
+  'nuxt:4',
+  'nuxt:4.4',
+  'nuxt4',
+  'nuxt-config',
+  'app-dir',
+  'server-dir',
+  'pages-dir',
+  'wrangler',
+  'auto-imports:vue',
+  'components:auto',
+  'pinia',
+  'vue-router',
+  'typescript',
+  'typescript:6',
+  'monorepo:pnpm',
+  'monorepo:yarn',
+  'monorepo:npm',
+  'cf-pages:enabled',
+  'nitro:node-server',
+] as const;
+
+export type Capability = (typeof CAPABILITIES)[number];
 
 export type MonorepoKind = 'pnpm' | 'yarn' | 'npm' | 'turbo' | null;
 
