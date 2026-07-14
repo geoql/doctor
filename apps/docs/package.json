@@ -34,7 +34,7 @@
     "better-sqlite3": "^12.11.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "fuse.js": "^7.4.2",
+    "fuse.js": "^7.5.0",
     "motion-v": "^2.3.0",
     "nuxt": "^4.4.8",
     "reka-ui": "^2.10.1",
