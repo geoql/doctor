@@ -727,6 +727,13 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
     recommended: true,
   },
   {
+    id: 'vue-doctor/security/markdown-it-unsanitized-html',
+    severity: 'warn',
+    category: 'security',
+    source: 'doctor',
+    recommended: true,
+  },
+  {
     id: 'vue-doctor/security/no-target-blank-without-rel',
     severity: 'warn',
     category: 'security',

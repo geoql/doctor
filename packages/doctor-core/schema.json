@@ -432,6 +432,10 @@
           "type": "string",
           "enum": ["error", "warn", "info", "off"]
         },
+        "vue-doctor/security/markdown-it-unsanitized-html": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
         "vue-doctor/security/no-target-blank-without-rel": {
           "type": "string",
           "enum": ["error", "warn", "info", "off"]

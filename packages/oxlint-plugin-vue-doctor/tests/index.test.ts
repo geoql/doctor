@@ -6,7 +6,7 @@ describe('plugin index', () => {
     expect(plugin.meta.name).toBe('vue-doctor');
   });
 
-  it('registers all twenty-three rules', () => {
+  it('registers all twenty-four rules', () => {
     expect(Object.keys(plugin.rules).sort()).toEqual(
       [
         'no-destructure-props-without-to-refs',
@@ -32,6 +32,7 @@ describe('plugin index', () => {
         'security/no-eval-like',
         'security/no-auth-token-in-web-storage',
         'security/no-secrets-in-source',
+        'security/markdown-it-unsanitized-html',
       ].sort(),
     );
   });

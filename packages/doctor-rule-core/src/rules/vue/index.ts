@@ -19,6 +19,7 @@ import { noStaleTimerRef } from './reactivity/no-stale-timer-ref.js';
 import { preferReadonlyForInjected } from './reactivity/prefer-readonly-for-injected.js';
 import { preferShallowRefForLargeData } from './reactivity/prefer-shallowRef-for-large-data.js';
 import { watchWithoutCleanup } from './reactivity/watch-without-cleanup.js';
+import { markdownItUnsanitizedHtml } from './security/markdown-it-unsanitized-html.js';
 import { noAuthTokenInWebStorage } from './security/no-auth-token-in-web-storage.js';
 import { noEvalLike } from './security/no-eval-like.js';
 import { noInnerHtml } from './security/no-inner-html.js';
@@ -195,5 +196,12 @@ export const VUE_RULES: readonly CoreRule[] = [
     'warn',
     true,
     defineRule(noSecretsInSource),
+  ),
+  coreRule(
+    'security/markdown-it-unsanitized-html',
+    'security',
+    'warn',
+    true,
+    defineRule(markdownItUnsanitizedHtml),
   ),
 ];

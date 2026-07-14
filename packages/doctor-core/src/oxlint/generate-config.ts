@@ -47,6 +47,7 @@ const VUE_DEFAULT_RULES: Record<string, Severity> = {
   'vue-doctor/security/no-eval-like': 'error',
   'vue-doctor/security/no-auth-token-in-web-storage': 'warn',
   'vue-doctor/security/no-secrets-in-source': 'warn',
+  'vue-doctor/security/markdown-it-unsanitized-html': 'warn',
 };
 
 const NUXT_PLUGIN_RULES: Record<string, Severity> = {
@@ -115,6 +116,7 @@ const VUE_OXLINT_RULE_IDS: ReadonlySet<string> = new Set([
   'vue-doctor/security/no-eval-like',
   'vue-doctor/security/no-auth-token-in-web-storage',
   'vue-doctor/security/no-secrets-in-source',
+  'vue-doctor/security/markdown-it-unsanitized-html',
 ]);
 
 const NUXT_OXLINT_RULE_IDS: ReadonlySet<string> = new Set(
