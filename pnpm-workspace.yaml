@@ -24,8 +24,10 @@ minimumReleaseAgeExclude:
   - '@oxc-parser/*'
   - '@oxc-project/*'
   - '@oxfmt/*'
+  - '@oxlint/*'
   - oxc-parser
   - oxfmt
+  - oxlint
 
 overrides:
   # Force the workspace onto Vite 8. apps/docs is a Nuxt 4.4.x app whose
