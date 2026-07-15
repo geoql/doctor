@@ -1,6 +1,6 @@
 {
   "name": "@geoql/doctor-rule-core",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": false,
   "description": "Linter-neutral rule cores shared by @geoql/oxlint-plugin-vue-doctor, @geoql/oxlint-plugin-nuxt-doctor, and the future ESLint plugin. ESTree/JS-AST only.",
   "keywords": [

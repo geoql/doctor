@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.6.0](https://github.com/geoql/doctor/compare/doctor-core-v1.5.0...doctor-core-v1.6.0) (2026-07-15)
+
+
+### Features
+
+* **monorepo:** add --changed-files-from and --include-untracked git-scope flags ([d007899](https://github.com/geoql/doctor/commit/d0078996df4574ff046743a00bf250ca5a0236a3))
+* **vue-plugin:** add security/markdown-it-unsanitized-html rule ([1a0a418](https://github.com/geoql/doctor/commit/1a0a418528037c2db5f07afafdea1fa10c1f3843))
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.139.0 to 0.140.0 ([#143](https://github.com/geoql/doctor/issues/143)) ([0b91ca6](https://github.com/geoql/doctor/commit/0b91ca6fc8afaa15462b5e83a6bdc09c8d608772))
+* **deps:** bump oxlint from 1.73.0 to 1.74.0 ([#144](https://github.com/geoql/doctor/issues/144)) ([5ac15f2](https://github.com/geoql/doctor/commit/5ac15f2fae678532d1d22ed083464a7371d6bf4e))
+
+
+### Code Refactoring
+
+* **core:** make Capability a strict union, not string ([dc697cd](https://github.com/geoql/doctor/commit/dc697cd77d3eb9743d84403a3b9dd7808d626c4f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 1.2.1
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.4.0
+
 ## [1.5.0](https://github.com/geoql/doctor/compare/doctor-core-v1.4.1...doctor-core-v1.5.0) (2026-07-12)
 
 
