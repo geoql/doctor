@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.3.0...doctor-rule-core-v1.4.0) (2026-07-15)
+
+
+### Features
+
+* **vue-plugin:** add security/markdown-it-unsanitized-html rule ([1a0a418](https://github.com/geoql/doctor/commit/1a0a418528037c2db5f07afafdea1fa10c1f3843))
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.139.0 to 0.140.0 ([#143](https://github.com/geoql/doctor/issues/143)) ([0b91ca6](https://github.com/geoql/doctor/commit/0b91ca6fc8afaa15462b5e83a6bdc09c8d608772))
+
 ## [1.3.0](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.2.2...doctor-rule-core-v1.3.0) (2026-07-12)
 
 
