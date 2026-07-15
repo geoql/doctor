@@ -1,6 +1,6 @@
 {
   "name": "@geoql/vue-doctor",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "private": false,
   "description": "CLI auditor for Vue 3 apps. Detects anti-patterns, AI-slop, and best-practice violations via @vue/compiler-sfc + oxlint. Run with `npx -y @geoql/vue-doctor`.",
   "keywords": [

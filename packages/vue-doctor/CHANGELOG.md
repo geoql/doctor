@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.5.0](https://github.com/geoql/doctor/compare/vue-doctor-v1.4.2...vue-doctor-v1.5.0) (2026-07-15)
+
+
+### Features
+
+* **monorepo:** add --changed-files-from and --include-untracked git-scope flags ([d007899](https://github.com/geoql/doctor/commit/d0078996df4574ff046743a00bf250ca5a0236a3))
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.139.0 to 0.140.0 ([#143](https://github.com/geoql/doctor/issues/143)) ([0b91ca6](https://github.com/geoql/doctor/commit/0b91ca6fc8afaa15462b5e83a6bdc09c8d608772))
+* **deps:** bump oxlint from 1.73.0 to 1.74.0 ([#144](https://github.com/geoql/doctor/issues/144)) ([5ac15f2](https://github.com/geoql/doctor/commit/5ac15f2fae678532d1d22ed083464a7371d6bf4e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.6.0
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.4.0
+
 ## [1.4.2](https://github.com/geoql/doctor/compare/vue-doctor-v1.4.1...vue-doctor-v1.4.2) (2026-07-12)
 
 
