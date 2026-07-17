@@ -228,8 +228,8 @@ importers:
         specifier: ^7.7.1
         version: 7.7.1
       '@vue/compiler-core':
-        specifier: ^3.5.39
-        version: 3.5.39
+        specifier: ^3.5.40
+        version: 3.5.40
       knip:
         specifier: ^6.27.0
         version: 6.27.0
@@ -364,8 +364,8 @@ importers:
         specifier: ^2.4.9
         version: 2.4.9
       '@vue/compiler-core':
-        specifier: ^3.5.39
-        version: 3.5.39
+        specifier: ^3.5.40
+        version: 3.5.40
       '@vue/compiler-sfc':
         specifier: ^3.5.39
         version: 3.5.39
@@ -488,8 +488,8 @@ importers:
         specifier: ^2.4.9
         version: 2.4.9
       '@vue/compiler-core':
-        specifier: ^3.5.39
-        version: 3.5.39
+        specifier: ^3.5.40
+        version: 3.5.40
       '@vue/compiler-sfc':
         specifier: ^3.5.39
         version: 3.5.39
@@ -4313,6 +4313,9 @@ packages:
   '@vue/compiler-core@3.5.39':
     resolution: {integrity: sha512-16KBTEXAJCpDr0mwlw+AZyhu8iyC7R3S2vBwsI7QnWJU6X3WKc9VKeNEZpiMdZ569qWhz9574L3vV55qRL0Vtw==}
 
+  '@vue/compiler-core@3.5.40':
+    resolution: {integrity: sha512-39E8IgOhTbVDnoJFMKc2DvYnypcZwUqgUhQkccva/0m6FUwtIKSGV7n1hpVmYcFaoRAwf9pBcwnKlCEsN63ZEQ==}
+
   '@vue/compiler-dom@3.5.39':
     resolution: {integrity: sha512-oQPigALqYbNxTNPvNgSOe+czwVExfbVF02lz8jP0S3AXJiu3jxYDygNUiqSep4ezzW8XgnubqH63My2A7JR/vg==}
 
@@ -4355,6 +4358,9 @@ packages:
 
   '@vue/shared@3.5.39':
     resolution: {integrity: sha512-l1rrBtBfTnmxvtsvdQDXltUUy8S1Y+ZaqdfUzmAnJkTd8Z8rv5v/ytW+TKiqEOWyHPoqtPlNFSs0lhRmYVSHVA==}
+
+  '@vue/shared@3.5.40':
+    resolution: {integrity: sha512-WxnBtruIqOoV3rA4jeKDWzrYI5h7Cp4+pjwDi8kWGHz+IslhiN+wguLVVhtv2l8VoU02rzDCVfDjgCl1lNpZVg==}
 
   '@vueuse/core@14.3.0':
     resolution: {integrity: sha512-aHfz47g0ZhMtTVHmIzMVpJy8ePhhOy68GY5bv110+5DVtZ+W7BsOx+m61UNQqfrWyPztIHIanWa3E2tib3NFIw==}
@@ -11656,6 +11662,14 @@ snapshots:
       estree-walker: 2.0.2
       source-map-js: 1.2.1
 
+  '@vue/compiler-core@3.5.40':
+    dependencies:
+      '@babel/parser': 7.29.7
+      '@vue/shared': 3.5.40
+      entities: 7.0.1
+      estree-walker: 2.0.2
+      source-map-js: 1.2.1
+
   '@vue/compiler-dom@3.5.39':
     dependencies:
       '@vue/compiler-core': 3.5.39
@@ -11730,6 +11744,8 @@ snapshots:
       vue: 3.5.39(typescript@6.0.3)
 
   '@vue/shared@3.5.39': {}
+
+  '@vue/shared@3.5.40': {}
 
   '@vueuse/core@14.3.0(vue@3.5.39(typescript@6.0.3))':
     dependencies:
