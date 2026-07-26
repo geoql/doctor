@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0](https://github.com/geoql/doctor/compare/doctor-core-v1.6.0...doctor-core-v1.7.0) (2026-07-26)
+
+
+### Features
+
+* --push-workspace flag for monorepo score series ([50cac92](https://github.com/geoql/doctor/commit/50cac9299654a969f439b3877dd3913dcd92b99b))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump knip from 6.26.0 to 6.27.0 ([#147](https://github.com/geoql/doctor/issues/147)) ([35a5241](https://github.com/geoql/doctor/commit/35a52418d130dcd3746e46f6a633bbc81b47fa77))
+
 ## [1.6.0](https://github.com/geoql/doctor/compare/doctor-core-v1.5.0...doctor-core-v1.6.0) (2026-07-15)
 
 

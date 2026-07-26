@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.11](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.10...doctor-language-server-v0.1.11) (2026-07-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.7.0
+
 ## [0.1.10](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.9...doctor-language-server-v0.1.10) (2026-07-15)
 
 
