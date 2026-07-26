@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.0](https://github.com/geoql/doctor/compare/vue-doctor-v1.5.0...vue-doctor-v1.6.0) (2026-07-26)
+
+
+### Features
+
+* --push-workspace flag for monorepo score series ([50cac92](https://github.com/geoql/doctor/commit/50cac9299654a969f439b3877dd3913dcd92b99b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.7.0
+
 ## [1.5.0](https://github.com/geoql/doctor/compare/vue-doctor-v1.4.2...vue-doctor-v1.5.0) (2026-07-15)
 
 

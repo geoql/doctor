@@ -1,6 +1,6 @@
 {
   "name": "@geoql/eslint-plugin-vue-doctor",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "private": false,
   "description": "ESLint flat-config plugin for Vue 3 anti-patterns and AI-slop detection. Shares the same rule cores as @geoql/oxlint-plugin-vue-doctor. TypeScript, ESM.",
   "keywords": [
