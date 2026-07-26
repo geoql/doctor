@@ -315,6 +315,7 @@ interface CliFlags {
   pushUrl: string;
   apiKey?: string;
   pushProject?: string;
+  pushWorkspace?: string;
   category?: string | string[];
   dimension?: string | string[];
   maxDuration?: string | number;
@@ -576,8 +577,13 @@ async function maybePushFindings(
     flags.pushProject && flags.pushProject.length > 0
       ? flags.pushProject
       : basename(rootDir);
+  const workspace: string | undefined =
+    flags.pushWorkspace && flags.pushWorkspace.length > 0
+      ? flags.pushWorkspace
+      : undefined;
   const result = await pushFindings({
     project,
+    workspace,
     score: report.score,
     errorCount: report.errorCount,
     warnCount: report.warnCount,
@@ -928,6 +934,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option(
       '--push-project <slug>',
       'SaaS dashboard project slug for --push (e.g. owner/repo). Defaults to the audited directory name.',
+    )
+    .option(
+      '--push-workspace <path>',
+      'Monorepo sub-app path for --push (e.g. packages/my-lib) so multiple apps in one repo keep separate score series.',
     )
     .option(
       '--max-duration <seconds>',

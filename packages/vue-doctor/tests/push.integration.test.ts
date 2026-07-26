@@ -152,6 +152,49 @@ describe('vue-doctor --push (real CLI + local HTTP server)', () => {
     }
   });
 
+  it('forwards --push-workspace as the payload workspace and omits it when unset', async () => {
+    const { server, port, captured } = await startCaptureServer();
+    try {
+      const url = `http://127.0.0.1:${port}/api/v1/findings`;
+      await run([
+        'node',
+        'vue-doctor',
+        '--no-dead-code',
+        '--push',
+        '--api-key',
+        'sk-live-abc-123',
+        '--push-url',
+        url,
+        '--push-project',
+        'acme/mono',
+        '--push-workspace',
+        'packages/widgets',
+        violationDir,
+      ]);
+      await run([
+        'node',
+        'vue-doctor',
+        '--no-dead-code',
+        '--push',
+        '--api-key',
+        'sk-live-abc-123',
+        '--push-url',
+        url,
+        '--push-project',
+        'acme/mono',
+        violationDir,
+      ]);
+
+      expect(captured).toHaveLength(2);
+      const withWs = JSON.parse(captured[0]!.body) as { workspace?: string };
+      const withoutWs = JSON.parse(captured[1]!.body) as { workspace?: string };
+      expect(withWs.workspace).toBe('packages/widgets');
+      expect(withoutWs).not.toHaveProperty('workspace');
+    } finally {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
+  });
+
   it('falls back to the audited directory name when --push-project is omitted', async () => {
     const { server, port, captured } = await startCaptureServer();
     try {

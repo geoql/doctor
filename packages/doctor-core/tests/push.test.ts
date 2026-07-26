@@ -214,6 +214,24 @@ describe('buildPushPayload', () => {
     });
   });
 
+  it('includes workspace when provided and omits it when absent', () => {
+    const base = {
+      project: 'geoql/v-maplibre',
+      score: 90,
+      errorCount: 0,
+      warnCount: 0,
+      infoCount: 0,
+      findings: [],
+    };
+    const withWs = buildPushPayload({
+      ...base,
+      workspace: 'packages/v-maplibre',
+    });
+    expect(withWs.workspace).toBe('packages/v-maplibre');
+    const withoutWs = buildPushPayload(base);
+    expect(withoutWs).not.toHaveProperty('workspace');
+  });
+
   it('omits optional CI fields when env vars are unset', () => {
     const savedSha = process.env.GITHUB_SHA;
     const savedRef = process.env.GITHUB_REF_NAME;

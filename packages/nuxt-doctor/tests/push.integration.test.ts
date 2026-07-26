@@ -150,6 +150,33 @@ describe('nuxt-doctor --push (real CLI + local HTTP server)', () => {
     }
   });
 
+  it('forwards --push-workspace as the payload workspace', async () => {
+    const { server, port, captured } = await startCaptureServer();
+    try {
+      const url = `http://127.0.0.1:${port}/api/v1/findings`;
+      await run([
+        'node',
+        'nuxt-doctor',
+        '--no-dead-code',
+        '--push',
+        '--api-key',
+        'sk-live-abc-123',
+        '--push-url',
+        url,
+        '--push-project',
+        'acme/mono',
+        '--push-workspace',
+        'apps/docs',
+        violationDir,
+      ]);
+      expect(captured).toHaveLength(1);
+      const body = JSON.parse(captured[0]!.body) as { workspace?: string };
+      expect(body.workspace).toBe('apps/docs');
+    } finally {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
+  });
+
   it('falls back to the audited directory name when --push-project is omitted', async () => {
     const { server, port, captured } = await startCaptureServer();
     try {

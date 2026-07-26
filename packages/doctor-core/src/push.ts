@@ -22,6 +22,8 @@ export interface PushPayloadInput {
   errorCount: number;
   warnCount: number;
   infoCount: number;
+  /** Monorepo sub-app path (e.g. "packages/v-maplibre"); omitted = single-app repo. */
+  workspace?: string;
   findings: PushedFinding[];
 }
 
@@ -33,6 +35,8 @@ export interface PushPayload extends PushPayloadInput {
 
 export interface PushOptions {
   project: string;
+  /** Monorepo sub-app path forwarded to the SaaS so two frameworks in one repo keep separate score series. */
+  workspace?: string;
   score: number;
   errorCount: number;
   warnCount: number;
@@ -122,6 +126,9 @@ export function buildPushPayload(input: PushPayloadInput): PushPayload {
     infoCount: input.infoCount,
     findings: input.findings,
   };
+  if (input.workspace !== undefined && input.workspace !== '') {
+    payload.workspace = input.workspace;
+  }
   const commitSha = readOptionalEnv('GITHUB_SHA');
   const branch = readOptionalEnv('GITHUB_REF_NAME');
   const prNumber = readPrNumber();
@@ -144,6 +151,7 @@ export async function pushFindings(opts: PushOptions): Promise<PushResult> {
     errorCount: opts.errorCount,
     warnCount: opts.warnCount,
     infoCount: opts.infoCount,
+    workspace: opts.workspace,
     findings,
   });
 
