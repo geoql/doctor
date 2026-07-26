@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useIntersectionObserver } from '@vueuse/core';
 import { useRoute } from 'vue-router';
 import { useState } from '#app';
 import type { Heading } from '~/types';
@@ -10,30 +11,25 @@ const props = defineProps<{
 const route = useRoute();
 const activeId = useState<string>(`toc-active-${route.path}`, () => '');
 
+const targets = ref<HTMLElement[]>([]);
+
 onMounted(() => {
-  if (props.headings.length === 0) return;
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const map = new Map<HTMLElement, string>();
-  for (const h of props.headings) {
-    const el = document.getElementById(h.id);
-    if (el) map.set(el, h.id);
-  }
-  if (map.size === 0) return;
-  const io = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          activeId.value = map.get(entry.target) ?? '';
-        }
-      }
-    },
-    { rootMargin: '-30% 0px -60% 0px', threshold: 0 },
-  );
-  map.forEach((_, el) => io.observe(el));
-  if (reduce) {
-    // No-op; IntersectionObserver respects motion preferences by default.
-  }
+  targets.value = props.headings
+    .map((h) => document.getElementById(h.id))
+    .filter((el): el is HTMLElement => el !== null);
 });
+
+useIntersectionObserver(
+  targets,
+  (entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        activeId.value = entry.target.id;
+      }
+    }
+  },
+  { rootMargin: '-30% 0px -60% 0px', threshold: 0 },
+);
 </script>
 
 <template>

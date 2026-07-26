@@ -568,55 +568,55 @@ Notable rules from `@nuxt/eslint` we leverage:
 
 ### 9.5 Advisory-only (can't lint, surfaced as info)
 
-| Topic                                     | Surfaced as                                     | Source                                      |
+| Topic | Surfaced as | Source |
 | ----------------------------------------- | ----------------------------------------------- | ------------------------------------------- | --------- |
 | Accessibility (semantic HTML, ARIA roles) | info ref to `eslint-plugin-vuejs-accessibility` | community plugin (not yet ported to oxlint) |
-| Security (CSP, sanitization)              | info ref + link to Vue Security docs            | Vue Security guide                          |
-| Production deployment checklist           | info ref to docs/CHECKLIST.md                   | Vue Production guide                        |
-| Bundle analysis                           | info: "Run `vp build --analyze`"                | vp own tooling                              |
-| **typescript**                            | tsconfig-strict                                 | warn                                        | config    |
-|                                           | vue-tsc-installed                               | warn                                        | deps      |
-|                                           | defineProps-generic-typed                       | info                                        | AST       |
-| **deps**                                  | vue-version-supported                           | error                                       | deps      |
-|                                           | duplicate-vue-detected                          | error                                       | deps      |
-|                                           | unused-deps-knip                                | warn                                        | dead-code |
-|                                           | outdated-major-deps                             | info                                        | deps      |
-| **build**                                 | vite-config-present                             | warn                                        | config    |
-|                                           | eslint-plugin-vue-installed                     | info                                        | deps      |
-|                                           | no-deprecated-vue-cli                           | warn                                        | deps      |
+| Security (CSP, sanitization) | info ref + link to Vue Security docs | Vue Security guide |
+| Production deployment checklist | info ref to docs/CHECKLIST.md | Vue Production guide |
+| Bundle analysis | info: "Run `vp build --analyze`" | vp own tooling |
+| **typescript** | tsconfig-strict | warn | config |
+| | vue-tsc-installed | warn | deps |
+| | defineProps-generic-typed | info | AST |
+| **deps** | vue-version-supported | error | deps |
+| | duplicate-vue-detected | error | deps |
+| | unused-deps-knip | warn | dead-code |
+| | outdated-major-deps | info | deps |
+| **build** | vite-config-present | warn | config |
+| | eslint-plugin-vue-installed | info | deps |
+| | no-deprecated-vue-cli | warn | deps |
 
 ### nuxt-doctor (~40 rules, _extends_ vue-doctor by default) — **Nuxt 4 only**
 
-| Category          | Rule                                 | Severity |
+| Category | Rule | Severity |
 | ----------------- | ------------------------------------ | -------- | ----------------------------------------- |
-| **structure**     | uses-app-directory                   | error    | (Nuxt 4 default; flag legacy root layout) |
-|                   | nuxt-version-4-required              | error    |
-|                   | compatibilityVersion-4-set           | warn     |
-| **data-fetching** | prefer-useFetch-over-raw-fetch       | warn     |
-|                   | useAsyncData-requires-key            | error    |
-|                   | no-shared-key-across-pages           | warn     | (Nuxt 4 stricter key scoping)             |
-|                   | ssr-safe-async-cleanup               | warn     |
-| **rendering**     | routeRules-defined-for-pages         | info     |
-|                   | prerender-config-present-for-static  | warn     |
-|                   | no-client-only-in-ssr-route          | warn     |
-| **server-routes** | defineEventHandler-typed             | warn     |
-|                   | validate-body-with-h3-v2             | warn     | (Nuxt 4 ships h3 v2)                      |
-|                   | createError-on-failure               | warn     |
-| **auto-imports**  | no-explicit-imports-of-auto-imported | info     |
-|                   | imports.dirs-configured-for-utils    | info     |
-| **seo**           | useSeoMeta-on-pages                  | warn     |
-|                   | og-image-defined                     | warn     |
-| **images**        | nuxt-image-installed                 | info     |
-|                   | no-raw-img-tag                       | warn     |
-| **hydration**     | clientOnly-for-browser-apis          | error    |
-|                   | no-document-in-setup                 | error    |
-| **modules**       | recommended-modules-installed        | info     |
-|                   | no-deprecated-nuxt-3-modules         | warn     | (modules without Nuxt 4 compat)           |
-| **nitro**         | preset-defined-for-deploy-target     | warn     |
-|                   | compatibilityDate-set                | error    |
-|                   | runtime-config-typed                 | info     |
-| **cloudflare**    | satori-og-image-for-cf               | info     |
-|                   | nitro-cloudflare-preset              | warn     |
+| **structure** | uses-app-directory | error | (Nuxt 4 default; flag legacy root layout) |
+| | nuxt-version-4-required | error |
+| | compatibilityVersion-4-set | warn |
+| **data-fetching** | prefer-useFetch-over-raw-fetch | warn |
+| | useAsyncData-requires-key | error |
+| | no-shared-key-across-pages | warn | (Nuxt 4 stricter key scoping) |
+| | ssr-safe-async-cleanup | warn |
+| **rendering** | routeRules-defined-for-pages | info |
+| | prerender-config-present-for-static | warn |
+| | no-client-only-in-ssr-route | warn |
+| **server-routes** | defineEventHandler-typed | warn |
+| | validate-body-with-h3-v2 | warn | (Nuxt 4 ships h3 v2) |
+| | createError-on-failure | warn |
+| **auto-imports** | no-explicit-imports-of-auto-imported | info |
+| | imports.dirs-configured-for-utils | info |
+| **seo** | useSeoMeta-on-pages | warn |
+| | og-image-defined | warn |
+| **images** | nuxt-image-installed | info |
+| | no-raw-img-tag | warn |
+| **hydration** | clientOnly-for-browser-apis | error |
+| | no-document-in-setup | error |
+| **modules** | recommended-modules-installed | info |
+| | no-deprecated-nuxt-3-modules | warn | (modules without Nuxt 4 compat) |
+| **nitro** | preset-defined-for-deploy-target | warn |
+| | compatibilityDate-set | error |
+| | runtime-config-typed | info |
+| **cloudflare** | satori-og-image-for-cf | info |
+| | nitro-cloudflare-preset | warn |
 
 (Full list in `packages/{vue,nuxt}-doctor/RULES.md` once written.)
 
@@ -710,15 +710,15 @@ All passes emit the canonical `Diagnostic` shape; `mergeDiagnostics` dedupes on 
 
 ## 11. Phased rollout
 
-| Phase                       | Scope                                                                                                                                                                                                                                                                                                                                                                                        | Outcome                                                                |
+| Phase | Scope | Outcome |
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------ |
-| **0 — Scaffold**            | Monorepo + 5 packages with placeholder `0.0.1`; vite-plus configs; husky; CI pipeline.yml verbatim from v-maplibre; release-please configured for all 5 packages; JSR publish wired                                                                                                                                                                                                          | All 5 packages publish to npm + JSR as `0.0.1` empty placeholders      |
-| **1 — Vue MVP plugin**      | `@geoql/oxlint-plugin-vue-doctor` with **5 hand-written rules** (the AI-priority-high ones): `no-destructure-props-without-toRefs`, `no-destructure-reactive-without-toRefs`, `no-non-null-assertion-on-ref-value`, `no-mixed-options-and-composition-api`, `no-imports-from-vue-when-auto-imported`. Plugin codegen (`pnpm gen`). Vitest fixtures. **Plugin is independently installable.** | `@geoql/oxlint-plugin-vue-doctor@0.1.0-alpha` consumable via `vp lint` |
-| **2 — doctor-core + CLI**   | `doctor-core` (oxlint runner, knip integration, score, agent reporter); `vue-doctor` CLI with `--preset`, `--format agent                                                                                                                                                                                                                                                                    | pretty                                                                 | json`, `--diff`, `--staged`, `--threshold`, `--fail-on`, `--explain` | `@geoql/vue-doctor@0.1.0-alpha` works on real Vue apps |
-| **3 — Vue completeness**    | Expand plugin to ~20 doctor-owned rules. Wire eslint-plugin-vue compat. SARIF + GitHub annotations reporters. `init`/`list-rules`/`explain`/`inspect` subcommands                                                                                                                                                                                                                            | `@geoql/vue-doctor@0.1.0` stable                                       |
-| **4 — Nuxt (plugin + CLI)** | `@geoql/oxlint-plugin-nuxt-doctor` (~25 Nuxt-4-only rules) + `@geoql/nuxt-doctor` CLI. `@nuxt/eslint` compat wired. Cloudflare-specific rule set                                                                                                                                                                                                                                             | `@geoql/nuxt-doctor@0.1.0`                                             |
-| **5 — CI/Action**           | Reusable GH Actions (`@geoql/vue-doctor-action@v1`, `@geoql/nuxt-doctor-action@v1`) in `.github/actions/`. SARIF upload to Code Scanning. PR sticky comments. Marketplace listings                                                                                                                                                                                                           | Actions used by all 11 of your personal Vue repos                      |
-| **6 — Polish**              | Safe `--fix` auto-fixer (rule-by-rule opt-in). HTML report. Docs site (Nuxt 4 Content). Benchmark vs eslint-plugin-vue + @nuxt/eslint. `--no-respect-inline-disables` audit mode                                                                                                                                                                                                             | `@geoql/{vue,nuxt}-doctor@1.0.0`                                       |
+| **0 — Scaffold** | Monorepo + 5 packages with placeholder `0.0.1`; vite-plus configs; husky; CI pipeline.yml verbatim from v-maplibre; release-please configured for all 5 packages; JSR publish wired | All 5 packages publish to npm + JSR as `0.0.1` empty placeholders |
+| **1 — Vue MVP plugin** | `@geoql/oxlint-plugin-vue-doctor` with **5 hand-written rules** (the AI-priority-high ones): `no-destructure-props-without-toRefs`, `no-destructure-reactive-without-toRefs`, `no-non-null-assertion-on-ref-value`, `no-mixed-options-and-composition-api`, `no-imports-from-vue-when-auto-imported`. Plugin codegen (`pnpm gen`). Vitest fixtures. **Plugin is independently installable.** | `@geoql/oxlint-plugin-vue-doctor@0.1.0-alpha` consumable via `vp lint` |
+| **2 — doctor-core + CLI** | `doctor-core` (oxlint runner, knip integration, score, agent reporter); `vue-doctor` CLI with `--preset`, `--format agent                                                                                                                                                                                                                                                                    | pretty                                                                 | json`, `--diff`, `--staged`, `--threshold`, `--fail-on`, `--explain` | `@geoql/vue-doctor@0.1.0-alpha` works on real Vue apps |
+| **3 — Vue completeness** | Expand plugin to ~20 doctor-owned rules. Wire eslint-plugin-vue compat. SARIF + GitHub annotations reporters. `init`/`list-rules`/`explain`/`inspect` subcommands | `@geoql/vue-doctor@0.1.0` stable |
+| **4 — Nuxt (plugin + CLI)** | `@geoql/oxlint-plugin-nuxt-doctor` (~25 Nuxt-4-only rules) + `@geoql/nuxt-doctor` CLI. `@nuxt/eslint` compat wired. Cloudflare-specific rule set | `@geoql/nuxt-doctor@0.1.0` |
+| **5 — CI/Action** | Reusable GH Actions (`@geoql/vue-doctor-action@v1`, `@geoql/nuxt-doctor-action@v1`) in `.github/actions/`. SARIF upload to Code Scanning. PR sticky comments. Marketplace listings | Actions used by all 11 of your personal Vue repos |
+| **6 — Polish** | Safe `--fix` auto-fixer (rule-by-rule opt-in). HTML report. Docs site (Nuxt 4 Content). Benchmark vs eslint-plugin-vue + @nuxt/eslint. `--no-respect-inline-disables` audit mode | `@geoql/{vue,nuxt}-doctor@1.0.0` |
 
 ---
 
