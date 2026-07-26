@@ -158,7 +158,11 @@ export default defineEventHandler(async (event) => {
   );
 
   try {
-    const { ImageResponse } = await import('@cf-wasm/og/workerd');
+    const { ImageResponse, cache } = await import('@cf-wasm/og/workerd');
+    // Persist WASM/font assets across invocations on CF Pages; without this
+    // every request re-initializes Satori (slow + memory churn).
+    const ctx = event.context.cloudflare?.context;
+    if (ctx) cache.setExecutionContext(ctx);
     const response = await ImageResponse.async(element, {
       width: 1200,
       height: 630,
@@ -169,6 +173,11 @@ export default defineEventHandler(async (event) => {
     setResponseHeaders(event, {
       'Content-Type': 'image/png',
       'Cache-Control': 'public, max-age=31536000, s-maxage=31536000, immutable',
+      // CF edge ignores Cache-Control for dynamic Worker responses without this.
+      'CDN-Cache-Control': 'public, max-age=31536000, immutable',
+      // Social-card fetchers (Slack/Discord/X) are cross-origin; CORP
+      // same-origin silently blanks every share card.
+      'Cross-Origin-Resource-Policy': 'cross-origin',
     });
 
     return Buffer.from(buffer);
