@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.1](https://github.com/geoql/doctor/compare/doctor-core-v1.8.0...doctor-core-v1.8.1) (2026-07-27)
+
+
+### Bug Fixes
+
+* **core:** stop flagging v-for alias .value as a ref deref ([c961c62](https://github.com/geoql/doctor/commit/c961c62c764831dc69e78aa69473937a3d8a115e))
+* **core:** stop flagging variant selectors and JS brackets as arbitrary values ([899cc31](https://github.com/geoql/doctor/commit/899cc31c00d9adbcb5275e7ab66430fb4ab24e1f))
+
 ## [1.8.0](https://github.com/geoql/doctor/compare/doctor-core-v1.7.0...doctor-core-v1.8.0) (2026-07-27)
 
 
