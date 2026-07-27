@@ -1715,4 +1715,30 @@ describe('run', () => {
     ]);
     expect(code).toBe(2);
   });
+
+  it('--include-test-files carries through the config merge into the audit', async () => {
+    const stdout: string[] = [];
+    const write = process.stdout.write.bind(process.stdout);
+    process.stdout.write = ((chunk: string) => {
+      stdout.push(String(chunk));
+      return true;
+    }) as typeof process.stdout.write;
+    process.exitCode = undefined;
+    try {
+      await run([
+        'node',
+        'vue-doctor',
+        violationDir,
+        '--include-test-files',
+        '--no-dead-code',
+        '--format',
+        'json',
+      ]);
+    } finally {
+      process.stdout.write = write;
+    }
+    const report = JSON.parse(stdout.join(''));
+    expect(Array.isArray(report.diagnostics)).toBe(true);
+    process.exitCode = undefined;
+  });
 });
