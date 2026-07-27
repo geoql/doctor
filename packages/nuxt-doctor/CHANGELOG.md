@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.8.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.7.0...nuxt-doctor-v1.8.0) (2026-07-27)
+
+
+### Features
+
+* **core:** wave-1 anti-slop design rules (react.doctor 0.8.x parity) ([276b5eb](https://github.com/geoql/doctor/commit/276b5eb20b9fe74072ed8d1aa1093c9dccc1c0b1))
+* design subcommand (shadscan-vue) + test-surface score exclusion ([216a8dc](https://github.com/geoql/doctor/commit/216a8dc91eefd5bf0e450f87b4280ae8eb8f3b79))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.8.0
+
 ## [1.7.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.6.0...nuxt-doctor-v1.7.0) (2026-07-26)
 
 

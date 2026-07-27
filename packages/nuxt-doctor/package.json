@@ -1,6 +1,6 @@
 {
   "name": "@geoql/nuxt-doctor",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "private": false,
   "description": "CLI auditor for Nuxt 4 apps. Detects anti-patterns, AI-slop, and best-practice violations via @vue/compiler-sfc + oxlint. Run with `npx -y @geoql/nuxt-doctor`.",
   "keywords": [
