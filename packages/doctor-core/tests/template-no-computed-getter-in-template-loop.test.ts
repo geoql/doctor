@@ -49,9 +49,25 @@ describe('runTemplatePass — no-computed-getter-in-template-loop', () => {
     expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
   });
 
-  it('flags a .value access on the v-for item identifier itself', async () => {
+  it('does not flag .value on the v-for item alias (data property, not a ref)', async () => {
     const path = await writeVue(
       '<template><div v-for="x in xs" :key="x.id">{{ x.value }}</div></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  it('does not flag a computed-member lookup keyed by the alias .value property', async () => {
+    const path = await writeVue(
+      `<template><button v-for="opt in options" :key="opt.value" :class="classes[opt.value]">x</button></template>`,
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  it('still flags a real ref .value deref next to an alias access', async () => {
+    const path = await writeVue(
+      '<template><div v-for="x in xs" :key="x.id">{{ count.value }}</div></template>',
     );
     const diags = await runTemplatePass({ files: [path] });
     expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
@@ -155,5 +171,37 @@ describe('runTemplatePass — no-computed-getter-in-template-loop', () => {
     const path = await writeVue('<template></template>');
     const diags = await runTemplatePass({ files: [path] });
     expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  it('does not flag destructured v-for alias properties', async () => {
+    const path = await writeVue(
+      '<template><div v-for="({ value, id }, idx) in rows" :key="id">{{ value }} {{ idx }}</div></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  it('does not flag the index alias .value in an object v-for', async () => {
+    const path = await writeVue(
+      '<template><div v-for="(v, k, i) in obj" :key="k">{{ v.value }}</div></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  it('flags a ref .value in a nested element under a destructured v-for', async () => {
+    const path = await writeVue(
+      '<template><ul><li v-for="({ id }) in rows" :key="id"><span>{{ total.value }}</span></li></ul></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
+  });
+
+  it('ignores root-level text nodes while scanning sibling elements', async () => {
+    const path = await writeVue(
+      '<template>intro text<div v-for="x in xs" :key="x.id">{{ total.value }}</div></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
   });
 });

@@ -80,6 +80,14 @@ describe('runTemplatePass — no-arbitrary-tailwind-values', () => {
     expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
   });
 
+  it('does not flag a data-* variant selector after other classes', async () => {
+    const path = await writeVue(
+      '<template><div class="border py-0 data-[state=open]:border-accent" /></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
   it('does not flag a data-* variant selector', async () => {
     const path = await writeVue(
       '<template><div class="data-[state=open]:rotate-180 transition" /></template>',

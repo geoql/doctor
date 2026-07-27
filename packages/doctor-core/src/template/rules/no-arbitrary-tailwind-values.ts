@@ -10,7 +10,7 @@ const ARBITRARY_VALUE = /\[[^\]]+\]/;
 // `supports-[display:grid]:`) — the trailing `:` lookahead is what separates a
 // variant from a real arbitrary value. Variants have no token equivalent.
 const VARIANT_SELECTOR =
-  /(?:^|:)(?:group|peer)?-?(?:data|aria|supports|has|group|peer|not|in)-\[[^\]]*\](?=:)/g;
+  /(?:^|[\s:])(?:group|peer)?-?(?:data|aria|supports|has|group|peer|not|in)-\[[^\]]*\](?=:)/g;
 
 // Matches quoted fragments in a bound `:class` JS expression. Scanning only
 // these keeps `[color, tone]` (array binding) and `TONE[row.sev]` (member

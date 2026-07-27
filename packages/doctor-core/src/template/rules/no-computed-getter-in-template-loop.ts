@@ -34,24 +34,75 @@ interface InterpolationNode {
   loc: Loc;
 }
 
-function isValueDeref(node: ExprNode): boolean {
+interface ForDirective {
+  name?: string;
+  forParseResult?: {
+    value?: { content?: string; ast?: unknown } | null;
+    key?: { content?: string } | null;
+    index?: { content?: string } | null;
+  };
+}
+
+const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
+
+function collectIdentifierNames(value: unknown, into: Set<string>): void {
+  if (value === null || typeof value !== 'object') return;
+  if (Array.isArray(value)) {
+    for (const item of value) collectIdentifierNames(item, into);
+    return;
+  }
+  const node = value as ExprNode;
+  if (node.type === 'Identifier' && node.name) into.add(node.name);
+  for (const child of Object.values(node)) collectIdentifierNames(child, into);
+}
+
+// The v-for alias (`opt` in `v-for="opt in options"`) is a plain data item, so
+// `opt.value` is a property read, not a ref deref — aliases must not be flagged.
+function collectForAliases(el: ElementNode, into: Set<string>): void {
+  for (const prop of el.props) {
+    if (prop.type !== NODE_DIRECTIVE) continue;
+    const dir = prop as ForDirective;
+    if (dir.name !== 'for' || !dir.forParseResult) continue;
+    for (const part of [
+      dir.forParseResult.value,
+      dir.forParseResult.key,
+      dir.forParseResult.index,
+    ]) {
+      if (!part?.content) continue;
+      if (IDENTIFIER.test(part.content)) {
+        into.add(part.content);
+      } else {
+        collectIdentifierNames(part.ast, into);
+      }
+    }
+  }
+}
+
+function isValueDeref(node: ExprNode, aliases: ReadonlySet<string>): boolean {
   if (node.type !== 'MemberExpression' || node.computed === true) return false;
   const { object, property } = node as {
     object: ExprNode;
     property: ExprNode;
   };
-  return object.type === 'Identifier' && property.name === 'value';
+  return (
+    object.type === 'Identifier' &&
+    property.name === 'value' &&
+    !aliases.has(String(object.name))
+  );
 }
 
-function containsValueDeref(value: unknown): boolean {
+function containsValueDeref(
+  value: unknown,
+  aliases: ReadonlySet<string>,
+): boolean {
   if (value === null || typeof value !== 'object') return false;
   if (Array.isArray(value)) {
-    return value.some((item) => containsValueDeref(item));
+    return value.some((item) => containsValueDeref(item, aliases));
   }
   const node = value as ExprNode;
   return (
-    isValueDeref(node) ||
-    Object.values(node).some((child) => containsValueDeref(child))
+    isValueDeref(node, aliases) ||
+    Object.values(node).some((child) => containsValueDeref(child, aliases))
   );
 }
 
@@ -79,6 +130,7 @@ function pushDiagnostic(
 function checkElement(
   el: ElementNode,
   inVForSubtree: boolean,
+  aliases: ReadonlySet<string>,
   ctx: TemplateRuleContext,
   diagnostics: Diagnostic[],
 ): void {
@@ -87,13 +139,19 @@ function checkElement(
   );
 
   const effectiveInVFor = inVForSubtree || isVFor;
+  let effectiveAliases = aliases;
+  if (isVFor) {
+    const next = new Set(aliases);
+    collectForAliases(el, next);
+    effectiveAliases = next;
+  }
 
   if (effectiveInVFor) {
     for (const prop of el.props) {
       if (prop.type !== NODE_DIRECTIVE) continue;
       const dir = prop as BindDirective;
       if (dir.name !== 'bind') continue;
-      if (containsValueDeref(dir.exp?.ast)) {
+      if (containsValueDeref(dir.exp?.ast, effectiveAliases)) {
         pushDiagnostic(el, dir.loc, ctx, diagnostics);
       }
     }
@@ -101,7 +159,7 @@ function checkElement(
     for (const child of el.children) {
       if (child.type === NODE_INTERPOLATION) {
         const interp = child as unknown as InterpolationNode;
-        if (containsValueDeref(interp.content.ast)) {
+        if (containsValueDeref(interp.content.ast, effectiveAliases)) {
           pushDiagnostic(el, interp.loc, ctx, diagnostics);
         }
       }
@@ -110,7 +168,13 @@ function checkElement(
 
   for (const child of el.children) {
     if (child.type === NODE_ELEMENT) {
-      checkElement(child as ElementNode, effectiveInVFor, ctx, diagnostics);
+      checkElement(
+        child as ElementNode,
+        effectiveInVFor,
+        effectiveAliases,
+        ctx,
+        diagnostics,
+      );
     }
   }
 }
@@ -120,7 +184,13 @@ export function check(ctx: TemplateRuleContext): TemplateRuleResult {
 
   function walk(node: TemplateChildNode, inVForSubtree: boolean): void {
     if (node.type === NODE_ELEMENT) {
-      checkElement(node as ElementNode, inVForSubtree, ctx, diagnostics);
+      checkElement(
+        node as ElementNode,
+        inVForSubtree,
+        new Set<string>(),
+        ctx,
+        diagnostics,
+      );
     } else if (node.type === 0) {
       const root = node as RootNode;
       for (const child of root.children) {
