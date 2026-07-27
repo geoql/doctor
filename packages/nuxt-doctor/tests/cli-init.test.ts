@@ -242,8 +242,8 @@ describe('nuxt-doctor init + --pr-comment', () => {
       'nuxt-doctor',
       '--no-dead-code',
       '--no-ci',
-      '--pr-comment',
       violationDir,
+      '--pr-comment',
     ]);
     expect(code).toBe(1);
     const out = stdout.join('');
