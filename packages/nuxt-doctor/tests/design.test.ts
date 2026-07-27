@@ -124,4 +124,78 @@ describe('runDesignScan', () => {
     expect(errs.join('')).toContain('--format must be');
     process.exitCode = undefined;
   });
+
+  it('defaults the scan directory to the cwd when no dir is given', async () => {
+    const dir = scaffoldVueApp();
+    const cwd = process.cwd();
+    const out: string[] = [];
+    const write = process.stdout.write.bind(process.stdout);
+    process.stdout.write = ((chunk: string) => {
+      out.push(String(chunk));
+      return true;
+    }) as typeof process.stdout.write;
+    process.exitCode = undefined;
+    try {
+      process.chdir(dir);
+      await run(['node', 'nuxt-doctor', 'design', '--format', 'json']);
+    } finally {
+      process.chdir(cwd);
+      process.stdout.write = write;
+    }
+    expect(out.join('')).toContain('score');
+    process.exitCode = undefined;
+  });
+
+  it('exits 1 when the design score is under --fail-under', async () => {
+    const dir = scaffoldVueApp();
+    const out: string[] = [];
+    const write = process.stdout.write.bind(process.stdout);
+    process.stdout.write = ((chunk: string) => {
+      out.push(String(chunk));
+      return true;
+    }) as typeof process.stdout.write;
+    process.exitCode = undefined;
+    try {
+      await run([
+        'node',
+        'nuxt-doctor',
+        'design',
+        dir,
+        '--format',
+        'json',
+        '--fail-under',
+        '101',
+      ]);
+    } finally {
+      process.stdout.write = write;
+    }
+    expect(process.exitCode).toBe(1);
+    process.exitCode = undefined;
+  });
+
+  it('exits 2 when --fail-under is not a number', async () => {
+    const dir = scaffoldVueApp();
+    const errs: string[] = [];
+    const write = process.stderr.write.bind(process.stderr);
+    process.stderr.write = ((chunk: string) => {
+      errs.push(String(chunk));
+      return true;
+    }) as typeof process.stderr.write;
+    process.exitCode = undefined;
+    try {
+      await run([
+        'node',
+        'nuxt-doctor',
+        'design',
+        dir,
+        '--fail-under',
+        'not-a-number',
+      ]);
+    } finally {
+      process.stderr.write = write;
+    }
+    expect(process.exitCode).toBe(2);
+    expect(errs.join('')).toContain('--fail-under must be');
+    process.exitCode = undefined;
+  });
 });

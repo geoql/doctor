@@ -16,6 +16,8 @@ export interface AttrSource {
   /** The raw text to scan (class string body or bound-class expression text). */
   text: string;
   loc: AttrLoc;
+  /** True when `text` is a `:class` JS expression rather than a literal class string. */
+  bound: boolean;
 }
 
 /**
@@ -30,7 +32,7 @@ export function collectClassSources(el: ElementNode): AttrSource[] {
     if (prop.type === NODE_ATTRIBUTE) {
       const attr = prop as AttributeNode;
       if (attr.name === 'class' && attr.value) {
-        sources.push({ text: attr.value.content, loc: attr.loc });
+        sources.push({ text: attr.value.content, loc: attr.loc, bound: false });
       }
     }
     if (prop.type === NODE_DIRECTIVE) {
@@ -43,7 +45,11 @@ export function collectClassSources(el: ElementNode): AttrSource[] {
         dir.exp &&
         'content' in dir.exp
       ) {
-        sources.push({ text: dir.exp.content as string, loc: dir.loc });
+        sources.push({
+          text: dir.exp.content as string,
+          loc: dir.loc,
+          bound: true,
+        });
       }
     }
   }

@@ -79,4 +79,64 @@ describe('runTemplatePass — no-arbitrary-tailwind-values', () => {
     const diags = await runTemplatePass({ files: [path] });
     expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
   });
+
+  it('does not flag a data-* variant selector', async () => {
+    const path = await writeVue(
+      '<template><div class="data-[state=open]:rotate-180 transition" /></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  it.each([
+    'aria-[expanded=true]:font-bold',
+    'supports-[display:grid]:grid',
+    'has-[input:checked]:bg-ok',
+    'group-[.is-open]:block',
+    'peer-[.invalid]:text-error',
+  ])('does not flag the %s variant selector', async (cls) => {
+    const path = await writeVue(`<template><div class="${cls}" /></template>`);
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  it('still flags a real arbitrary value that follows a variant selector', async () => {
+    const path = await writeVue(
+      '<template><div class="data-[state=open]:w-[10px]" /></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
+  });
+
+  it('does not flag a bound class array binding of plain identifiers', async () => {
+    const path = await writeVue(
+      '<template><div :class="[color, sizeClass]" /></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  it('does not flag a bound class computed member access', async () => {
+    const path = await writeVue(
+      '<template><div :class="SEVERITY_TONE[row.severity]" /></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  it('flags an arbitrary value inside a bound array of string literals', async () => {
+    const path = await writeVue(
+      `<template><div :class="['px-3', isWide && 'w-[40rem]']" /></template>`,
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
+  });
+
+  it('flags an arbitrary value inside a bound template literal', async () => {
+    const path = await writeVue(
+      '<template><div :class="`p-2 ${tone} max-w-[85vw]`" /></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
+  });
 });

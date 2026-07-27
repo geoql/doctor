@@ -96,6 +96,14 @@ describe('runTemplatePass — no-decorative-blur-orb', () => {
     expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
   });
 
+  it('still flags an orb whose only child is a comment', async () => {
+    const path = await writeVue(
+      '<template><div class="absolute blur-3xl bg-purple-500"><!-- spacer --></div></template>',
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
+  });
+
   it('does not flag a blurred container that holds an element child', async () => {
     const path = await writeVue(
       '<template><div class="absolute blur-3xl bg-purple-500"><span>real</span></div></template>',
