@@ -16,6 +16,16 @@ import { check as noImportantUtility } from './no-important-utility.js';
 import { check as noHardcodedInlineStyle } from './no-hardcoded-inline-style.js';
 import { check as noMissingAlt } from './no-missing-alt.js';
 import { check as noAbsurdZIndex } from './no-absurd-z-index.js';
+import { check as noGradientText } from './no-gradient-text.js';
+import { check as noPureBlackBackground } from './no-pure-black-background.js';
+import { check as noDecorativeBlurOrb } from './no-decorative-blur-orb.js';
+import { check as noDecorativeGridBackground } from './no-decorative-grid-background.js';
+import { check as noRadialHalo } from './no-radial-halo.js';
+import { check as noFakeBrowserChrome } from './no-fake-browser-chrome.js';
+import { check as noHeroEyebrowChip } from './no-hero-eyebrow-chip.js';
+import { check as noUniformFeatureCardGrid } from './no-uniform-feature-card-grid.js';
+import { check as noEmojiHeadingDecoration } from './no-emoji-heading-decoration.js';
+import { check as noRepeatedGlassSurfaces } from './no-repeated-glass-surfaces.js';
 import type { TemplateRule } from './types.js';
 
 export const TEMPLATE_RULES: TemplateRule[] = [
@@ -66,4 +76,35 @@ export const TEMPLATE_RULES: TemplateRule[] = [
   },
   { id: 'vue-doctor/design/no-missing-alt', check: noMissingAlt },
   { id: 'vue-doctor/design/no-absurd-z-index', check: noAbsurdZIndex },
+  { id: 'vue-doctor/design/no-gradient-text', check: noGradientText },
+  {
+    id: 'vue-doctor/design/no-pure-black-background',
+    check: noPureBlackBackground,
+  },
+  {
+    id: 'vue-doctor/design/no-decorative-blur-orb',
+    check: noDecorativeBlurOrb,
+  },
+  {
+    id: 'vue-doctor/design/no-decorative-grid-background',
+    check: noDecorativeGridBackground,
+  },
+  { id: 'vue-doctor/design/no-radial-halo', check: noRadialHalo },
+  {
+    id: 'vue-doctor/design/no-fake-browser-chrome',
+    check: noFakeBrowserChrome,
+  },
+  { id: 'vue-doctor/design/no-hero-eyebrow-chip', check: noHeroEyebrowChip },
+  {
+    id: 'vue-doctor/design/no-uniform-feature-card-grid',
+    check: noUniformFeatureCardGrid,
+  },
+  {
+    id: 'vue-doctor/design/no-emoji-heading-decoration',
+    check: noEmojiHeadingDecoration,
+  },
+  {
+    id: 'vue-doctor/design/no-repeated-glass-surfaces',
+    check: noRepeatedGlassSurfaces,
+  },
 ];

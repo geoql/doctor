@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import { runDesignScan } from '../src/design.js';
+import { run } from '../src/cli.js';
 
 const root = mkdtempSync(join(tmpdir(), 'vd-design-'));
 
@@ -85,5 +86,42 @@ describe('runDesignScan', () => {
     const dir = scaffoldVueApp();
     const result = await runDesignScan(dir, { format: 'json', failUnder: 0 });
     expect(result.exitCode).toBe(0);
+  });
+
+  it('runs through the CLI design command and writes output', async () => {
+    const dir = scaffoldVueApp();
+    const out: string[] = [];
+    const write = process.stdout.write.bind(process.stdout);
+    process.stdout.write = ((chunk: string) => {
+      out.push(String(chunk));
+      return true;
+    }) as typeof process.stdout.write;
+    process.exitCode = undefined;
+    try {
+      await run(['node', 'vue-doctor', 'design', dir, '--format', 'json']);
+    } finally {
+      process.stdout.write = write;
+    }
+    expect(out.join('')).toContain('score');
+    process.exitCode = undefined;
+  });
+
+  it('exits 2 from the CLI design command on an invalid format', async () => {
+    const dir = scaffoldVueApp();
+    const errs: string[] = [];
+    const write = process.stderr.write.bind(process.stderr);
+    process.stderr.write = ((chunk: string) => {
+      errs.push(String(chunk));
+      return true;
+    }) as typeof process.stderr.write;
+    process.exitCode = undefined;
+    try {
+      await run(['node', 'vue-doctor', 'design', dir, '--format', 'bogus']);
+    } finally {
+      process.stderr.write = write;
+    }
+    expect(process.exitCode).toBe(2);
+    expect(errs.join('')).toContain('--format must be');
+    process.exitCode = undefined;
   });
 });

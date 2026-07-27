@@ -482,6 +482,46 @@
         "vue-doctor/design/no-absurd-z-index": {
           "type": "string",
           "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-gradient-text": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-pure-black-background": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-decorative-blur-orb": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-decorative-grid-background": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-radial-halo": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-fake-browser-chrome": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-hero-eyebrow-chip": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-uniform-feature-card-grid": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-emoji-heading-decoration": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
+        },
+        "vue-doctor/design/no-repeated-glass-surfaces": {
+          "type": "string",
+          "enum": ["error", "warn", "info", "off"]
         }
       },
       "additionalProperties": {

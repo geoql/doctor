@@ -42,4 +42,9 @@ describe('isTestSurfacePath', () => {
     expect(isTestSurfacePath('src\\utils\\date.test.ts')).toBe(true);
     expect(isTestSurfacePath('app\\pages\\tests\\index.vue')).toBe(false);
   });
+
+  it('treats an empty path as prod surface', () => {
+    expect(isTestSurfacePath('')).toBe(false);
+    expect(isTestSurfacePath('/')).toBe(false);
+  });
 });

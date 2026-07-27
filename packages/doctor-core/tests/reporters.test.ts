@@ -404,6 +404,17 @@ describe('json reporter', () => {
     expect(parsed.diagnostics[0].codeSnippet).toBeUndefined();
   });
 
+  it('emits surface only for test-surface diagnostics', () => {
+    const out = jsonReport(
+      makeInput({
+        diagnostics: [diag({ surface: 'test' }), diag({})],
+      }),
+    );
+    const parsed = JSON.parse(out);
+    expect(parsed.diagnostics[0].surface).toBe('test');
+    expect(parsed.diagnostics[1].surface).toBeUndefined();
+  });
+
   it('sorts capabilities deterministically', () => {
     const out = jsonReport(
       makeInput({ capabilities: ['vue:3.5', 'typescript', 'vue:3'] }),

@@ -66,6 +66,20 @@ describe('loadDoctorConfig', () => {
     expect(result.fixExcludes).toBeUndefined();
   });
 
+  it('resolves includeTestFiles from a config file', async () => {
+    writeFileSync(
+      join(tmp, 'doctor.config.json'),
+      JSON.stringify({ includeTestFiles: true }),
+    );
+    const result = await loadDoctorConfig(tmp);
+    expect(result.includeTestFiles).toBe(true);
+  });
+
+  it('leaves includeTestFiles undefined when not declared', async () => {
+    const result = await loadDoctorConfig(tmp);
+    expect(result.includeTestFiles).toBeUndefined();
+  });
+
   it('loads a JSON config file and tags source as json', async () => {
     writeFileSync(
       join(tmp, 'doctor.config.json'),

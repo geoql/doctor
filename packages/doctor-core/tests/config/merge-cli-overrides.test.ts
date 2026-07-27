@@ -141,4 +141,27 @@ describe('mergeCliOverrides', () => {
     const result = mergeCliOverrides(baseResolved, {});
     expect(result.fixExcludes).toBeUndefined();
   });
+
+  it('takes includeTestFiles from the CLI over the config file', () => {
+    const withConfig: ResolvedDoctorConfig = {
+      ...baseResolved,
+      includeTestFiles: false,
+    };
+    const result = mergeCliOverrides(withConfig, { includeTestFiles: true });
+    expect(result.includeTestFiles).toBe(true);
+  });
+
+  it('keeps includeTestFiles from the config file when the CLI omits it', () => {
+    const withConfig: ResolvedDoctorConfig = {
+      ...baseResolved,
+      includeTestFiles: true,
+    };
+    const result = mergeCliOverrides(withConfig, {});
+    expect(result.includeTestFiles).toBe(true);
+  });
+
+  it('omits includeTestFiles when neither config nor CLI provide it', () => {
+    const result = mergeCliOverrides(baseResolved, {});
+    expect(result.includeTestFiles).toBeUndefined();
+  });
 });
