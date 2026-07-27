@@ -109,6 +109,7 @@ export function buildDoctorReport(input: ReporterInput): DoctorReport {
       message: d.message,
       source: d.source,
       recommendation: d.recommendation,
+      ...(d.surface ? { surface: d.surface } : {}),
     })),
     timing: {
       elapsedMs: input.elapsedMs,

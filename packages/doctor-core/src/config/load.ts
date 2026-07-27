@@ -129,5 +129,8 @@ export async function loadDoctorConfig(
     source,
     configFile,
     ...(raw.fixExcludes ? { fixExcludes: raw.fixExcludes } : {}),
+    ...(raw.includeTestFiles !== undefined
+      ? { includeTestFiles: raw.includeTestFiles }
+      : {}),
   };
 }

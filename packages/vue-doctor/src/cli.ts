@@ -38,6 +38,7 @@ import {
   type Severity,
   type WorkspacePackage,
 } from '@geoql/doctor-core';
+import { runDesignScan } from './design.js';
 import { cac } from 'cac';
 import prompts from 'prompts';
 import { runInstallSkill } from './install/install-skill.js';
@@ -46,6 +47,11 @@ interface InstallCliFlags {
   yes?: boolean;
   force?: boolean;
   dryRun?: boolean;
+}
+
+interface DesignCliFlags {
+  format?: string;
+  failUnder?: string | number;
 }
 
 interface CiInstallCliFlags {
@@ -306,6 +312,7 @@ interface CliFlags {
   staged?: boolean;
   changedFilesFrom?: string;
   includeUntracked?: boolean;
+  includeTestFiles?: boolean;
   full?: boolean;
   project?: string;
   prComment?: string | true;
@@ -440,6 +447,7 @@ async function runSingleAudit(
     rules: prepared.ruleOverrides,
     threshold: prepared.threshold,
     ...(fixExclude ? { fixExcludes: fixExclude } : {}),
+    ...(flags.includeTestFiles ? { includeTestFiles: true } : {}),
   });
   const report = await audit({
     rootDir: merged.rootDir,
@@ -451,6 +459,9 @@ async function runSingleAudit(
     deadCode: flags.deadCode,
     lint: flags.lint,
     respectInlineDisables: flags.respectInlineDisables,
+    ...(merged.includeTestFiles !== undefined
+      ? { includeTestFiles: merged.includeTestFiles }
+      : {}),
     scopeFiles,
     fix: flags.fix,
     ...(merged.fixExcludes ? { fixExcludes: merged.fixExcludes } : {}),
@@ -465,7 +476,13 @@ async function runSingleAudit(
       prepared.categoryScope,
     );
   }
-  const filtered = filterReportByRules(report, allowedRuleIds, merged.failOn);
+  const filtered = filterReportByRules(
+    report,
+    allowedRuleIds,
+    merged.failOn,
+    undefined,
+    merged.includeTestFiles ?? false,
+  );
   return { report: filtered, source: resolved.source };
 }
 
@@ -901,6 +918,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       '--include-untracked',
       'Fold non-ignored untracked files into --staged / --changed-files-from scope',
     )
+    .option(
+      '--include-test-files',
+      'Score findings in test/story files too (excluded from the score by default)',
+    )
     .option('--full', 'Force a complete scan (overrides scope flags)')
     .option(
       '--project <name>',
@@ -1226,6 +1247,30 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         }
       },
     );
+
+  cli
+    .command(
+      'design [dir]',
+      'Focused design-quality scan (a11y, states, polish) via shadscan-vue',
+    )
+    .option('--format <name>', 'Output format: human | json | agent')
+    .option('--fail-under <score>', 'Exit 1 when the design score is below N')
+    .action(async (dir: string | undefined, flags: DesignCliFlags) => {
+      try {
+        const result = await runDesignScan(dir ?? '.', {
+          format: flags.format,
+          failUnder:
+            flags.failUnder === undefined ? undefined : Number(flags.failUnder),
+        });
+        process.stdout.write(`${result.output}\n`);
+        if (result.exitCode !== 0) process.exitCode = result.exitCode;
+      } catch (err) {
+        process.stderr.write(
+          `vue-doctor design: ${err instanceof Error ? err.message : err}\n`,
+        );
+        process.exitCode = 2;
+      }
+    });
 
   cli.help();
   cli.version(readVersion());

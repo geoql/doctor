@@ -34,4 +34,5 @@ export interface ResolvedDoctorConfig {
   source: ConfigSource;
   configFile?: string;
   fixExcludes?: string[];
+  includeTestFiles?: boolean;
 }

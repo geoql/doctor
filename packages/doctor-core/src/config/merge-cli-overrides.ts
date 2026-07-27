@@ -8,6 +8,7 @@ export interface CliOverrides {
   threshold?: number;
   rules?: Record<string, Severity | 'off'>;
   fixExcludes?: string[];
+  includeTestFiles?: boolean;
 }
 
 export function mergeCliOverrides(
@@ -37,6 +38,11 @@ export function mergeCliOverrides(
     configFile: resolved.configFile,
     ...((cli.fixExcludes ?? resolved.fixExcludes)
       ? { fixExcludes: cli.fixExcludes ?? resolved.fixExcludes }
+      : {}),
+    ...((cli.includeTestFiles ?? resolved.includeTestFiles) !== undefined
+      ? {
+          includeTestFiles: cli.includeTestFiles ?? resolved.includeTestFiles,
+        }
       : {}),
   };
 }

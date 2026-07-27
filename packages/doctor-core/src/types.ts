@@ -23,6 +23,8 @@ export interface Diagnostic {
   source: DiagnosticSource;
   recommendation?: string;
   codeSnippet?: string;
+  /** Present only for test/story/fixture files; omitted for prod source. */
+  surface?: 'test';
 }
 
 export interface AuditConfig {
@@ -39,6 +41,7 @@ export interface AuditConfig {
   fix?: boolean;
   fixExcludes?: string[];
   maxDurationMs?: number;
+  includeTestFiles?: boolean;
 }
 
 export interface SkippedCheckReason {

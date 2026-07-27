@@ -49,6 +49,7 @@ const BaseUserConfigSchema = z
       .optional(),
     extends: z.array(z.string()).optional(),
     fixExcludes: z.array(z.string()).optional(),
+    includeTestFiles: z.boolean().optional(),
     rules: RulesSchema.optional(),
   })
   .loose();

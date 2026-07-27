@@ -1,4 +1,4 @@
-import { resolve } from 'node:path';
+import { relative, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { checkBuildQuality } from './check-build-quality.js';
 import { checkDeadCode } from './check-dead-code.js';
@@ -13,6 +13,7 @@ import { mergeDiagnostics } from './merge-diagnostics.js';
 import { runScriptPass } from './oxlint/run.js';
 import type { ProjectInfoLite } from './reporters/types.js';
 import { scoreDiagnostics } from './score.js';
+import { isTestSurfacePath } from './test-surface.js';
 import { runSfcPass } from './sfc/run.js';
 import { runCrossFilePass } from './nuxt/cross-file/run.js';
 import { runTemplatePass } from './template/run.js';
@@ -266,8 +267,17 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
       scope.has(resolve(rootDir, d.file)),
     );
   }
-  const diagnostics = await attachCodeSnippets(afterDisables);
-  const scored = scoreDiagnostics(diagnostics, { threshold });
+  const diagnostics = (await attachCodeSnippets(afterDisables)).map((d) =>
+    isTestSurfacePath(relative(rootDir, d.file))
+      ? { ...d, surface: 'test' as const }
+      : d,
+  );
+  // Test/story findings stay in the report but are excluded from the score
+  // and the CI gate unless the project opts them in.
+  const scoredDiagnostics = config.includeTestFiles
+    ? diagnostics
+    : diagnostics.filter((d) => d.surface !== 'test');
+  const scored = scoreDiagnostics(scoredDiagnostics, { threshold });
 
   const ruleCounts = countRuleCounts(diagnostics);
 

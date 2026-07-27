@@ -208,3 +208,62 @@ describe('filterReportByRules', () => {
     expect(filtered.exitCode).toBe(0);
   });
 });
+
+describe('filterReportByRules — test surface', () => {
+  it('keeps test-surface diagnostics but excludes them from score/counts', () => {
+    const prod = diag('vue-doctor/template/v-for-has-key', 'error');
+    const testDiag = {
+      ...diag('vue-doctor/template/v-for-has-key', 'error'),
+      file: 'tests/Foo.test.vue',
+      surface: 'test' as const,
+    };
+    const report = makeReport([prod, testDiag]);
+    const filtered = filterReportByRules(
+      report,
+      new Set(['vue-doctor/template/v-for-has-key']),
+      'error',
+    );
+
+    expect(filtered.diagnostics).toHaveLength(2);
+    expect(filtered.errorCount).toBe(1);
+    expect(filtered.exitCode).toBe(1);
+  });
+
+  it('exits 0 when only test-surface findings survive', () => {
+    const testDiag = {
+      ...diag('vue-doctor/template/v-for-has-key', 'error'),
+      file: 'tests/Foo.test.vue',
+      surface: 'test' as const,
+    };
+    const report = makeReport([testDiag]);
+    const filtered = filterReportByRules(
+      report,
+      new Set(['vue-doctor/template/v-for-has-key']),
+      'error',
+    );
+
+    expect(filtered.diagnostics).toHaveLength(1);
+    expect(filtered.errorCount).toBe(0);
+    expect(filtered.score).toBe(100);
+    expect(filtered.exitCode).toBe(0);
+  });
+
+  it('scores test-surface findings when includeTestFiles is passed', () => {
+    const testDiag = {
+      ...diag('vue-doctor/template/v-for-has-key', 'error'),
+      file: 'tests/Foo.test.vue',
+      surface: 'test' as const,
+    };
+    const report = makeReport([testDiag]);
+    const filtered = filterReportByRules(
+      report,
+      new Set(['vue-doctor/template/v-for-has-key']),
+      'error',
+      undefined,
+      true,
+    );
+
+    expect(filtered.errorCount).toBe(1);
+    expect(filtered.exitCode).toBe(1);
+  });
+});

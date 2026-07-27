@@ -45,6 +45,9 @@
         "type": "string"
       }
     },
+    "includeTestFiles": {
+      "type": "boolean"
+    },
     "rules": {
       "type": "object",
       "properties": {

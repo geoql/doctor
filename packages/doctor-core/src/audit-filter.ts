@@ -14,26 +14,35 @@ import type { AuditReport, Diagnostic } from './types.js';
  * (the SaaS `--push` payload, the dashboard's counts-but-no-findings bug)
  * and to the `score` itself (suppressed findings still penalize).
  *
- * Invariant enforced here:
- *   report.errorCount + report.warnCount + report.infoCount === report.diagnostics.length
- *   report.scoreResult.totalFindings === report.diagnostics.length
+ * Invariant enforced here (over the SCORED subset — see includeTestFiles):
+ *   errorCount + warnCount + infoCount === scored.length
+ *   scoreResult.totalFindings === scored.length
  *
  * `exitCode=2` (oxlint crash) is preserved verbatim; `exitCode=1` is
  * recomputed from the surviving counts + the `failOn` gate.
+ *
+ * Test/story-surface diagnostics survive the filter (they stay visible in
+ * the report) but are excluded from the score and gate unless
+ * `includeTestFiles` is set — the same contract `audit()` applies.
  */
 export function filterReportByRules(
   report: AuditReport,
   allowedRuleIds: ReadonlySet<string>,
   failOn: 'error' | 'warn' | 'none' = 'error',
   oxlintStderr?: string,
+  includeTestFiles = false,
 ): AuditReport {
   const filtered: Diagnostic[] = [];
   for (const d of report.diagnostics) {
     if (allowedRuleIds.has(d.ruleId)) filtered.push(d);
   }
 
+  const scored = includeTestFiles
+    ? filtered
+    : filtered.filter((d) => d.surface !== 'test');
+
   const threshold = report.scoreResult.threshold;
-  const scoreResult = scoreDiagnostics(filtered, { threshold });
+  const scoreResult = scoreDiagnostics(scored, { threshold });
 
   const ruleCounts: Record<string, number> = {};
   for (const d of filtered) {
