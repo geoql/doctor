@@ -158,6 +158,7 @@ export default defineNuxtConfig({
       wrangler: {
         name: 'geoql-doctor-docs',
         compatibility_date: '2026-06-16',
+        workers_dev: false,
         d1_databases: [
           {
             binding: 'DB',
