@@ -59,7 +59,7 @@
     "@geoql/oxlint-plugin-vue-doctor": "workspace:*",
     "cac": "^7.0.0",
     "kolorist": "^1.8.0",
-    "oxlint": "^1.74.0",
+    "oxlint": "^1.76.0",
     "prompts": "^2.4.2",
     "shadscan-vue": "^0.3.1"
   },
