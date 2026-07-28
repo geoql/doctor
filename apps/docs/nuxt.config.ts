@@ -145,16 +145,19 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: 'cloudflare-pages',
+    // Workers, not Pages: the Pages build wraps the WASM OG-image route
+    // (@cf-wasm/resvg) in a CJS `require` shim that workerd cannot execute,
+    // so `wrangler pages deploy` dies with "require is not defined".
+    preset: 'cloudflare_module',
     cloudflare: {
-      // Single source of truth — Nitro writes dist/_worker.js/wrangler.json at
+      // Single source of truth — Nitro writes .output/server/wrangler.json at
       // build time, so there is no local wrangler.json. The DB binding backs
       // Nuxt Content v3 (database.type: 'd1').
       deployConfig: true,
       nodeCompat: true,
       wrangler: {
         name: 'geoql-doctor-docs',
-        compatibility_date: '2026-05-26',
+        compatibility_date: '2026-06-16',
         d1_databases: [
           {
             binding: 'DB',
@@ -162,6 +165,21 @@ export default defineNuxtConfig({
             database_id: 'c9376a38-b408-4d52-843d-a2cf3225f26e',
           },
         ],
+        placement: { mode: 'smart' },
+        // Nested logs+traces form (NOT the flat { enabled } form): the flat
+        // form expands to logs.* only and hard-defaults traces.enabled to
+        // false, so traces must be opted in explicitly.
+        observability: {
+          logs: {
+            enabled: true,
+            invocation_logs: true,
+            head_sampling_rate: 1,
+          },
+          traces: {
+            enabled: true,
+            head_sampling_rate: 1,
+          },
+        },
       },
     },
     experimental: {
