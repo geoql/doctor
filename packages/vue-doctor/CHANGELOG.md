@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.7.2](https://github.com/geoql/doctor/compare/vue-doctor-v1.7.1...vue-doctor-v1.7.2) (2026-07-28)
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.140.0 to 0.142.0 ([#159](https://github.com/geoql/doctor/issues/159)) ([9390969](https://github.com/geoql/doctor/commit/93909691b898c0714d3e0fafb90017b1385d204d))
+* **deps:** bump oxlint from 1.75.0 to 1.76.0 ([#165](https://github.com/geoql/doctor/issues/165)) ([4888d34](https://github.com/geoql/doctor/commit/4888d347674cfddd8a12e94997358fc0a64e986a))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @types/node from 26.1.1 to 26.1.2 ([#164](https://github.com/geoql/doctor/issues/164)) ([2051941](https://github.com/geoql/doctor/commit/205194172b5c06f49683cf4a326724cca62c5a4b))
+* **deps:** bump dependencies ✨ ([3cf3f9d](https://github.com/geoql/doctor/commit/3cf3f9df15819e0370cc0a309d36c79208c6c35c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.8.2
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.4.1
+
 ## [1.7.1](https://github.com/geoql/doctor/compare/vue-doctor-v1.7.0...vue-doctor-v1.7.1) (2026-07-27)
 
 
