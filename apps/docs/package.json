@@ -46,7 +46,7 @@
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/eslint-config": "^1.16.0",
     "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.1.2",
     "eslint": "^10.8.0",
     "eslint-plugin-better-tailwindcss": "^4.7.0",
     "eslint-plugin-oxlint": "^1.76.0",
