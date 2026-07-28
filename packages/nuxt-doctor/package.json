@@ -64,7 +64,7 @@
     "shadscan-vue": "^0.3.1"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.1.2",
     "@types/prompts": "^2.4.9",
     "@vue/compiler-core": "^3.5.40",
     "@vue/compiler-sfc": "^3.5.40",
