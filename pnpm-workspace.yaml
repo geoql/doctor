@@ -30,6 +30,7 @@ minimumReleaseAgeExclude:
   - oxlint
   - shadscan-vue
   - eslint-plugin-oxlint
+  - '@types/*'
 
 overrides:
   # unhead >=3.2.1 fixes nuxt#35670 (streaming IIFE corruption in the unhead
