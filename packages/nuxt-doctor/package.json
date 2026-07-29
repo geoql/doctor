@@ -61,7 +61,7 @@
     "kolorist": "^1.8.0",
     "oxlint": "^1.76.0",
     "prompts": "^2.4.2",
-    "shadscan-vue": "^0.3.1"
+    "shadscan-vue": "^0.3.2"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",

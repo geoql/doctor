@@ -358,8 +358,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       shadscan-vue:
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.3.2
+        version: 0.3.2
     devDependencies:
       '@types/node':
         specifier: ^26.1.2
@@ -485,8 +485,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       shadscan-vue:
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.3.2
+        version: 0.3.2
     devDependencies:
       '@types/node':
         specifier: ^26.1.2
@@ -7065,8 +7065,8 @@ packages:
   shadcn-nuxt@2.8.0:
     resolution: {integrity: sha512-0HKTjq8FeEbAKGGc6a7pd72kSLNiAhCK9JgjYlZ5mJ8DPlRNQ1LV8aarfP+BKLX6IYLevUvtZiCGS5TaPS7WLQ==}
 
-  shadscan-vue@0.3.1:
-    resolution: {integrity: sha512-FIjyU/vbrxoN1VWIgrqJFD9YPVlEOMytP/EHxRo9xP2QB4AouSPSVEIIjLx7MMHAkhh9uOqbeiyxTn1esR7y2Q==}
+  shadscan-vue@0.3.2:
+    resolution: {integrity: sha512-CLV6+/mb3KnnHrJAOYVwVa1d913chiRcC1NDFwSjQh+67jNm2AqrmESWIn73QLqsCpBl7IXb4DjleIe+4SkNqA==}
     engines: {node: '>=20.19.0'}
     hasBin: true
 
@@ -15276,7 +15276,7 @@ snapshots:
       - '@emnapi/runtime'
       - magicast
 
-  shadscan-vue@0.3.1:
+  shadscan-vue@0.3.2:
     dependencies:
       '@vue/compiler-dom': 3.5.40
       '@vue/compiler-sfc': 3.5.40
