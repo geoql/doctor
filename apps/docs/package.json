@@ -22,7 +22,7 @@
   "dependencies": {
     "@cf-wasm/og": "^0.4.1",
     "@iconify-json/lucide": "^1.2.120",
-    "@lucide/vue": "^1.27.0",
+    "@lucide/vue": "^1.28.0",
     "@nuxt/content": "^3.15.2",
     "@nuxt/icon": "^2.4.1",
     "@nuxtjs/color-mode": "^4.0.1",
