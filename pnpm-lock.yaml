@@ -46,8 +46,8 @@ importers:
   apps/docs:
     dependencies:
       '@cf-wasm/og':
-        specifier: ^0.4.1
-        version: 0.4.1(react@19.2.8)
+        specifier: ^0.5.0
+        version: 0.5.0(react@19.2.8)
       '@iconify-json/lucide':
         specifier: ^1.2.121
         version: 1.2.121
@@ -700,14 +700,14 @@ packages:
       commander:
         optional: true
 
-  '@cf-wasm/og@0.4.1':
-    resolution: {integrity: sha512-oZJjA+5SZIeKOLmsBigpHofvr/IdxqaAPlRWGlD9cyibw8OCD0L38ub1xLeggqciOuLFWTIrDfg/5w8T6iBRmA==}
+  '@cf-wasm/og@0.5.0':
+    resolution: {integrity: sha512-NAITsw8hVDGfnNxYwcA+KJs9MBQJnJ/PkTgqqSIV/4mnOAMFJfMzLAlJ4B5RZaFthTdy6fDo6EnJP5LcH9oC0Q==}
 
-  '@cf-wasm/resvg@0.3.5':
-    resolution: {integrity: sha512-0dTZFR7AEVrnchNR68VLWg/AL64e42q7WkT4Dc6PxMCRjnPuWrqY3qu01bN/w31pXgPIJTvnNHnqtw9WbZCUEw==}
+  '@cf-wasm/resvg@0.4.0':
+    resolution: {integrity: sha512-p45IjI5EDYPTsJzhoqJ48f/TcNhR3/F9l2CCFomEHBJ0jbedQQMFB9CQfRaqcqdhDTNy4fSjN8hvOeKDMnz3zA==}
 
-  '@cf-wasm/satori@0.3.7':
-    resolution: {integrity: sha512-4/r2WRtriyrco0tvIJ5SiNRelxjUx4xk6Bt913uNAnINvkfWVh7em6Zz8bRKlRM7nbSf5hxsnDdoOKgHGkn2ww==}
+  '@cf-wasm/satori@0.4.0':
+    resolution: {integrity: sha512-sFZZcqrIwx28DQyL0kXr1lnGUEfzzH6KLLjdxHV5f51uIqiv730nGrbyh5MIsczDgABjQR7NmG9h4vH3Dp5lQQ==}
 
   '@clack/core@1.4.3':
     resolution: {integrity: sha512-/kr3UWNtdJfxZtPgDqUOmG2pvwlmcLGheex5yiZKdwbzZJxhV+HMNR9QNmyY5cGwTNV6LrR7Jtp+KjhUAP1qBQ==}
@@ -7044,8 +7044,8 @@ packages:
   safe-buffer@5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
 
-  satori@0.26.0:
-    resolution: {integrity: sha512-tkMFrfIs3l2mQ2JEcyW0ADTy3zGggFRFzi6Ef8YozQSFsFKEqaSO1Y8F9wJg4//PJGQauMalHGTUEkPrFwhVPA==}
+  satori@0.29.0:
+    resolution: {integrity: sha512-fPAfrwNaIQ7EsJLhY382STEqpczN6ZEH9NsKXDQgRcxUXNNPB73iAjSshzFwTaaScT68pxV0pmG6TBzDQ4sEGw==}
     engines: {node: '>=16'}
 
   sax@1.6.1:
@@ -8396,22 +8396,22 @@ snapshots:
     optionalDependencies:
       citty: 0.2.2
 
-  '@cf-wasm/og@0.4.1(react@19.2.8)':
+  '@cf-wasm/og@0.5.0(react@19.2.8)':
     dependencies:
-      '@cf-wasm/resvg': 0.3.5
-      '@cf-wasm/satori': 0.3.7
+      '@cf-wasm/resvg': 0.4.0
+      '@cf-wasm/satori': 0.4.0
       '@hedgedoc/html-to-react': 2.1.1(react@19.2.8)
     transitivePeerDependencies:
       - react
 
-  '@cf-wasm/resvg@0.3.5':
+  '@cf-wasm/resvg@0.4.0':
     dependencies:
       '@resvg/resvg-wasm': 2.6.2
       '@resvg/resvg-wasm-legacy': '@resvg/resvg-wasm@2.4.1'
 
-  '@cf-wasm/satori@0.3.7':
+  '@cf-wasm/satori@0.4.0':
     dependencies:
-      satori: 0.26.0
+      satori: 0.29.0
 
   '@clack/core@1.4.3':
     dependencies:
@@ -15280,7 +15280,7 @@ snapshots:
 
   safe-buffer@5.2.1: {}
 
-  satori@0.26.0:
+  satori@0.29.0:
     dependencies:
       '@shuding/opentype.js': 1.4.0-beta.0
       css-background-parser: 0.1.0
