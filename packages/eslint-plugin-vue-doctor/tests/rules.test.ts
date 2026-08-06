@@ -67,12 +67,18 @@ const VUE_FIXTURES: Readonly<Record<string, Fixture>> = {
   'reactivity/watch-without-cleanup': {
     valid: [
       {
-        code: `watch(src, () => { window.addEventListener('resize', h); return () => window.removeEventListener('resize', h); });`,
+        code: `watch(src, () => { window.addEventListener('resize', h); onWatcherCleanup(() => window.removeEventListener('resize', h)); });`,
       },
     ],
     invalid: [
       {
         code: `watch(src, () => { window.addEventListener('resize', onResize); });`,
+        errors: 1,
+      },
+      {
+        // Returning a function from a watch callback is a no-op in Vue -
+        // the cleanup never runs, so this must be reported (geoql/doctor#179).
+        code: `watch(src, () => { window.addEventListener('resize', h); return () => window.removeEventListener('resize', h); });`,
         errors: 1,
       },
     ],
