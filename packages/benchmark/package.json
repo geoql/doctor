@@ -14,8 +14,8 @@
     "@geoql/vue-doctor": "workspace:*"
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "^1.16.0",
-    "@typescript-eslint/parser": "^8.65.0",
+    "@nuxt/eslint-config": "^1.17.0",
+    "@typescript-eslint/parser": "^8.66.0",
     "eslint": "^10.8.0",
     "eslint-plugin-vue": "^10.10.0",
     "mitata": "^1.0.34",
