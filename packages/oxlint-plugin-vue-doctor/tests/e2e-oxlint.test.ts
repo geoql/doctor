@@ -23,10 +23,21 @@ describe('e2e: real oxlint integration', () => {
   it('watch-without-cleanup does NOT fire on cleaned-up watcher', () => {
     const result = runOxlint(
       'reactivity/watch-without-cleanup',
-      `watch(src, () => { window.addEventListener('resize', h); return () => window.removeEventListener('resize', h); });`,
+      `watch(src, () => { window.addEventListener('resize', h); onWatcherCleanup(() => window.removeEventListener('resize', h)); });`,
     );
     expect(hasStackOverflow(result)).toBe(false);
     expect(firedRuleIds(result)).not.toContain(
+      'vue-doctor(reactivity/watch-without-cleanup)',
+    );
+  });
+
+  it('watch-without-cleanup fires when watch returns a cleanup fn (no-op for watch)', () => {
+    const result = runOxlint(
+      'reactivity/watch-without-cleanup',
+      `watch(src, () => { window.addEventListener('resize', h); return () => window.removeEventListener('resize', h); });`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).toContain(
       'vue-doctor(reactivity/watch-without-cleanup)',
     );
   });

@@ -3,7 +3,12 @@ import type { AstNode, RuleContext } from '../../../types.js';
 
 const DOCS_URL =
   'https://vuejs.org/guide/essentials/watchers.html#side-effect-cleanup';
-const MESSAGE = `This watcher registers a listener, timer, or observer but never cleans it up, so it leaks across re-runs and hot reloads. Return a cleanup function (or call onWatcherCleanup) inside the watcher. See ${DOCS_URL}`;
+const MESSAGE =
+  "This watcher registers a listener, timer, or observer but never cleans it up, so it leaks across re-runs and hot reloads. Register cleanup with onWatcherCleanup (or the callback's onCleanup argument) inside the watcher. See " +
+  DOCS_URL;
+const MESSAGE_EFFECT =
+  'This watcher registers a listener, timer, or observer but never cleans it up, so it leaks across re-runs and hot reloads. Return a cleanup function (or call onWatcherCleanup) inside the watcher. See ' +
+  DOCS_URL;
 
 const REGISTER_CALLS = new Set([
   'addEventListener',
@@ -78,7 +83,12 @@ export const watchWithoutCleanup = defineRule({
         if (method !== undefined && REGISTER_CALLS.has(method)) {
           top.hasRegistration = true;
         }
-        if (method !== undefined && CLEANUP_CALLS.has(method) && top.isEffect) {
+        // onCleanup (the watch callback's third argument) and onWatcherCleanup
+        // are valid cleanup registration in BOTH watch and watchEffect
+        // callbacks - the isEffect gate previously rejected the watch() forms,
+        // leaving the only accepted pattern the return-a-function form Vue
+        // ignores for watch() (geoql/doctor#179).
+        if (method !== undefined && CLEANUP_CALLS.has(method)) {
           top.hasCleanup = true;
         }
       },
@@ -94,8 +104,12 @@ export const watchWithoutCleanup = defineRule({
       },
       ReturnStatement(node: AstNode) {
         if (watchStack.length === 0) return;
-        if (isFunction(node.argument as AstNode | undefined)) {
-          watchStack[watchStack.length - 1]!.hasCleanup = true;
+        // Returning a function is cleanup ONLY for watchEffect - Vue ignores
+        // a returned function from a watch() callback, so crediting it there
+        // accepted the one pattern that actually leaks (geoql/doctor#179).
+        const top = watchStack[watchStack.length - 1]!;
+        if (top.isEffect && isFunction(node.argument as AstNode | undefined)) {
+          top.hasCleanup = true;
         }
       },
       'CallExpression:exit'(node: AstNode) {
@@ -104,7 +118,10 @@ export const watchWithoutCleanup = defineRule({
         if (top.sourceCall !== node) return;
         watchStack.pop();
         if (top.hasRegistration && !top.hasCleanup) {
-          context.report({ node, message: MESSAGE });
+          context.report({
+            node,
+            message: top.isEffect ? MESSAGE_EFFECT : MESSAGE,
+          });
         }
       },
     };

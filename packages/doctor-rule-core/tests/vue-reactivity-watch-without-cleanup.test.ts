@@ -95,12 +95,12 @@ describe('reactivity/watch-without-cleanup', () => {
     expect(reports).toHaveLength(1);
   });
 
-  it('does NOT fire for new WebSocket with a returned cleanup', () => {
+  it('fires for new WebSocket with a returned cleanup - return fn is a no-op for watch', () => {
     const reports = runRule(
       rule,
       `watch(src, () => { const ws = new WebSocket('wss://x'); return () => ws.close(); });`,
     );
-    expect(reports).toEqual([]);
+    expect(reports).toHaveLength(1);
   });
 
   it('fires for watchEffect that registers a listener without onCleanup', () => {
@@ -135,18 +135,26 @@ describe('reactivity/watch-without-cleanup', () => {
     expect(reports).toHaveLength(1);
   });
 
-  it('does NOT fire when the watch callback returns an arrow cleanup', () => {
+  it('fires when the watch callback returns an arrow cleanup - no-op for watch', () => {
     const reports = runRule(
       rule,
       `watch(src, () => { window.addEventListener('resize', h); return () => window.removeEventListener('resize', h); });`,
     );
-    expect(reports).toEqual([]);
+    expect(reports).toHaveLength(1);
   });
 
-  it('does NOT fire when the watch callback returns a function-expression cleanup', () => {
+  it('fires when the watch callback returns a function-expression cleanup - no-op for watch', () => {
     const reports = runRule(
       rule,
       `watch(src, () => { setInterval(tick, 1); return function () { clearInterval(); }; });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('does NOT fire when watchEffect returns a cleanup function', () => {
+    const reports = runRule(
+      rule,
+      `watchEffect(() => { setInterval(tick, 1); return () => clearInterval(); });`,
     );
     expect(reports).toEqual([]);
   });
@@ -227,24 +235,24 @@ describe('reactivity/watch-without-cleanup', () => {
   it('handles nested watches independently', () => {
     const reports = runRule(
       rule,
-      `watch(a, () => { window.addEventListener('resize', h); watch(b, () => { setInterval(tick, 1); }); return () => window.removeEventListener('resize', h); });`,
+      `watch(a, () => { window.addEventListener('resize', h); watch(b, () => { setInterval(tick, 1); }); onWatcherCleanup(() => window.removeEventListener('resize', h)); });`,
     );
     expect(reports).toHaveLength(1);
   });
 
-  it('does NOT treat onCleanup as cleanup for plain watch', () => {
+  it('does NOT fire when watch calls onCleanup', () => {
     const reports = runRule(
       rule,
       `watch(src, () => { window.addEventListener('resize', h); onCleanup(() => {}); });`,
     );
-    expect(reports).toHaveLength(1);
+    expect(reports).toEqual([]);
   });
 
-  it('does NOT treat onWatcherCleanup as cleanup for plain watch', () => {
+  it('does NOT fire when watch calls onWatcherCleanup', () => {
     const reports = runRule(
       rule,
       `watch(src, () => { window.addEventListener('resize', h); onWatcherCleanup(() => {}); });`,
     );
-    expect(reports).toHaveLength(1);
+    expect(reports).toEqual([]);
   });
 });
