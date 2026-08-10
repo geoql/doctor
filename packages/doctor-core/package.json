@@ -68,7 +68,7 @@
     "@types/node": "^26.1.2",
     "@types/semver": "^7.8.0",
     "@vue/compiler-core": "^3.5.41",
-    "knip": "^6.31.0",
+    "knip": "^6.32.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   },
