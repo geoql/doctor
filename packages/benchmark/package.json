@@ -16,7 +16,7 @@
   "devDependencies": {
     "@nuxt/eslint-config": "^1.17.0",
     "@typescript-eslint/parser": "^8.66.0",
-    "eslint": "^10.8.0",
+    "eslint": "^10.8.1",
     "eslint-plugin-vue": "^10.10.0",
     "mitata": "^1.0.34",
     "vue-eslint-parser": "^10.4.1"
