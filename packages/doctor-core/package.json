@@ -65,7 +65,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.2.0",
     "@types/semver": "^7.8.0",
     "@vue/compiler-core": "^3.5.41",
     "knip": "^6.32.0",
