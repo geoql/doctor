@@ -137,8 +137,8 @@ importers:
         specifier: ^1.77.0
         version: 1.77.0(oxlint-tsgolint@7.0.2001)(vite-plus@0.2.8(@types/node@26.2.0)(@vitest/coverage-v8@4.1.10)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.2)(typescript@6.0.3)(vite@8.2.0(@types/node@26.2.0)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.2)(yaml@2.9.0))(yaml@2.9.0))
       shadcn-nuxt:
-        specifier: ^2.8.1
-        version: 2.8.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(magicast@0.5.4)
+        specifier: ^2.8.2
+        version: 2.8.2(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(magicast@0.5.4)
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
@@ -6968,8 +6968,8 @@ packages:
     engines: {node: '>= 0.10'}
     hasBin: true
 
-  shadcn-nuxt@2.8.1:
-    resolution: {integrity: sha512-6l98KohFTJPDAyWcbLtIJMBCo7Xhey1QfBHvvrJoqVZAsXdNgnpXvt3mVKLzizJmjqUVnvsI9LDimLlwu6vM0Q==}
+  shadcn-nuxt@2.8.2:
+    resolution: {integrity: sha512-MjHCs7tAO/xJDk80JUeHe2QtkOAN3a/qEK5zX4UTrZY0q1/pFglBdf88OUC+w0SNZJBIeCMjdth57ucK74hM5g==}
 
   shadscan-vue@0.3.2:
     resolution: {integrity: sha512-CLV6+/mb3KnnHrJAOYVwVa1d913chiRcC1NDFwSjQh+67jNm2AqrmESWIn73QLqsCpBl7IXb4DjleIe+4SkNqA==}
@@ -15191,7 +15191,7 @@ snapshots:
       safe-buffer: 5.2.1
       to-buffer: 1.2.2
 
-  shadcn-nuxt@2.8.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(magicast@0.5.4):
+  shadcn-nuxt@2.8.2(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(magicast@0.5.4):
     dependencies:
       '@nuxt/kit': 3.21.11(magicast@0.5.4)
       oxc-parser: 0.102.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)
