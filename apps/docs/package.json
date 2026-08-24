@@ -50,7 +50,7 @@
     "eslint": "^10.8.1",
     "eslint-plugin-better-tailwindcss": "^4.7.0",
     "eslint-plugin-oxlint": "^1.79.0",
-    "oxfmt": "^0.63.0",
+    "oxfmt": "^0.64.0",
     "oxlint": "^1.78.0",
     "shadcn-nuxt": "^2.8.2",
     "tailwindcss": "^4.3.3",
