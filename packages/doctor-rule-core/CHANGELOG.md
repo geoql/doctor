@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.1](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.4.0...doctor-rule-core-v1.4.1) (2026-08-25)
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.140.0 to 0.142.0 ([#159](https://github.com/geoql/doctor/issues/159)) ([9390969](https://github.com/geoql/doctor/commit/93909691b898c0714d3e0fafb90017b1385d204d))
+* **deps:** bump oxc-parser from 0.143.0 to 0.144.0 ([#207](https://github.com/geoql/doctor/issues/207)) ([21c7622](https://github.com/geoql/doctor/commit/21c7622e81b53475d41ea89e37584f596b3ca62c))
+* **rule:** watch-without-cleanup accepts watch() cleanup forms (geoql/doctor[#179](https://github.com/geoql/doctor/issues/179)) ([73e1933](https://github.com/geoql/doctor/commit/73e1933af3d959e6545f17c32254a329d99b0da2))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @types/node from 26.1.1 to 26.1.2 ([#164](https://github.com/geoql/doctor/issues/164)) ([2051941](https://github.com/geoql/doctor/commit/205194172b5c06f49683cf4a326724cca62c5a4b))
+* **deps-dev:** bump @types/node from 26.1.2 to 26.2.0 ([#197](https://github.com/geoql/doctor/issues/197)) ([20b5d9e](https://github.com/geoql/doctor/commit/20b5d9e73f715ea8c338e9c911de44c665dfe4d7))
+* **deps:** bump dependencies ✨ ([fa825f0](https://github.com/geoql/doctor/commit/fa825f03c592c2a349cc90aa90a75a734e4304db))
+
 ## [1.4.0](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.3.0...doctor-rule-core-v1.4.0) (2026-07-15)
 
 
