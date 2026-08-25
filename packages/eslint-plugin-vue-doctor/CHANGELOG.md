@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.2.5](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.2.4...eslint-plugin-vue-doctor-v1.2.5) (2026-08-25)
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @types/node from 26.1.1 to 26.1.2 ([#164](https://github.com/geoql/doctor/issues/164)) ([2051941](https://github.com/geoql/doctor/commit/205194172b5c06f49683cf4a326724cca62c5a4b))
+* **deps-dev:** bump @types/node from 26.1.2 to 26.2.0 ([#197](https://github.com/geoql/doctor/issues/197)) ([20b5d9e](https://github.com/geoql/doctor/commit/20b5d9e73f715ea8c338e9c911de44c665dfe4d7))
+* **deps-dev:** bump @typescript-eslint/parser from 8.66.0 to 8.67.0 ([#218](https://github.com/geoql/doctor/issues/218)) ([ba8cd98](https://github.com/geoql/doctor/commit/ba8cd98c237689449a86943f50f192a545e4aeaa))
+* **deps-dev:** bump eslint from 10.8.0 to 10.8.1 ([#194](https://github.com/geoql/doctor/issues/194)) ([52dc14d](https://github.com/geoql/doctor/commit/52dc14d6b6c172c14b5c55e6f7f829ddcc338b2b))
+* **deps-dev:** bump eslint from 10.8.1 to 10.9.0 ([#229](https://github.com/geoql/doctor/issues/229)) ([6d530e5](https://github.com/geoql/doctor/commit/6d530e573c8d9851ae4c9c855a3412391c1e5d0c))
+* **deps:** bump dependencies ✨ ([fa825f0](https://github.com/geoql/doctor/commit/fa825f03c592c2a349cc90aa90a75a734e4304db))
+* **deps:** bump dependencies ✨ ([3cf3f9d](https://github.com/geoql/doctor/commit/3cf3f9df15819e0370cc0a309d36c79208c6c35c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.4.1
+  * devDependencies
+    * @geoql/doctor-core bumped to 1.8.2
+
 ## [1.2.4](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.2.3...eslint-plugin-vue-doctor-v1.2.4) (2026-07-27)
 
 

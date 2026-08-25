@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.8.2](https://github.com/geoql/doctor/compare/doctor-core-v1.8.1...doctor-core-v1.8.2) (2026-08-25)
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.140.0 to 0.142.0 ([#159](https://github.com/geoql/doctor/issues/159)) ([9390969](https://github.com/geoql/doctor/commit/93909691b898c0714d3e0fafb90017b1385d204d))
+* **deps:** bump oxc-parser from 0.143.0 to 0.144.0 ([#207](https://github.com/geoql/doctor/issues/207)) ([21c7622](https://github.com/geoql/doctor/commit/21c7622e81b53475d41ea89e37584f596b3ca62c))
+* **deps:** bump oxlint from 1.75.0 to 1.76.0 ([#165](https://github.com/geoql/doctor/issues/165)) ([4888d34](https://github.com/geoql/doctor/commit/4888d347674cfddd8a12e94997358fc0a64e986a))
+* **deps:** bump oxlint from 1.77.0 to 1.78.0 ([#210](https://github.com/geoql/doctor/issues/210)) ([6e61832](https://github.com/geoql/doctor/commit/6e618321f81edb6efa981737a22348210bd361c2))
+* **deps:** bump oxlint from 1.78.0 to 1.79.0 ([#228](https://github.com/geoql/doctor/issues/228)) ([431a28c](https://github.com/geoql/doctor/commit/431a28c639ab48aae4b6a282523052c0e052ef0e))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @types/node from 26.1.1 to 26.1.2 ([#164](https://github.com/geoql/doctor/issues/164)) ([2051941](https://github.com/geoql/doctor/commit/205194172b5c06f49683cf4a326724cca62c5a4b))
+* **deps-dev:** bump @types/node from 26.1.2 to 26.2.0 ([#197](https://github.com/geoql/doctor/issues/197)) ([20b5d9e](https://github.com/geoql/doctor/commit/20b5d9e73f715ea8c338e9c911de44c665dfe4d7))
+* **deps-dev:** bump @types/semver from 7.7.1 to 7.8.0 ([#189](https://github.com/geoql/doctor/issues/189)) ([740076e](https://github.com/geoql/doctor/commit/740076e2d633edc6d349807636ea1138c5fa3310))
+* **deps-dev:** bump knip from 6.29.0 to 6.31.0 ([#186](https://github.com/geoql/doctor/issues/186)) ([04cbe18](https://github.com/geoql/doctor/commit/04cbe18c9439b7c136462f139ab102beef89d52d))
+* **deps-dev:** bump knip from 6.31.0 to 6.32.0 ([#191](https://github.com/geoql/doctor/issues/191)) ([7b6ff38](https://github.com/geoql/doctor/commit/7b6ff3854113bd38c2c5c652c2e8be9e61c94f61))
+* **deps-dev:** bump knip from 6.32.0 to 6.32.1 ([#209](https://github.com/geoql/doctor/issues/209)) ([8892c36](https://github.com/geoql/doctor/commit/8892c36f59c395d2b5836bc35f68338dc0dbd2ac))
+* **deps-dev:** bump knip from 6.32.1 to 6.32.2 ([#213](https://github.com/geoql/doctor/issues/213)) ([a6ac1f8](https://github.com/geoql/doctor/commit/a6ac1f81899afd809702d2c4456cd21381a54751))
+* **deps:** bump dependencies ✨ ([fa825f0](https://github.com/geoql/doctor/commit/fa825f03c592c2a349cc90aa90a75a734e4304db))
+* **deps:** bump dependencies ✨ ([3cf3f9d](https://github.com/geoql/doctor/commit/3cf3f9df15819e0370cc0a309d36c79208c6c35c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 1.2.2
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.4.1
+
 ## [1.8.1](https://github.com/geoql/doctor/compare/doctor-core-v1.8.0...doctor-core-v1.8.1) (2026-07-27)
 
 

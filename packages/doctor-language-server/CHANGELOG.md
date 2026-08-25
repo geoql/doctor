@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.14](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.13...doctor-language-server-v0.1.14) (2026-08-25)
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @types/node from 26.1.1 to 26.1.2 ([#164](https://github.com/geoql/doctor/issues/164)) ([2051941](https://github.com/geoql/doctor/commit/205194172b5c06f49683cf4a326724cca62c5a4b))
+* **deps-dev:** bump @types/node from 26.1.2 to 26.2.0 ([#197](https://github.com/geoql/doctor/issues/197)) ([20b5d9e](https://github.com/geoql/doctor/commit/20b5d9e73f715ea8c338e9c911de44c665dfe4d7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.8.2
+
 ## [0.1.13](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.12...doctor-language-server-v0.1.13) (2026-07-27)
 
 
