@@ -1,15 +1,11 @@
+import { eachChild } from '../../../ast.js';
 import { defineRule } from '../../../define-rule.js';
 import type { AstNode, RuleContext } from '../../../types.js';
 
 const DOCS_URL = 'https://nuxt.com/docs/4.x/guide/data-fetching';
 const MESSAGE = `useState with a fetch/await initializer suggests useFetch or useAsyncData for automatic SSR hydration and request deduplication. See ${DOCS_URL}`;
 
-function containsFetchOrAwait(
-  node: AstNode | undefined,
-  visited: Set<unknown>,
-): boolean {
-  if (!node || visited.has(node)) return false;
-  visited.add(node);
+function containsFetchOrAwait(node: AstNode): boolean {
   if (node.type === 'AwaitExpression') return true;
   if (node.type === 'CallExpression') {
     const callee = node.callee as AstNode | undefined;
@@ -18,20 +14,14 @@ function containsFetchOrAwait(
       if (name === '$fetch' || name === 'fetch') return true;
     }
   }
-  for (const key of Object.keys(node)) {
-    if (key === 'type' || key === 'loc' || key === 'range') continue;
-    const value = (node as Record<string, unknown>)[key];
-    if (Array.isArray(value)) {
-      for (const child of value) {
-        if (child && typeof child === 'object' && 'type' in child) {
-          if (containsFetchOrAwait(child as AstNode, visited)) return true;
-        }
-      }
-    } else if (value && typeof value === 'object' && 'type' in value) {
-      if (containsFetchOrAwait(value as AstNode, visited)) return true;
-    }
-  }
-  return false;
+  // eachChild never follows `parent`, so this stays inside the initializer's
+  // own subtree instead of climbing to Program and scanning sibling
+  // statements (#234). A subtree is a tree, so no visited-set is needed.
+  let found = false;
+  eachChild(node, (child) => {
+    if (!found && containsFetchOrAwait(child)) found = true;
+  });
+  return found;
 }
 
 export const noUseStateForServerData = defineRule({
@@ -49,7 +39,7 @@ export const noUseStateForServerData = defineRule({
           initFn.type !== 'FunctionExpression'
         )
           return;
-        if (!containsFetchOrAwait(initFn.body as AstNode, new Set())) return;
+        if (!containsFetchOrAwait(initFn.body as AstNode)) return;
         context.report({ node, message: MESSAGE });
       },
     };

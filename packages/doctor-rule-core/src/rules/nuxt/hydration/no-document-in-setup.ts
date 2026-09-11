@@ -1,3 +1,4 @@
+import { eachChild } from '../../../ast.js';
 import { defineRule } from '../../../define-rule.js';
 import type { AstNode, RuleContext } from '../../../types.js';
 
@@ -42,17 +43,13 @@ function isImportMetaClientExpression(node: AstNode): boolean {
 
 function containsImportMetaClient(node: AstNode): boolean {
   if (isImportMetaClientExpression(node)) return true;
-  for (const key of Object.keys(node)) {
-    if (key === 'parent' || key === 'loc') continue;
-    const value = node[key];
-    const children = Array.isArray(value) ? value : [value];
-    for (const child of children) {
-      if (child && typeof child === 'object' && (child as AstNode).type) {
-        if (containsImportMetaClient(child as AstNode)) return true;
-      }
-    }
-  }
-  return false;
+  // eachChild skips `parent`, so this cannot climb out of `node`'s subtree.
+  // (isGuardedByImportMetaClient below ascends deliberately via node.parent.)
+  let found = false;
+  eachChild(node, (child) => {
+    if (!found && containsImportMetaClient(child)) found = true;
+  });
+  return found;
 }
 
 function isGuardedByImportMetaClient(node: AstNode): boolean {

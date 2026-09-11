@@ -1,3 +1,4 @@
+import { AST_SKIP_KEYS, eachChild } from '../../../ast.js';
 import { defineRule } from '../../../define-rule.js';
 import type { AstNode, RuleContext } from '../../../types.js';
 
@@ -34,22 +35,6 @@ const GLOBALS = new Set([
   'Infinity',
   'globalThis',
 ]);
-
-const SKIP_KEYS = new Set(['type', 'loc', 'start', 'end', 'range', 'parent']);
-
-function eachChild(node: AstNode, visit: (child: AstNode) => void): void {
-  for (const key of Object.keys(node)) {
-    if (SKIP_KEYS.has(key)) continue;
-    const value = (node as Record<string, unknown>)[key];
-    if (Array.isArray(value)) {
-      for (const c of value) {
-        if (c && typeof c === 'object' && 'type' in c) visit(c as AstNode);
-      }
-    } else if (value && typeof value === 'object' && 'type' in value) {
-      visit(value as AstNode);
-    }
-  }
-}
 
 function collectPatternNames(pattern: AstNode, into: Set<string>): void {
   switch (pattern.type) {
@@ -120,7 +105,7 @@ function collectFree(fn: AstNode, free: Set<string>): void {
       return;
     }
     for (const k of Object.keys(node)) {
-      if (SKIP_KEYS.has(k)) continue;
+      if (AST_SKIP_KEYS.has(k)) continue;
       const value = (node as Record<string, unknown>)[k];
       if (Array.isArray(value)) {
         for (const c of value) {
