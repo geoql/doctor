@@ -54,23 +54,23 @@
   "dependencies": {
     "@geoql/oxlint-plugin-nuxt-doctor": "workspace:*",
     "@geoql/oxlint-plugin-vue-doctor": "workspace:^",
-    "@vue/compiler-sfc": "^3.5.41",
-    "c12": "^4.0.0-beta.5",
+    "@vue/compiler-sfc": "^3.5.42",
+    "c12": "^4.0.0-rc.1",
     "kolorist": "^1.8.0",
-    "oxc-parser": "^0.144.0",
-    "oxlint": "^1.79.0",
+    "oxc-parser": "^0.149.0",
+    "oxlint": "^1.82.0",
     "picocolors": "^1.1.1",
     "semver": "^7.8.5",
     "tinyglobby": "^0.2.17",
-    "zod": "^4.4.3"
+    "zod": "^4.6.1"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.5.1",
     "@types/semver": "^7.8.0",
-    "@vue/compiler-core": "^3.5.41",
-    "knip": "^6.32.2",
+    "@vue/compiler-core": "^3.5.42",
+    "knip": "^6.35.1",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
     "knip": "^6.14.2",

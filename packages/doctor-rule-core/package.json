@@ -49,10 +49,10 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
-    "oxc-parser": "^0.144.0",
+    "@types/node": "^26.5.1",
+    "oxc-parser": "^0.149.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "engines": {
     "node": ">=24"
