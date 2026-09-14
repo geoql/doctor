@@ -27,7 +27,7 @@
     "@nuxt/icon": "^2.5.1",
     "@nuxtjs/color-mode": "^4.0.1",
     "@nuxtjs/plausible": "^4.0.0",
-    "@nuxtjs/robots": "^6.2.0",
+    "@nuxtjs/robots": "^6.2.1",
     "@nuxtjs/sitemap": "^8.5.0",
     "@vueuse/core": "^14.4.0",
     "@vueuse/nuxt": "^14.4.0",
