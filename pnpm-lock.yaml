@@ -67,8 +67,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(magic-string@1.1.0)(magicast@0.5.4)(oxc-parser@0.139.0)(rolldown@1.2.3)(unplugin@3.3.0(esbuild@0.28.2)(rolldown@1.2.3)(rollup@4.62.4)(vite@8.2.0(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.49.2)(yaml@2.9.0)))
       '@nuxtjs/robots':
-        specifier: ^6.2.1
-        version: 6.2.1(6d43a482b8f901959634054d7b15dbbb)
+        specifier: ^6.2.2
+        version: 6.2.2(6d43a482b8f901959634054d7b15dbbb)
       '@nuxtjs/sitemap':
         specifier: ^8.5.0
         version: 8.5.0(6d43a482b8f901959634054d7b15dbbb)
@@ -1760,8 +1760,8 @@ packages:
   '@nuxtjs/plausible@4.0.0':
     resolution: {integrity: sha512-R2G9BktBVSCG0nDNBSVlC8jDbsYBgrbqmn8wWisiIF9lKfRq99NwIvtw/DLuwexJT5pCYPvBflIof4NS4ZX8Xg==}
 
-  '@nuxtjs/robots@6.2.1':
-    resolution: {integrity: sha512-LCHuawbM7IEYzI3vBxWsTLpcD6DgQDsexBO8bZnKr7EAtPw85NEr/UTFYDFjI+DqrMxQ0JM3TAu8JRTWHI6HQw==}
+  '@nuxtjs/robots@6.2.2':
+    resolution: {integrity: sha512-2o+XTw8vmVMz3xxRVJ5pgTW8eP4qhzpk0Hkeyaj1c4+uRLea+2XkWhIvJhm9I8QijeIsWQqg9XFy4w4BzpmHKA==}
     peerDependencies:
       zod: '>=3'
     peerDependenciesMeta:
@@ -10245,7 +10245,7 @@ snapshots:
       - rolldown
       - unplugin
 
-  '@nuxtjs/robots@6.2.1(6d43a482b8f901959634054d7b15dbbb)':
+  '@nuxtjs/robots@6.2.2(6d43a482b8f901959634054d7b15dbbb)':
     dependencies:
       '@fingerprintjs/botd': 2.0.0
       '@nuxt/kit': 4.5.2(magic-string@1.1.0)(magicast@0.5.4)(oxc-parser@0.139.0)(rolldown@1.2.3)(unplugin@3.3.0(esbuild@0.28.2)(rolldown@1.2.3)(rollup@4.62.4)(vite@8.2.0(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.49.2)(yaml@2.9.0)))
