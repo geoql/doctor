@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.7.3](https://github.com/geoql/doctor/compare/vue-doctor-v1.7.2...vue-doctor-v1.7.3) (2026-09-15)
+
+
+### Bug Fixes
+
+* **deps:** bump zod from 4.6.1 to 4.6.2 ([#236](https://github.com/geoql/doctor/issues/236)) ([74e6c0b](https://github.com/geoql/doctor/commit/74e6c0b9e420770fac2785f403bf9d6f76d0ccc4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.8.3
+
 ## [1.7.2](https://github.com/geoql/doctor/compare/vue-doctor-v1.7.1...vue-doctor-v1.7.2) (2026-09-11)
 
 
