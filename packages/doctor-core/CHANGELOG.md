@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.3](https://github.com/geoql/doctor/compare/doctor-core-v1.8.2...doctor-core-v1.8.3) (2026-09-15)
+
+
+### Bug Fixes
+
+* **deps:** bump zod from 4.6.1 to 4.6.2 ([#236](https://github.com/geoql/doctor/issues/236)) ([74e6c0b](https://github.com/geoql/doctor/commit/74e6c0b9e420770fac2785f403bf9d6f76d0ccc4))
+
 ## [1.8.2](https://github.com/geoql/doctor/compare/doctor-core-v1.8.1...doctor-core-v1.8.2) (2026-09-11)
 
 
