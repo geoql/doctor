@@ -57,7 +57,7 @@
     "@vue/compiler-sfc": "^3.5.42",
     "c12": "^4.0.0-rc.1",
     "kolorist": "^1.8.0",
-    "oxc-parser": "^0.149.0",
+    "oxc-parser": "^0.150.0",
     "oxlint": "^1.82.0",
     "picocolors": "^1.1.1",
     "semver": "^7.8.5",
