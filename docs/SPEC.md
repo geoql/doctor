@@ -50,7 +50,6 @@ Tagline: _"Your agent writes bad Vue/Nuxt. This catches it."_
 ├── .husky/
 │   ├── pre-commit                # pnpm exec lint-staged
 │   └── commit-msg                # pnpm exec commitlint --edit $1
-├── .nvmrc                         # 24
 ├── packages/
 │   ├── doctor-core/                        # @geoql/doctor-core
 │   │   ├── src/
@@ -192,7 +191,7 @@ Tagline: _"Your agent writes bad Vue/Nuxt. This catches it."_
 
 | Concern                    | Tool                                                                                                         | Reason                                                                |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| Package mgr                | **pnpm `^11.4.0`** (via corepack)                                                                            | Latest stable — verify with `npm view pnpm version` at scaffold time  |
+| Package mgr                | **pnpm `12.15.0`** (`packageManager` field)                                                                  | Latest stable — verify with `npm view pnpm version` at scaffold time  |
 | Build                      | **vite-plus `^0.1.22`** (`vp pack`)                                                                          | Latest, rolldown under hood                                           |
 | Lint                       | **vp lint** (oxlint `^1.67.0` bundled, inline `oxlintrc` in vite.config.ts)                                  | Your standard                                                         |
 | Lint engine (runtime)      | **oxlint `^1.67.0`** invoked programmatically by `doctor-core` + **JS plugin API (alpha)** for rule packages | Mirrors react-doctor; piggybacks on oxc-parser (already a doctor dep) |

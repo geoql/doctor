@@ -1,6 +1,6 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 
 // Invariant: the CI Node line must satisfy the root `devEngines.runtime` floor.
 //
@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 // `EBADDEVENGINES Invalid semver version ">=X" does not match "vY"` — that is
 // exactly how the 1.8.2 / 1.7.2 publish died: taze had synced
 // `devEngines.runtime` to the maintainer's local Node (26.8.2) while
-// `.nvmrc` (which every workflow feeds to actions/setup-node) pins the 24 line.
+// the workflows' actions/setup-node pinned the 24 line.
 //
 // The floor still has to clear one real bar: vite-plus declares its native
 // binding as an optional dependency with engines
@@ -17,18 +17,18 @@ import { describe, expect, it } from 'vitest';
 // DECLARED floor. Declare anything lower and pnpm silently skips linking the
 // binding, so `vp lint/fmt/build` crash with MODULE_NOT_FOUND.
 //
-// SEMANTICS: `.nvmrc` is resolved by nvm and actions/setup-node to the NEWEST
-// release of whatever it pins, so `24` means "latest 24.x" (24.20.0 on the
-// runners), NOT 24.0.0. This test therefore only compares the components
-// `.nvmrc` actually pins: a major-only pin is checked against the floor's
-// major, a fully pinned version is checked exactly.
+// SEMANTICS: actions/setup-node resolves `node-version` to the NEWEST release
+// of whatever it pins, so `26` means "latest 26.x", NOT 26.0.0. This test
+// therefore only compares the components each workflow actually pins: a
+// major-only pin is checked against the floor's major, a fully pinned version
+// is checked exactly.
 //
 // After any taze run, re-check this pairing before committing.
 const repoRoot = join(import.meta.dirname, '..', '..', '..');
 
 interface PinnedVersion {
   parts: number[];
-  /** How many components .nvmrc pins: 1 = major only, 3 = major.minor.patch. */
+  /** How many components the pin has: 1 = major only, 3 = major.minor.patch. */
   pinned: number;
 }
 
@@ -53,8 +53,8 @@ function parseFloor(value: string): number[] | null {
 }
 
 /**
- * True when the version `.nvmrc` resolves to can be proven to satisfy `floor`.
- * Only the components `.nvmrc` pins take part, because the unpinned tail
+ * True when the version a pin resolves to can be proven to satisfy `floor`.
+ * Only the pinned components take part, because the unpinned tail
  * resolves to the newest available release.
  */
 function satisfies(pin: PinnedVersion, floor: number[]): boolean {
@@ -76,9 +76,18 @@ const rootPkg = JSON.parse(
 };
 
 const devEngines = rootPkg.devEngines?.runtime;
-const nvmrc = readFileSync(join(repoRoot, '.nvmrc'), 'utf8').trim();
+const workflowsDir = join(repoRoot, '.github', 'workflows');
+const workflowNodePins = readdirSync(workflowsDir)
+  .filter((file) => file.endsWith('.yml'))
+  .flatMap((file) =>
+    [
+      ...readFileSync(join(workflowsDir, file), 'utf8').matchAll(
+        /^\s*node-version:\s*'?"?([^'"\s#]+)/gm,
+      ),
+    ].map((match) => ({ file, value: match[1] ?? '' })),
+  );
 
-describe('devEngines runtime vs .nvmrc', () => {
+describe('devEngines runtime vs workflow node-version', () => {
   it('root declares a node devEngines runtime floor', () => {
     expect(devEngines?.name).toBe('node');
     expect(typeof devEngines?.version).toBe('string');
@@ -90,23 +99,29 @@ describe('devEngines runtime vs .nvmrc', () => {
     expect((devEngines?.version ?? '').startsWith('>=')).toBe(true);
   });
 
-  it('.nvmrc pins at least a major version', () => {
-    expect(parsePin(nvmrc)).not.toBeNull();
+  it('workflows pin node-version (no node-version-file)', () => {
+    expect(workflowNodePins.length).toBeGreaterThan(0);
   });
 
-  it('the .nvmrc line satisfies devEngines.runtime', () => {
-    const pin = parsePin(nvmrc);
-    const floor = parseFloor(devEngines?.version ?? '');
-    expect(floor).not.toBeNull();
-    expect(pin).not.toBeNull();
-    expect(satisfies(pin as PinnedVersion, floor as number[])).toBe(true);
-  });
+  it.each(workflowNodePins)(
+    '$file node-version $value satisfies devEngines.runtime',
+    ({ value }) => {
+      const pin = parsePin(value);
+      const floor = parseFloor(devEngines?.version ?? '');
+      expect(floor).not.toBeNull();
+      expect(pin).not.toBeNull();
+      if (pin && floor) expect(satisfies(pin, floor)).toBe(true);
+    },
+  );
 
-  it('the .nvmrc line clears the vite-plus native binding floor', () => {
-    // vite-plus needs the DECLARED floor to clear this or pnpm skips linking
-    // its binding entirely (the original reason engines is >=24.11.0).
-    const pin = parsePin(nvmrc);
-    expect(pin).not.toBeNull();
-    expect(satisfies(pin as PinnedVersion, [24, 11, 0])).toBe(true);
-  });
+  it.each(workflowNodePins)(
+    '$file node-version $value clears the vite-plus Node floor',
+    ({ value }) => {
+      // vite-plus 1.x requires ^22.18.0 || ^24.11.0 || >=26.0.0; below that
+      // pnpm skips linking its native binding and `vp` crashes.
+      const pin = parsePin(value);
+      expect(pin).not.toBeNull();
+      if (pin) expect(satisfies(pin, [26, 0, 0])).toBe(true);
+    },
+  );
 });
