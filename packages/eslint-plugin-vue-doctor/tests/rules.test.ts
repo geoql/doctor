@@ -1,6 +1,6 @@
 import tsParser from '@typescript-eslint/parser';
 import { Linter, RuleTester } from 'eslint';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { RULE_REGISTRY } from '@geoql/doctor-core';
 import vueDoctor, { plugin } from '../src/index.js';
 import { VUE_RULES } from '@geoql/doctor-rule-core';

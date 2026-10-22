@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noDocumentInSetup } from '../src/rules/nuxt/hydration/no-document-in-setup.js';
 import { runRule } from './run-rule.js';
 

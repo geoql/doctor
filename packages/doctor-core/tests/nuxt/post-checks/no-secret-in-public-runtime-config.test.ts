@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkNoSecretInPublicRuntimeConfig } from '../../../src/nuxt/post-checks/no-secret-in-public-runtime-config.js';
 import { fixture, makeNuxtProject } from './helpers.js';
 

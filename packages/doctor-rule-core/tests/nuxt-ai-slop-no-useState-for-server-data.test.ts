@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noUseStateForServerData } from '../src/rules/nuxt/ai-slop/no-useState-for-server-data.js';
 import { runRule } from './run-rule.js';
 

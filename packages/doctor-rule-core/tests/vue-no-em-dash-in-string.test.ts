@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noEmDashInString } from '../src/rules/vue/ai-slop/no-em-dash-in-string.js';
 import type { AstNode } from '../src/types.js';
 import { runRule } from './run-rule.js';

@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { generateOxlintConfig } from '../src/oxlint/generate-config.js';
 
 interface WrittenConfig {

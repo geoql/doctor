@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkVueMajorCurrent } from '../../src/deps/check-vue-major-current.js';
 import type { ProjectInfo } from '../../src/types/project-info.js';
 

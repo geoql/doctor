@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noFetchInSetup } from '../src/rules/nuxt/ai-slop/no-fetch-in-setup.js';
 import { runRule } from './run-rule.js';
 

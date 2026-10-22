@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { htmlReport } from '../../src/reporters/html.js';
 import type { Diagnostic } from '../../src/types.js';
 import type { ReporterInput } from '../../src/reporters/types.js';

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { encodeAnnotation, encodeAnnotations } from '../src/annotations.js';
 import type { Diagnostic } from '../src/types.js';
 

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noProcessClientServer } from '../src/rules/nuxt/ai-slop/no-process-client-server.js';
 import type { AstNode } from '../src/types.js';
 import { runRule } from './run-rule.js';

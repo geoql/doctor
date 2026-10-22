@@ -1,5 +1,5 @@
 import { parse } from '@vue/compiler-sfc';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { VAPOR_CAPABILITY, isVaporSfc } from '../src/template/vapor.js';
 
 function descriptorOf(src: string) {

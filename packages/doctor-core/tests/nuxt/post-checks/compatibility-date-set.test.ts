@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkCompatibilityDateSet } from '../../../src/nuxt/post-checks/compatibility-date-set.js';
 import type { NuxtConfigInfo } from '../../../src/project-info/parse-nuxt-config.js';
 import { makeNuxtProject } from './helpers.js';

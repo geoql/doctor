@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkRecommendedModulesInstalled } from '../../../src/nuxt/post-checks/recommended-modules-installed.js';
 import { fixture, makeNuxtProject } from './helpers.js';
 

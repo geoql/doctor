@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { docsUrl } from '@geoql/doctor-core';
 import type { Diagnostic as CoreDiagnostic } from '@geoql/doctor-core';
 import { DiagnosticSeverity } from 'vscode-languageserver';

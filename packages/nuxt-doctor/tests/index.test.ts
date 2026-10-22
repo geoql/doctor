@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { run } from '../src/index.js';
 
 describe('index entrypoint', () => {

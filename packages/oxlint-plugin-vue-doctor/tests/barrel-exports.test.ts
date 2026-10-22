@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import * as barrel from '../src/index.js';
 import { defineRule } from '../src/define-rule.js';
 import '../src/rule-types.js';

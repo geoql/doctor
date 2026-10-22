@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { InvalidConfigError } from '../../src/config/errors.js';
 import { validateConfig } from '../../src/config/validate.js';
 import { RULE_REGISTRY } from '../../src/rule-registry.js';

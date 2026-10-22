@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { markdownItUnsanitizedHtml } from '../src/rules/vue/security/markdown-it-unsanitized-html.js';
 import { runRule } from './run-rule.js';
 

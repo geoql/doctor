@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noPiniaStoreInSetup } from '../src/rules/vue/composition/no-pinia-store-in-setup.js';
 import { runRule } from './run-rule.js';
 

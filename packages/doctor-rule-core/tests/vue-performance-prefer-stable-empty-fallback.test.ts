@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { preferStableEmptyFallback } from '../src/rules/vue/performance/prefer-stable-empty-fallback.js';
 import { runRule } from './run-rule.js';
 

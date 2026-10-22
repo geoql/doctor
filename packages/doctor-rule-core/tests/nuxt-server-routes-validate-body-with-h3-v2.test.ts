@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { validateBodyWithH3V2 } from '../src/rules/nuxt/server-routes/validate-body-with-h3-v2.js';
 import { runRule } from './run-rule.js';
 

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noStaleTimerRef } from '../src/rules/vue/reactivity/no-stale-timer-ref.js';
 import { runRule } from './run-rule.js';
 

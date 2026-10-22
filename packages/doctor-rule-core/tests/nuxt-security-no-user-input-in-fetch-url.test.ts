@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noUserInputInFetchUrl } from '../src/rules/nuxt/security/no-user-input-in-fetch-url.js';
 import { runRule } from './run-rule.js';
 

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkPresetDefinedForDeployTarget } from '../../../src/nuxt/post-checks/preset-defined-for-deploy-target.js';
 import { makeNuxtProject } from './helpers.js';
 

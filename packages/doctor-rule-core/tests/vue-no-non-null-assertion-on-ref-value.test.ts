@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noNonNullAssertionOnRefValue } from '../src/rules/vue/ai-slop/no-non-null-assertion-on-ref-value.js';
 import { runRule } from './run-rule.js';
 

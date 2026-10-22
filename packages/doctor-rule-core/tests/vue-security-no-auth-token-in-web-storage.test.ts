@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noAuthTokenInWebStorage } from '../src/rules/vue/security/no-auth-token-in-web-storage.js';
 import { runRule } from './run-rule.js';
 

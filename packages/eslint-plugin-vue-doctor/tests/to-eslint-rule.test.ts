@@ -2,7 +2,7 @@ import tsParser from '@typescript-eslint/parser';
 import { RuleTester } from 'eslint';
 import type { AstNode } from '@geoql/doctor-rule-core';
 import { noEmDashInString } from '@geoql/doctor-rule-core';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vite-plus/test';
 import { deriveCapabilities, toESLintRule } from '../src/to-eslint-rule.js';
 
 const EM_DASH = '\u2014';

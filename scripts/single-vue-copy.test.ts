@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 
 // apps/docs must run ONE copy of Vue. When the lockfile resolves a second
 // copy (for example Nuxt's own `vue` dependency left on an older patch after

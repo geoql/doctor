@@ -1,5 +1,5 @@
 import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { mapKnipDiagnostic } from '../../src/dead-code/map-knip-diagnostic.js';
 import type { KnipIssue } from '../../src/dead-code/types.js';
 

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { dedupeDeadCodeAgainstLint } from '../../src/dead-code/dedupe.js';
 import type { Diagnostic } from '../../src/types.js';
 

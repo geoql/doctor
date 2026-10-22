@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkNitroCloudflarePreset } from '../../../src/nuxt/post-checks/nitro-cloudflare-preset.js';
 import { makeNuxtProject } from './helpers.js';
 

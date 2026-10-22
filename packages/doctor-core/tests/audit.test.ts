@@ -2,7 +2,7 @@ import { realpathSync } from 'node:fs';
 import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vite-plus/test';
 import { audit } from '../src/audit.js';
 
 async function fixture(files: Record<string, string>): Promise<string> {

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { useAsyncDataKeyRequiredInLoop } from '../src/rules/nuxt/data-fetching/useAsyncData-key-required-in-loop.js';
 import { runRule } from './run-rule.js';
 

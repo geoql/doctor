@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { preferModuleScopePureFunction } from '../src/rules/vue/performance/prefer-module-scope-pure-function.js';
 import { runRule } from './run-rule.js';
 

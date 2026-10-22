@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { preferShallowRefForLargeData } from '../src/rules/vue/reactivity/prefer-shallowRef-for-large-data.js';
 import { runRule } from './run-rule.js';
 

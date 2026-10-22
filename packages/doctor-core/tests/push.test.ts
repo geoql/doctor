@@ -1,4 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vite-plus/test';
 import { pushFindings, buildPushPayload, stripFindings } from '../src/push.js';
 import { RULE_REGISTRY } from '../src/rule-registry.js';
 import type { Diagnostic } from '../src/types.js';

@@ -47,7 +47,7 @@
     "format": "vp fmt",
     "format:check": "vp fmt --check",
     "build": "vp pack",
-    "test": "vitest run"
+    "test": "vp test run"
   },
   "dependencies": {
     "@geoql/doctor-rule-core": "workspace:*",
@@ -55,11 +55,10 @@
   },
   "devDependencies": {
     "@geoql/doctor-core": "workspace:*",
-    "@types/node": "^26.5.1",
-    "@typescript-eslint/parser": "^8.70.0",
-    "eslint": "^10.10.0",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.11"
+    "@types/node": "^26.6.5",
+    "@typescript-eslint/parser": "^8.72.0",
+    "eslint": "^10.13.0",
+    "typescript": "^6.0.3"
   },
   "peerDependencies": {
     "eslint": ">=9.0.0"

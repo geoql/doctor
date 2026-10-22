@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { clientOnlyForBrowserApis } from '../src/rules/nuxt/hydration/clientOnly-for-browser-apis.js';
 import type { AstNode, ReportDescriptor, RuleContext } from '../src/types.js';
 import { runRule } from './run-rule.js';

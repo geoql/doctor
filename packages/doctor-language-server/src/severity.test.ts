@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { DiagnosticSeverity } from 'vscode-languageserver';
 import { severityLabel, toLspSeverity } from './severity.js';
 

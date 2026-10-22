@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkNoNodeOnlyModules } from '../../../src/nuxt/post-checks/no-node-only-modules.js';
 import { fixture, makeNuxtProject } from './helpers.js';
 

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import type { AuditReport } from '../src/types.js';
 import { filterReportByRules } from '../src/audit-filter.js';
 

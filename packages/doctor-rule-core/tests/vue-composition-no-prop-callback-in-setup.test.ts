@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noPropCallbackInSetup } from '../src/rules/vue/composition/no-prop-callback-in-setup.js';
 import { runRule } from './run-rule.js';
 
