@@ -74,7 +74,9 @@ export const activate = async (
   const configuration = vscode.workspace.getConfiguration(CLIENT_ID);
   if (!configuration.get<boolean>('enable', true)) return;
 
-  const outputChannel = vscode.window.createOutputChannel(CLIENT_NAME);
+  const outputChannel = vscode.window.createOutputChannel(CLIENT_NAME, {
+    log: true,
+  });
   const resolved = resolveServer(configuration);
   const executable: Executable = {
     command: resolved.command,
