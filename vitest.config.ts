@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
   test: {
@@ -25,6 +25,7 @@ export default defineConfig({
         'packages/*/src/**/types.ts',
         'packages/doctor-core/src/types/project-info.ts',
         'packages/doctor-core/src/index.ts',
+        'packages/doctor-core/src/prompts.ts',
         'packages/doctor-core/src/config/index.ts',
         'packages/doctor-core/src/disables/index.ts',
         'packages/doctor-core/src/project-info/index.ts',
