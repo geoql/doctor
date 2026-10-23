@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { createScheduler, type CancellationToken } from './scheduler.js';
 
 const delay = (ms: number): Promise<void> =>

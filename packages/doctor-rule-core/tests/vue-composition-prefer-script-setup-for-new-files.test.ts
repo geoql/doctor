@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { preferScriptSetupForNewFiles } from '../src/rules/vue/composition/prefer-script-setup-for-new-files.js';
 import { runRule } from './run-rule.js';
 

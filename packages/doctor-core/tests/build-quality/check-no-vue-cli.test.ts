@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkNoVueCli } from '../../src/build-quality/check-no-vue-cli.js';
 import { fixture, makeProjectInfo } from './helpers.js';
 

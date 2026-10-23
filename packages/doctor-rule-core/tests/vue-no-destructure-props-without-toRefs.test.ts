@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noDestructurePropsWithoutToRefs } from '../src/rules/vue/ai-slop/no-destructure-props-without-toRefs.js';
 import { runRule } from './run-rule.js';
 

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vite-plus/test';
 
 vi.mock('../src/design.js', () => ({
   runDesignScan: vi.fn().mockRejectedValue('scan backend unavailable'),

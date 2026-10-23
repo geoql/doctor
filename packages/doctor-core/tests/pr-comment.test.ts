@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { format } from '../src/reporters/index.js';
 import { prCommentReport } from '../src/reporters/pr-comment.js';
 import type { ReporterInput } from '../src/reporters/types.js';

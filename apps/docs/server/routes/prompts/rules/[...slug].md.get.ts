@@ -1,4 +1,4 @@
-import { renderRulePrompt } from '@geoql/doctor-core';
+import { renderRulePrompt } from '@geoql/doctor-core/prompts';
 
 // Rule ids have 3 segments (e.g. `vue-doctor/template/v-for-has-key`), so a
 // catch-all reconstructs the full id from the path after `/prompts/rules/`.

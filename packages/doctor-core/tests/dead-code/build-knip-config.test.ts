@@ -1,7 +1,7 @@
 import { chmod, mkdir, mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { buildKnipConfig } from '../../src/dead-code/build-knip-config.js';
 import type { ProjectInfo } from '../../src/types/project-info.js';
 import type { ResolvedDoctorConfig } from '../../src/config/types.js';

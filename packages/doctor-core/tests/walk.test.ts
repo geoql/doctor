@@ -1,5 +1,5 @@
 import type { ElementNode, RootNode } from '@vue/compiler-core';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { isElementNode, walkElements } from '../src/template/walk.js';
 
 describe('isElementNode', () => {

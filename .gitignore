@@ -79,3 +79,4 @@ fixtures/**/package-lock.json
 .omo
 actionlint
 .design-explorations/
+.vitest/

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { stripJsonComments } from '../../src/build-quality/strip-json-comments.js';
 
 describe('stripJsonComments', () => {

@@ -1,7 +1,7 @@
 import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vite-plus/test';
 import { detectCiProvider } from '../src/ci/provider-detect.js';
 import { scaffoldCiWorkflow } from '../src/ci/scaffold-workflow.js';
 

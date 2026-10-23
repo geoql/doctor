@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noImportsFromVueWhenAutoImported } from '../src/rules/vue/ai-slop/no-imports-from-vue-when-auto-imported.js';
 import { runRule } from './run-rule.js';
 

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { defineConfig } from '../../src/config/define-config.js';
 import type { DoctorUserConfig } from '../../src/config/types.js';
 

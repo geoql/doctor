@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import * as ruleCore from '../src/index.js';
 import * as rules from '../src/rules/index.js';
 import '../src/types.js';

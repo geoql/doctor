@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkUsesAppDirectory } from '../../../src/nuxt/post-checks/uses-app-directory.js';
 import { makeNuxtProject } from './helpers.js';
 

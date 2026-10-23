@@ -117,10 +117,10 @@ pnpm install
 pnpm run lint        # vp lint
 pnpm run format      # vp fmt
 pnpm run build       # vp pack per package
-pnpm run coverage    # vitest run --coverage (100% gate)
+pnpm run coverage    # vp test run --coverage (100% gate)
 ```
 
-Requires Node `>=24.11.0` and pnpm `11.8.0`.
+Development requires Node `>=26.12.1` and pnpm `12.15.0` (pinned in `package.json`; pnpm downloads the Node runtime from `devEngines.runtime`). The published CLIs support Node `>=24`.
 
 ## License
 

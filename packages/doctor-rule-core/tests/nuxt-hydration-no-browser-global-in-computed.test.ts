@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noBrowserGlobalInComputed } from '../src/rules/nuxt/hydration/no-browser-global-in-computed.js';
 import { runRule } from './run-rule.js';
 

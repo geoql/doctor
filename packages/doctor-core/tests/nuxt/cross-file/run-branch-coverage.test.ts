@@ -1,7 +1,7 @@
 import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { runCrossFilePass } from '../../../src/nuxt/cross-file/run.js';
 import type { ProjectInfo } from '../../../src/types/project-info.js';
 

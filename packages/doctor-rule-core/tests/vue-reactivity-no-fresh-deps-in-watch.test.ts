@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noFreshDepsInWatch } from '../src/rules/vue/reactivity/no-fresh-deps-in-watch.js';
 import { runRule } from './run-rule.js';
 

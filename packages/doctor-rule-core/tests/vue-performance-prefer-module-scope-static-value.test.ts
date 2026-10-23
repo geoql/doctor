@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { preferModuleScopeStaticValue } from '../src/rules/vue/performance/prefer-module-scope-static-value.js';
 import { runRule } from './run-rule.js';
 

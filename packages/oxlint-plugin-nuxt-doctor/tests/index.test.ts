@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import defaultExport, { plugin, NUXT_AUTO_IMPORTED } from '../src/index.js';
 
 describe('plugin index', () => {

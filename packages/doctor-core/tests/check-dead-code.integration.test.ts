@@ -1,5 +1,5 @@
 import { resolve } from 'node:path';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vite-plus/test';
 import { detectProject } from '../src/detect-project.js';
 import { loadDoctorConfig } from '../src/config/load.js';
 import { checkDeadCode } from '../src/check-dead-code.js';

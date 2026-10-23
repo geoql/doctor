@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { scoreDiagnostics } from '../src/score.js';
 import { SCORE_DIMENSIONS } from '../src/score-dimensions.js';
 import type { Diagnostic } from '../src/types.js';

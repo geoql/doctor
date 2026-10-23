@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { NUXT_RULES, VUE_RULES } from '../src/rules/index.js';
 import type { CoreRule, Severity } from '../src/types.js';
 

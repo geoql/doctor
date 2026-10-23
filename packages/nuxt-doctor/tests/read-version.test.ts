@@ -1,7 +1,14 @@
 import { dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vite-plus/test';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cleanDir = resolve(here, 'fixtures/clean');

@@ -38,30 +38,27 @@
     "build": "pnpm -r --filter './packages/*' run build",
     "schema:generate": "node scripts/generate-schema.ts",
     "test": "pnpm -r --filter './packages/*' run test",
-    "coverage": "vitest run --coverage --testTimeout=90000",
+    "coverage": "vp test run --coverage --testTimeout=90000",
     "typecheck": "pnpm -r --filter './packages/*' run typecheck",
     "prepare": "is-ci || husky"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.2.2",
-    "@commitlint/config-conventional": "^21.2.2",
-    "@types/node": "^26.5.1",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@types/node": "^26.6.5",
+    "@vitest/coverage-v8": "catalog:",
     "husky": "^9.1.7",
     "is-ci": "^4.1.0",
-    "lint-staged": "^17.5.1",
+    "lint-staged": "^17.6.0",
     "typescript": "^6.0.3",
-    "vite-plus": "^0.3.2",
-    "vitest": "^4.1.11"
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
   },
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": ">=24.11.0"
+      "version": ">=26.12.1"
     }
   },
-  "engines": {
-    "node": ">=24.11.0"
-  },
-  "packageManager": "pnpm@11.26.0+sha512.fc0e2bf890b9f983611f1ab68c0637bce914390653699f83c1a78b005ed25f2c81e77920c8fd8eee2ecf0b58b28cdcb00a84d97f69bcf7c56b2f344710238664"
+  "packageManager": "pnpm@12.15.0+sha512.b3951d6d6ff4a9f13dc7cf56cd28d2b8eb37dbcc9c68e52e1e1191873ea9f82a017287ab50baadc5ccc494f036c67c0e47eb13608c2fa36f47711b61ea128e61"
 }

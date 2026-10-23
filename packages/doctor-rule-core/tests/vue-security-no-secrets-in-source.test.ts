@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noSecretsInSource } from '../src/rules/vue/security/no-secrets-in-source.js';
 import { runRule } from './run-rule.js';
 

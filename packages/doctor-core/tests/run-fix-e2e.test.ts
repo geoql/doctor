@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { runScriptPass } from '../src/oxlint/run.js';
 
 // A real .vue that violates the built-in vue/no-import-compiler-macros rule:

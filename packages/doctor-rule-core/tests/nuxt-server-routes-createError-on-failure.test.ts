@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { createErrorOnFailure } from '../src/rules/nuxt/server-routes/createError-on-failure.js';
 import { runRule } from './run-rule.js';
 

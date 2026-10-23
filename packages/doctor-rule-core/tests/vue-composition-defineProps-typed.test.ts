@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { definePropsTyped } from '../src/rules/vue/composition/defineProps-typed.js';
 import { runRule } from './run-rule.js';
 

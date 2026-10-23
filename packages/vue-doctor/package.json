@@ -51,30 +51,29 @@
     "format": "vp fmt",
     "format:check": "vp fmt --check",
     "build": "vp pack",
-    "test": "vitest run --passWithNoTests"
+    "test": "vp test run --passWithNoTests"
   },
   "dependencies": {
     "@geoql/doctor-core": "workspace:^",
     "@geoql/oxlint-plugin-vue-doctor": "workspace:*",
-    "cac": "^7.0.0",
+    "cac": "^7.1.0",
     "kolorist": "^1.8.0",
-    "oxlint": "^1.82.0",
+    "oxlint": "^1.89.0",
     "prompts": "^2.4.2",
     "shadscan-vue": "^0.3.2"
   },
   "devDependencies": {
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.5",
     "@types/prompts": "^2.4.9",
-    "@vue/compiler-core": "^3.5.42",
-    "@vue/compiler-sfc": "^3.5.42",
-    "c12": "^4.0.0-rc.1",
-    "oxc-parser": "^0.149.0",
+    "@vue/compiler-core": "^3.5.44",
+    "@vue/compiler-sfc": "^3.5.44",
+    "c12": "4.0.0-rc.2",
+    "oxc-parser": "^0.155.0",
     "picocolors": "^1.1.1",
     "semver": "^7.8.5",
     "tinyglobby": "^0.2.17",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.11",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "engines": {
     "node": ">=24"

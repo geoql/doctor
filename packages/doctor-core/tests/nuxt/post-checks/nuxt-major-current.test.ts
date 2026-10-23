@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkNuxtMajorCurrent } from '../../../src/nuxt/post-checks/nuxt-major-current.js';
 import { makeNuxtProject } from './helpers.js';
 

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { RULE_REGISTRY } from '../src/rule-registry.js';
 import {
   SCORE_DIMENSIONS,

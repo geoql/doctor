@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { agentReport } from '../src/reporters/agent.js';
 import { format, renderVerboseTrace } from '../src/reporters/index.js';
 import { compareStrings } from '../src/reporters/render.js';

@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkRuntimeConfigTyped } from '../../../src/nuxt/post-checks/runtime-config-typed.js';
 import type { NuxtConfigInfo } from '../../../src/project-info/parse-nuxt-config.js';
 import { fixture, makeNuxtProject } from './helpers.js';

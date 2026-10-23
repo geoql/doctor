@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import type { ResolvedDoctorConfig } from '../../src/config/types.js';
 import { mergeCliOverrides } from '../../src/config/merge-cli-overrides.js';
 import type { Severity } from '../../src/types.js';

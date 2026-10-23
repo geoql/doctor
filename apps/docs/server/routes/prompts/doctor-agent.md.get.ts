@@ -1,4 +1,4 @@
-import { renderAgentPlaybook } from '@geoql/doctor-core';
+import { renderAgentPlaybook } from '@geoql/doctor-core/prompts';
 
 // Canonical agent playbook served as markdown. Returns a native Response —
 // h3 2.x `setResponseHeader` throws during prerender when

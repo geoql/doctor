@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { noInnerHtml } from '../src/rules/vue/security/no-inner-html.js';
 import { runRule } from './run-rule.js';
 

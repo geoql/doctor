@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { checkNoModulesIncompatibleWithNuxt4 } from '../../../src/nuxt/post-checks/no-modules-incompatible-with-nuxt-4.js';
 import { fixture, makeNuxtProject } from './helpers.js';
 

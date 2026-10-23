@@ -1,8 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import * as core from '../src/index.js';
 import * as configBarrel from '../src/config/index.js';
 import * as disablesBarrel from '../src/disables/index.js';
 import * as projectInfoBarrel from '../src/project-info/index.js';
+import * as promptsEntry from '../src/prompts.js';
 import '../src/types.js';
 import '../src/build-quality/types.js';
 import '../src/config/types.js';
@@ -21,5 +22,10 @@ describe('package barrels', () => {
     expect(typeof configBarrel.BUILT_IN_RECOMMENDED).toBe('object');
     expect(typeof disablesBarrel.applyInlineDisables).toBe('function');
     expect(typeof projectInfoBarrel.detectProject).toBe('function');
+  });
+
+  it('re-exports the prompt renderers from the parser-free entry', () => {
+    expect(promptsEntry.renderAgentPlaybook).toBe(core.renderAgentPlaybook);
+    expect(promptsEntry.renderRulePrompt).toBe(core.renderRulePrompt);
   });
 });

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { plugin as nuxtPlugin } from '../../oxlint-plugin-nuxt-doctor/src/plugin.js';
 import { plugin as vuePlugin } from '../../oxlint-plugin-vue-doctor/src/plugin.js';
 import { mapKnipDiagnostic } from '../src/dead-code/map-knip-diagnostic.js';

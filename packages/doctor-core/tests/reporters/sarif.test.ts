@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { sarifReport } from '../../src/reporters/sarif.js';
 import type { ReporterInput } from '../../src/reporters/types.js';
 import type { Diagnostic } from '../../src/types.js';
