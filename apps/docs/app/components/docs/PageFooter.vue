@@ -11,7 +11,7 @@ defineProps<{
 </script>
 
 <template>
-  <footer class="mt-20">
+  <footer class="mt-20" data-analytics-location="page-footer">
     <div
       class="grid grid-cols-1 gap-4 pt-8 border-t border-border-soft sm:grid-cols-2"
     >

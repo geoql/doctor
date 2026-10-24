@@ -66,7 +66,10 @@ const sections = [
         A pair of CLIs and oxlint plugins that audit Vue 3 + Nuxt 4 apps for
         performance, correctness, security, and AI-agent anti-patterns.
       </p>
-      <div class="flex flex-wrap items-center gap-3">
+      <div
+        class="flex flex-wrap items-center gap-3"
+        data-analytics-location="hero"
+      >
         <NuxtLink
           to="/getting-started/installation"
           class="group inline-flex items-center gap-2 border border-ink bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-bg transition-colors duration-120 hover:bg-transparent hover:text-ink"

@@ -85,6 +85,19 @@ const editUrl = computed(() => {
   return `https://github.com/geoql/doctor/edit/main/apps/docs/content/${slug}.md`;
 });
 
+// Rule page views are the docs funnel's "evaluating a rule" step. NuxtPage
+// keys this catch-all by path, so it remounts on every navigation and
+// onMounted fires once per page view.
+const { track } = useAnalytics();
+onMounted(() => {
+  const ruleId = ruleIdFromPage(path.value, page.value?.title);
+  if (!ruleId) return;
+  track('rule_page_viewed', {
+    rule_id: ruleId,
+    plugin: ruleId.split('/')[0] ?? ruleId,
+  });
+});
+
 usePageSeo({
   title: page.value?.title
     ? `${page.value.title} · the-doctor.report`

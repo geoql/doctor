@@ -75,7 +75,11 @@ watch(
           >
         </Button>
 
-        <nav class="ml-auto flex items-center gap-1" aria-label="primary">
+        <nav
+          class="ml-auto flex items-center gap-1"
+          aria-label="primary"
+          data-analytics-location="header"
+        >
           <!-- Mobile: icon buttons (md:hidden, mirrors the hamburger). Desktop:
                text pills (hidden md:inline-flex, mirrors the search button).
                Two single-purpose elements avoid two cascade traps: iconify's
