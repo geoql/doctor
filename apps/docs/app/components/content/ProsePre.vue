@@ -8,6 +8,9 @@ const props = defineProps<{
   highlights?: number[];
 }>();
 
+const { track } = useAnalytics();
+const route = useRoute();
+
 const copied = ref(false);
 let resetTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -29,6 +32,13 @@ async function copyText() {
     }
     document.body.removeChild(ta);
   }
+  track(
+    isInstallCommand(props.code) ? 'install_command_copied' : 'code_copied',
+    {
+      page: route.path,
+      language: props.language ?? 'text',
+    },
+  );
   copied.value = true;
   if (resetTimer) clearTimeout(resetTimer);
   resetTimer = setTimeout(() => {

@@ -60,7 +60,15 @@ function setOpen(value: boolean) {
   if (!value) closeSearch();
 }
 
-function go(id: string) {
+const { track } = useAnalytics();
+
+function go(id: string, position: number) {
+  // The query text is never sent — only its length and the result shape.
+  track('search_result_selected', {
+    query_length: query.value.trim().length,
+    result_count: results.value.length,
+    position,
+  });
   closeSearch();
   void nextTick(() => router.push(id));
 }
@@ -77,7 +85,7 @@ function onKeydown(event: KeyboardEvent) {
   } else if (event.key === 'Enter') {
     event.preventDefault();
     const hit = results.value[activeIndex.value];
-    if (hit) go(hit.id);
+    if (hit) go(hit.id, activeIndex.value);
   }
 }
 </script>
@@ -126,7 +134,7 @@ function onKeydown(event: KeyboardEvent) {
                   ? 'bg-[color-mix(in_oklch,var(--accent)_12%,transparent)] text-ink'
                   : 'text-ink-muted hover:bg-[color-mix(in_oklch,var(--accent)_6%,transparent)]'
               "
-              @click="go(hit.id)"
+              @click="go(hit.id, i)"
               @mouseenter="activeIndex = i"
             >
               <span class="text-[14px] font-medium text-ink">

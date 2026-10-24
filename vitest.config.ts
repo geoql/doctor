@@ -2,7 +2,7 @@ import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
   test: {
-    projects: ['packages/*', 'scripts'],
+    projects: ['packages/*', 'scripts', 'apps/docs'],
     coverage: {
       provider: 'v8',
       include: ['packages/*/src/**/*.ts'],

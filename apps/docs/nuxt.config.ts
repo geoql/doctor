@@ -14,6 +14,14 @@ const cliVersion = JSON.parse(
   ),
 ).version as string;
 
+// Production analytics ids for docs.the-doctor.report.
+const ANALYTICS = {
+  gtagId: 'G-5SDY696ZEV',
+  plausibleScriptId: 'pa-FH8TlVz5RStV_65yFCsAT',
+  plausibleApiHost: 'https://analytics.geoql.in',
+  openpanelClientId: '05e66e59-37aa-492a-994e-55df6b5f6b3c',
+};
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-05-26',
   future: { compatibilityVersion: 4 },
@@ -36,17 +44,25 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'motion-v/nuxt',
     'shadcn-nuxt',
-    [
-      '@nuxtjs/plausible',
-      {
-        domain: 'docs.the-doctor.report',
-        // Self-hosted Plausible: without apiHost the module silently posts
-        // events to plausible.io (its default) and the dashboard shows zero hits.
-        apiHost: 'https://analytics.geoql.in',
-        autoOutboundTracking: true,
-      },
-    ],
+    // Analytics: GA4 via @nuxt/scripts (app/plugins/5.google-analytics.client.ts),
+    // Plausible via the official pa-*.js snippet (app/plugins/7.plausible.client.ts),
+    // OpenPanel via its module. All three fan out from useAnalytics().
+    '@nuxt/scripts',
+    '@openpanel/nuxt',
   ],
+
+  // Self-hosted OpenPanel (events.geoql.in), project `the-doctorreport`. The
+  // client id is set at runtime from runtimeConfig.public.openpanelClientId by
+  // app/plugins/0.analytics-guard.client.ts, which also disables the SDK in
+  // automation browsers.
+  openpanel: {
+    clientId: ANALYTICS.openpanelClientId,
+    apiUrl: 'https://events.geoql.in/api',
+    trackScreenViews: true,
+    trackOutgoingLinks: true,
+    trackAttributes: true,
+    proxy: false,
+  },
 
   css: ['~/assets/css/fonts.css', '~/assets/css/main.css'],
 
@@ -105,6 +121,13 @@ export default defineNuxtConfig({
       version: cliVersion,
       baseUrl:
         process.env.NUXT_PUBLIC_BASE_URL || 'https://docs.the-doctor.report',
+      // Public analytics ids (they ship in the HTML — not secrets). Override
+      // with NUXT_PUBLIC_GTAG_ID / NUXT_PUBLIC_PLAUSIBLE_SCRIPT_ID /
+      // NUXT_PUBLIC_PLAUSIBLE_API_HOST / NUXT_PUBLIC_OPENPANEL_CLIENT_ID.
+      gtagId: ANALYTICS.gtagId,
+      plausibleScriptId: ANALYTICS.plausibleScriptId,
+      plausibleApiHost: ANALYTICS.plausibleApiHost,
+      openpanelClientId: ANALYTICS.openpanelClientId,
     },
   },
 
