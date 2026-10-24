@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.6](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.2.5...eslint-plugin-vue-doctor-v1.2.6) (2026-10-24)
+
+
+### Miscellaneous
+
+* **deps:** upgrade to nuxt 4.6.2, node 26, latest deps ([#249](https://github.com/geoql/doctor/issues/249)) ([0d7244e](https://github.com/geoql/doctor/commit/0d7244e70e84e4445260d60c5890ff6c438e73f5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.4.2
+  * devDependencies
+    * @geoql/doctor-core bumped to 1.8.3
+
 ## [1.2.5](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.2.4...eslint-plugin-vue-doctor-v1.2.5) (2026-09-11)
 
 

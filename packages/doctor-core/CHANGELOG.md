@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.8.3](https://github.com/geoql/doctor/compare/doctor-core-v1.8.2...doctor-core-v1.8.3) (2026-10-24)
+
+
+### Bug Fixes
+
+* **deps:** bump zod from 4.6.1 to 4.6.2 ([#236](https://github.com/geoql/doctor/issues/236)) ([74e6c0b](https://github.com/geoql/doctor/commit/74e6c0b9e420770fac2785f403bf9d6f76d0ccc4))
+* **deps:** bump zod from 4.6.2 to 4.6.3 ([#241](https://github.com/geoql/doctor/issues/241)) ([685d074](https://github.com/geoql/doctor/commit/685d074d9ba8d3d8e68dcdac7bd384acd80ff5a0))
+* **deps:** bump zod from 4.6.3 to 4.6.5 ([#243](https://github.com/geoql/doctor/issues/243)) ([3afa303](https://github.com/geoql/doctor/commit/3afa303b7e6d498b7b31fe74f98583d0370c6c35))
+
+
+### Miscellaneous
+
+* **deps:** upgrade to nuxt 4.6.2, node 26, latest deps ([#249](https://github.com/geoql/doctor/issues/249)) ([0d7244e](https://github.com/geoql/doctor/commit/0d7244e70e84e4445260d60c5890ff6c438e73f5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 1.2.3
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.4.2
+
 ## [1.8.2](https://github.com/geoql/doctor/compare/doctor-core-v1.8.1...doctor-core-v1.8.2) (2026-09-11)
 
 
