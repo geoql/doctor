@@ -8,6 +8,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![dashboard](https://img.shields.io/badge/dashboard-the--doctor.report-c2410c)](https://the-doctor.report/?utm_source=github&utm_medium=readme&utm_campaign=repo-badge)
 
+**[Website](https://the-doctor.report/?utm_source=github&utm_medium=readme&utm_campaign=doctor)** · [Docs](https://docs.the-doctor.report/?utm_source=github&utm_medium=readme&utm_campaign=doctor) · [npm: @geoql/vue-doctor](https://www.npmjs.com/package/@geoql/vue-doctor) · [npm: @geoql/nuxt-doctor](https://www.npmjs.com/package/@geoql/nuxt-doctor)
+
 ## What is this?
 
 A pnpm monorepo of CLIs, oxlint + eslint plugins, and a language server that audit Vue 3 and Nuxt 4 apps for performance, correctness, security, and AI-agent anti-patterns. It does not scaffold or generate. It critiques the code your agent just wrote and gives it a deterministic 0-100 health score. The audit runs fully local and offline: same code in, same score out.
@@ -20,12 +22,12 @@ The CLI is the whole product and stays free. If you want the score tracked over 
 
 ## Ecosystem
 
-| Repo                       | What                            | Link                                                                     |
-| -------------------------- | ------------------------------- | ------------------------------------------------------------------------ |
-| `geoql/doctor` (this repo) | OSS CLIs + oxlint rule plugins  | [github.com/geoql/doctor](https://github.com/geoql/doctor)               |
-| `geoql/doctor-action`      | GitHub Action wrapper           | [github.com/geoql/doctor-action](https://github.com/geoql/doctor-action) |
-| `the-doctor.report`        | Hosted SaaS dashboard (private) | [app.the-doctor.report](https://app.the-doctor.report)                   |
-| Docs                       | Rules, CLI, scoring reference   | [docs.the-doctor.report](https://docs.the-doctor.report)                 |
+| Repo                       | What                           | Link                                                                     |
+| -------------------------- | ------------------------------ | ------------------------------------------------------------------------ |
+| `geoql/doctor` (this repo) | OSS CLIs + oxlint rule plugins | [github.com/geoql/doctor](https://github.com/geoql/doctor)               |
+| `geoql/doctor-action`      | GitHub Action wrapper          | [github.com/geoql/doctor-action](https://github.com/geoql/doctor-action) |
+| Dashboard                  | Hosted SaaS dashboard          | [app.the-doctor.report](https://app.the-doctor.report)                   |
+| Docs                       | Rules, CLI, scoring reference  | [docs.the-doctor.report](https://docs.the-doctor.report)                 |
 
 ## Packages
 
@@ -121,6 +123,16 @@ pnpm run coverage    # vp test run --coverage (100% gate)
 ```
 
 Development requires Node `>=26.12.1` and pnpm `12.15.0` (pinned in `package.json`; pnpm downloads the Node runtime from `devEngines.runtime`). The published CLIs support Node `>=24`.
+
+## More from the author
+
+- [nxui](https://nxui.geoql.in/?utm_source=github&utm_medium=readme&utm_campaign=doctor) — Vue port of Paper Shaders + animated components (shadcn-vue registry)
+- [shadscan-vue](https://shadscan-vue.geoql.in/?utm_source=github&utm_medium=readme&utm_campaign=doctor) — shadcn-vue component/registry scanner
+- [v-maplibre](https://v-maplibre.geoql.in/?utm_source=github&utm_medium=readme&utm_campaign=doctor) — Vue 3 MapLibre GL components
+- [mdr](https://mdr.geoql.in/?utm_source=github&utm_medium=readme&utm_campaign=doctor) — persistent memory for AI coding agents
+- [tileserver-rs](https://tileserver.app/?utm_source=github&utm_medium=readme&utm_campaign=doctor) — Rust vector/raster tile server
+
+See every project at [vinayakkulkarni.dev/projects](https://vinayakkulkarni.dev/projects?utm_source=github&utm_medium=readme&utm_campaign=doctor) and [geoql.in](https://geoql.in/?utm_source=github&utm_medium=readme&utm_campaign=doctor).
 
 ## License
 
