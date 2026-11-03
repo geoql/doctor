@@ -27,8 +27,12 @@ import {
   scaffoldCiWorkflow,
   renderVerboseTrace,
   scoreDiagnostics,
+  applyConfigFilters,
+  defaultRuleLevel,
   filterReportByRules,
   filterRuleIdsByCategory,
+  RULE_TAGS,
+  setRuleLevel,
   findGitRoot,
   findNestedWorkspaceExclusion,
   parseWarningExitCode,
@@ -46,6 +50,7 @@ import {
   type ResolvedDoctorConfig,
   type RuleCategory,
   type RuleSource,
+  type RuleTag,
   type Severity,
   type WorkspacePackage,
 } from '@geoql/doctor-core';
@@ -91,8 +96,14 @@ interface ListRulesCliFlags {
   category?: string;
   source?: string;
   severity?: string;
+  tag?: string;
   json?: boolean;
   jsonCompact?: boolean;
+}
+
+interface RulesCliFlags extends ListRulesCliFlags {
+  dir: string;
+  dryRun?: boolean;
 }
 
 interface ExplainCliFlags {
@@ -195,6 +206,7 @@ interface ExplainableDoc {
   id: string;
   severity: string;
   category: string;
+  tags: readonly string[];
   source: string;
   recommended: boolean;
   helpUri: string;
@@ -211,6 +223,7 @@ function renderExplain(doc: ExplainableDoc): string {
   lines.push(
     `Recommended: ${doc.recommended ? 'yes' : 'no (off in `recommended` preset)'}`,
   );
+  lines.push(`Tags:        ${doc.tags.join(', ')}`);
   lines.push(`Help:        ${doc.helpUri}`);
   lines.push('');
   lines.push(doc.description);
@@ -252,6 +265,7 @@ function buildListRulesFilter(flags: ListRulesCliFlags): ListRulesFilter {
     category?: RuleCategory;
     source?: RuleSource;
     severity?: Severity;
+    tag?: RuleTag;
   } = {};
   if (flags.preset !== undefined) {
     if (!VALID_LIST_PRESETS.has(flags.preset)) {
@@ -285,6 +299,14 @@ function buildListRulesFilter(flags: ListRulesCliFlags): ListRulesFilter {
     }
     out.severity = flags.severity;
   }
+  if (flags.tag !== undefined) {
+    if (!(RULE_TAGS as readonly string[]).includes(flags.tag)) {
+      throw new Error(
+        `unknown --tag '${flags.tag}' (expected: ${RULE_TAGS.join(' | ')})`,
+      );
+    }
+    out.tag = flags.tag as RuleTag;
+  }
   return out;
 }
 
@@ -299,8 +321,9 @@ function renderRulesTable(rules: RegisteredRule[]): string {
   const catWidth = Math.max(...rules.map((r) => r.category.length));
   for (const r of rules) {
     const tag = r.recommended ? '[recommended]' : '              ';
+    const tags = `  #${r.tags.join(' #')}`;
     lines.push(
-      `  ${r.id.padEnd(idWidth)}  ${r.severity.padEnd(sevWidth)}  ${r.category.padEnd(catWidth)}  ${r.source}  ${tag}`,
+      `  ${r.id.padEnd(idWidth)}  ${r.severity.padEnd(sevWidth)}  ${r.category.padEnd(catWidth)}  ${r.source}  ${tag}${tags}`,
     );
   }
   return `${lines.join('\n')}\n`;
@@ -355,6 +378,7 @@ interface PreparedOptions {
   maxDurationMs: number | undefined;
   positionalScope: string[] | undefined;
   announceNested: boolean;
+  outputSurface: 'cli' | 'prComment';
 }
 
 interface SingleAuditResult {
@@ -525,13 +549,20 @@ async function runSingleAudit(
       prepared.categoryScope,
     );
   }
-  const filtered = filterReportByRules(
+  const ruleFiltered = filterReportByRules(
     report,
     allowedRuleIds,
     merged.failOn,
     undefined,
     merged.includeTestFiles ?? false,
   );
+  const filtered = applyConfigFilters(ruleFiltered, {
+    ...(merged.ignore ? { ignore: merged.ignore } : {}),
+    ...(merged.surfaces ? { surfaces: merged.surfaces } : {}),
+    failOn: merged.failOn,
+    includeTestFiles: merged.includeTestFiles ?? false,
+    outputSurface: prepared.outputSurface,
+  });
   return { report: filtered, source: resolved.source, failOn: merged.failOn };
 }
 
@@ -914,6 +945,102 @@ async function runCiInstall(
   process.exitCode = 0;
 }
 
+function runListRules(flags: ListRulesCliFlags, command: string): void {
+  try {
+    const rules = listRules(buildListRulesFilter(flags));
+    if (flags.json || flags.jsonCompact) {
+      const payload = { count: rules.length, rules };
+      process.stdout.write(
+        flags.jsonCompact
+          ? JSON.stringify(payload)
+          : `${JSON.stringify(payload, null, 2)}\n`,
+      );
+    } else {
+      process.stdout.write(renderRulesTable(rules));
+    }
+    process.exitCode = 0;
+  } catch (err) {
+    process.stderr.write(`nuxt-doctor ${command}: ${(err as Error).message}\n`);
+    process.exitCode = 2;
+  }
+}
+
+function runExplain(ruleId: string, flags: ExplainCliFlags): void {
+  const doc = loadRuleDoc(ruleId);
+  if (!doc) {
+    process.stderr.write(
+      `nuxt-doctor explain: unknown rule '${ruleId}'. Try \`nuxt-doctor list-rules\` to see registered rules.\n`,
+    );
+    process.exitCode = 2;
+    return;
+  }
+  if (flags.json) {
+    process.stdout.write(`${JSON.stringify(doc, null, 2)}\n`);
+  } else {
+    process.stdout.write(renderExplain(doc));
+  }
+  process.exitCode = 0;
+}
+
+const RULES_EDIT_ARITY: Record<string, number> = {
+  set: 2,
+  enable: 1,
+  disable: 1,
+};
+
+async function runRulesEdit(
+  action: string,
+  args: string[],
+  flags: RulesCliFlags,
+): Promise<void> {
+  const arity = RULES_EDIT_ARITY[action];
+  if (arity === undefined) {
+    process.stderr.write(
+      `nuxt-doctor rules: unknown action '${action}' (expected: list | set | enable | disable | explain)\n`,
+    );
+    process.exitCode = 2;
+    return;
+  }
+  if (args.length !== arity) {
+    const usage = action === 'set' ? '<rule> <off|info|warn|error>' : '<rule>';
+    process.stderr.write(
+      `nuxt-doctor rules ${action}: usage: rules ${action} ${usage}\n`,
+    );
+    process.exitCode = 2;
+    return;
+  }
+  const ruleId = args[0];
+  try {
+    const level =
+      action === 'set'
+        ? args[1]
+        : action === 'disable'
+          ? 'off'
+          : (defaultRuleLevel(ruleId) ?? 'error');
+    const result = await setRuleLevel({
+      dir: resolve(flags.dir),
+      ruleId,
+      level,
+      dryRun: flags.dryRun === true,
+    });
+    if (flags.dryRun) {
+      process.stdout.write(
+        `[dry-run] would write ${result.path}\n${result.content}`,
+      );
+    } else {
+      process.stdout.write(
+        `nuxt-doctor rules ${action}: ${ruleId} = ${result.level} (${result.created ? 'created' : 'updated'} ${result.path})\n`,
+      );
+    }
+    process.exitCode = 0;
+  } catch (err) {
+    process.stderr.write(
+      `nuxt-doctor rules ${action}: ${(err as Error).message}\n`,
+    );
+    process.exitCode = 2;
+  }
+}
+
 export async function run(argv: string[] = process.argv): Promise<number> {
   const cli = cac('nuxt-doctor');
 
@@ -1097,6 +1224,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           maxDurationMs: parseMaxDurationMs(flags.maxDuration),
           positionalScope: positional.scopeFiles,
           announceNested: !flags.project,
+          outputSurface: reporter === 'pr-comment' ? 'prComment' : 'cli',
         };
 
         const workspacePackages = flags.project
@@ -1162,9 +1290,8 @@ export async function run(argv: string[] = process.argv): Promise<number> {
   cli
     .command(
       'list-rules',
-      'List every registered rule with id, severity, category, source, and preset membership',
+      'List every registered rule with id, severity, category, source, tags, and preset membership',
     )
-    .alias('rules')
     .option('--preset <name>', 'Filter to: recommended | all')
     .option('--category <name>', 'Filter by category')
     .option(
@@ -1172,52 +1299,56 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       'Filter by source: doctor | oxlint-builtin | eslint-plugin-vue',
     )
     .option('--severity <level>', 'Filter by: error | warn | info')
+    .option('--tag <name>', `Filter by tag: ${RULE_TAGS.join(' | ')}`)
     .option('--json', 'Emit JSON instead of formatted text')
     .option('--json-compact', 'With --json, single-line output')
     .action(async (flags: ListRulesCliFlags) => {
-      try {
-        const filter = buildListRulesFilter(flags);
-        const rules = listRules(filter);
-        if (flags.json || flags.jsonCompact) {
-          const payload = { count: rules.length, rules };
-          process.stdout.write(
-            flags.jsonCompact
-              ? JSON.stringify(payload)
-              : `${JSON.stringify(payload, null, 2)}\n`,
-          );
-        } else {
-          process.stdout.write(renderRulesTable(rules));
-        }
-        process.exitCode = 0;
-      } catch (err) {
-        const msg = (err as Error).message;
-        process.stderr.write(`nuxt-doctor list-rules: ${msg}\n`);
-        process.exitCode = 2;
-      }
+      runListRules(flags, 'list-rules');
     });
 
   cli
     .command(
+      'rules [action] [...args]',
+      'List rules (no action), or edit the project config: set <rule> <off|info|warn|error> | enable <rule> | disable <rule> | explain <rule>',
+    )
+    .option('--preset <name>', 'List filter: recommended | all')
+    .option('--category <name>', 'List filter: category')
+    .option('--source <name>', 'List filter: source')
+    .option('--severity <level>', 'List filter: error | warn | info')
+    .option('--tag <name>', 'List filter: tag')
+    .option('--json', 'Emit JSON instead of formatted text')
+    .option('--json-compact', 'With --json, single-line output')
+    .option('--dir <path>', 'Project directory whose config is edited', {
+      default: '.',
+    })
+    .option('--dry-run', 'Print the edited config, write nothing')
+    .action(
+      async (
+        action: string | undefined,
+        args: string[],
+        flags: RulesCliFlags,
+      ) => {
+        if (action === undefined || action === 'list') {
+          runListRules(flags, 'rules');
+          return;
+        }
+        if (action === 'explain') {
+          runExplain(args[0] ?? '', flags);
+          return;
+        }
+        await runRulesEdit(action, args, flags);
+      },
+    );
+
+  cli
+    .command(
       'explain <ruleId>',
-      "Print the rule's severity, category, recommendation, and helpUri",
+      "Print the rule's severity, category, tags, recommendation, and helpUri",
     )
     .alias('why')
     .option('--json', 'Emit structured JSON instead of formatted text')
     .action(async (ruleId: string, flags: ExplainCliFlags) => {
-      const doc = loadRuleDoc(ruleId);
-      if (!doc) {
-        process.stderr.write(
-          `nuxt-doctor explain: unknown rule '${ruleId}'. Try \`nuxt-doctor list-rules\` to see registered rules.\n`,
-        );
-        process.exitCode = 2;
-        return;
-      }
-      if (flags.json) {
-        process.stdout.write(`${JSON.stringify(doc, null, 2)}\n`);
-      } else {
-        process.stdout.write(renderExplain(doc));
-      }
-      process.exitCode = 0;
+      runExplain(ruleId, flags);
     });
 
   cli

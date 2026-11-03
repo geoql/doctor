@@ -44,5 +44,7 @@ export function mergeCliOverrides(
           includeTestFiles: cli.includeTestFiles ?? resolved.includeTestFiles,
         }
       : {}),
+    ...(resolved.ignore ? { ignore: resolved.ignore } : {}),
+    ...(resolved.surfaces ? { surfaces: resolved.surfaces } : {}),
   };
 }

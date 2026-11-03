@@ -35,4 +35,11 @@ export interface ResolvedDoctorConfig {
   configFile?: string;
   fixExcludes?: string[];
   includeTestFiles?: boolean;
+  ignore?: DoctorIgnoreConfig;
+  surfaces?: DoctorSurfacesConfig;
 }
+
+export type DoctorIgnoreConfig = NonNullable<DoctorUserConfig['ignore']>;
+export type DoctorSurfacesConfig = NonNullable<DoctorUserConfig['surfaces']>;
+export type DoctorSurface = keyof DoctorSurfacesConfig;
+export type SurfaceControls = NonNullable<DoctorSurfacesConfig['cli']>;

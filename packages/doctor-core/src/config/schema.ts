@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { RULE_REGISTRY } from '../rule-registry.js';
+import { RULE_REGISTRY, RULE_TAGS } from '../rule-registry.js';
 
 /**
  * A rule severity level as accepted in user config. `off` disables a rule
@@ -29,6 +29,53 @@ const RulesSchema = z
   )
   .catchall(RuleEntrySchema.optional());
 
+const RuleTagSchema = z.enum(RULE_TAGS);
+
+/** A per-glob rule suppression inside `ignore.overrides`. */
+export const IgnoreOverrideSchema = z.object({
+  files: z.array(z.string()).min(1),
+  rules: z.array(z.string()).optional(),
+});
+
+/**
+ * Post-lint ignore controls (react.doctor parity). `rules` drops a rule's
+ * findings (the rule still runs), `files` excludes globs from the scan,
+ * `tags` turns off every rule carrying the tag (an explicit `rules` level
+ * wins), and `overrides` drops findings for matching files — every rule, or
+ * just the listed ones.
+ */
+export const IgnoreSchema = z.object({
+  rules: z.array(z.string()).optional(),
+  files: z.array(z.string()).optional(),
+  tags: z.array(RuleTagSchema).optional(),
+  overrides: z.array(IgnoreOverrideSchema).optional(),
+});
+
+/**
+ * Visibility controls for one output surface. Includes win over excludes;
+ * they never change a rule's severity or whether it runs.
+ */
+export const SurfaceControlsSchema = z.object({
+  includeRules: z.array(z.string()).optional(),
+  excludeRules: z.array(z.string()).optional(),
+  includeTags: z.array(RuleTagSchema).optional(),
+  excludeTags: z.array(RuleTagSchema).optional(),
+  includeCategories: z.array(z.string()).optional(),
+  excludeCategories: z.array(z.string()).optional(),
+});
+
+/**
+ * Per-surface visibility: `cli` (printed/JSON report), `score` (counted in
+ * the score), `prComment` (the `--pr-comment` body), `ciGate` (counted by
+ * the `--fail-on` exit-code gate).
+ */
+export const SurfacesSchema = z.object({
+  cli: SurfaceControlsSchema.optional(),
+  score: SurfaceControlsSchema.optional(),
+  prComment: SurfaceControlsSchema.optional(),
+  ciGate: SurfaceControlsSchema.optional(),
+});
+
 /**
  * Scalar fields of the user config. `.loose()` preserves unknown top-level keys
  * (forward-compatibility, matching the old validator which ignored them) and is
@@ -51,6 +98,8 @@ const BaseUserConfigSchema = z
     fixExcludes: z.array(z.string()).optional(),
     includeTestFiles: z.boolean().optional(),
     rules: RulesSchema.optional(),
+    ignore: IgnoreSchema.optional(),
+    surfaces: SurfacesSchema.optional(),
   })
   .loose();
 
@@ -62,10 +111,22 @@ const BaseUserConfigSchema = z
  */
 export const DoctorUserConfigSchema = BaseUserConfigSchema.superRefine(
   (value, ctx) => {
-    const rules = value.rules;
-    if (!rules) return;
     const known = new Set(ruleIds);
-    for (const key of Object.keys(rules)) {
+    const check = (
+      ids: readonly string[] | undefined,
+      path: (string | number)[],
+    ): void => {
+      ids?.forEach((id, index) => {
+        if (!known.has(id)) {
+          ctx.addIssue({
+            code: 'custom',
+            path: [...path, index],
+            message: `unknown rule id ${JSON.stringify(id)}`,
+          });
+        }
+      });
+    };
+    for (const key of Object.keys(value.rules ?? {})) {
       if (!known.has(key)) {
         ctx.addIssue({
           code: 'custom',
@@ -73,6 +134,14 @@ export const DoctorUserConfigSchema = BaseUserConfigSchema.superRefine(
           message: `unknown rule id ${JSON.stringify(key)}`,
         });
       }
+    }
+    check(value.ignore?.rules, ['ignore', 'rules']);
+    value.ignore?.overrides?.forEach((override, index) => {
+      check(override.rules, ['ignore', 'overrides', index, 'rules']);
+    });
+    for (const [surface, controls] of Object.entries(value.surfaces ?? {})) {
+      check(controls?.includeRules, ['surfaces', surface, 'includeRules']);
+      check(controls?.excludeRules, ['surfaces', surface, 'excludeRules']);
     }
   },
 );

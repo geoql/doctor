@@ -14,6 +14,7 @@ import type {
   ResolvedDoctorConfig,
 } from './types.js';
 import { validateConfig } from './validate.js';
+import { RULE_REGISTRY } from '../rule-registry.js';
 import type { Severity } from '../types.js';
 
 const SOURCE_MAP: Record<string, ConfigSource> = {
@@ -118,10 +119,25 @@ export async function loadDoctorConfig(
   };
   for (const key of userOff) delete mergedRules[key];
 
+  // ignore.tags turns a whole rule family off before linting. An explicit
+  // `rules` level is more specific and wins.
+  const ignoredTags = new Set<string>(raw.ignore?.tags ?? []);
+  if (ignoredTags.size > 0) {
+    for (const rule of RULE_REGISTRY) {
+      if (rule.id in userRules) continue;
+      if (rule.tags.some((tag) => ignoredTags.has(tag))) {
+        delete mergedRules[rule.id];
+      }
+    }
+  }
+
   return {
     rootDir,
     include: raw.include ?? BUILT_IN_RECOMMENDED.include,
-    exclude: raw.exclude ?? BUILT_IN_RECOMMENDED.exclude,
+    exclude: [
+      ...(raw.exclude ?? BUILT_IN_RECOMMENDED.exclude),
+      ...(raw.ignore?.files ?? []),
+    ],
     failOn: raw.failOn ?? BUILT_IN_RECOMMENDED.failOn,
     threshold: raw.threshold ?? BUILT_IN_RECOMMENDED.threshold,
     rules: mergedRules,
@@ -132,5 +148,7 @@ export async function loadDoctorConfig(
     ...(raw.includeTestFiles !== undefined
       ? { includeTestFiles: raw.includeTestFiles }
       : {}),
+    ...(raw.ignore ? { ignore: raw.ignore } : {}),
+    ...(raw.surfaces ? { surfaces: raw.surfaces } : {}),
   };
 }

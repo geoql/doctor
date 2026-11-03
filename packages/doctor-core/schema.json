@@ -528,6 +528,335 @@
         "type": "string",
         "enum": ["error", "warn", "info", "off"]
       }
+    },
+    "ignore": {
+      "type": "object",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "vue",
+              "nuxt",
+              "design",
+              "ai-slop",
+              "security-scan",
+              "test-noise",
+              "performance",
+              "hydration",
+              "dead-code",
+              "migration-hint"
+            ]
+          }
+        },
+        "overrides": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "files": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": ["files"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "surfaces": {
+      "type": "object",
+      "properties": {
+        "cli": {
+          "type": "object",
+          "properties": {
+            "includeRules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "excludeRules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "includeTags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vue",
+                  "nuxt",
+                  "design",
+                  "ai-slop",
+                  "security-scan",
+                  "test-noise",
+                  "performance",
+                  "hydration",
+                  "dead-code",
+                  "migration-hint"
+                ]
+              }
+            },
+            "excludeTags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vue",
+                  "nuxt",
+                  "design",
+                  "ai-slop",
+                  "security-scan",
+                  "test-noise",
+                  "performance",
+                  "hydration",
+                  "dead-code",
+                  "migration-hint"
+                ]
+              }
+            },
+            "includeCategories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "excludeCategories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "score": {
+          "type": "object",
+          "properties": {
+            "includeRules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "excludeRules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "includeTags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vue",
+                  "nuxt",
+                  "design",
+                  "ai-slop",
+                  "security-scan",
+                  "test-noise",
+                  "performance",
+                  "hydration",
+                  "dead-code",
+                  "migration-hint"
+                ]
+              }
+            },
+            "excludeTags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vue",
+                  "nuxt",
+                  "design",
+                  "ai-slop",
+                  "security-scan",
+                  "test-noise",
+                  "performance",
+                  "hydration",
+                  "dead-code",
+                  "migration-hint"
+                ]
+              }
+            },
+            "includeCategories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "excludeCategories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "prComment": {
+          "type": "object",
+          "properties": {
+            "includeRules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "excludeRules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "includeTags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vue",
+                  "nuxt",
+                  "design",
+                  "ai-slop",
+                  "security-scan",
+                  "test-noise",
+                  "performance",
+                  "hydration",
+                  "dead-code",
+                  "migration-hint"
+                ]
+              }
+            },
+            "excludeTags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vue",
+                  "nuxt",
+                  "design",
+                  "ai-slop",
+                  "security-scan",
+                  "test-noise",
+                  "performance",
+                  "hydration",
+                  "dead-code",
+                  "migration-hint"
+                ]
+              }
+            },
+            "includeCategories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "excludeCategories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "ciGate": {
+          "type": "object",
+          "properties": {
+            "includeRules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "excludeRules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "includeTags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vue",
+                  "nuxt",
+                  "design",
+                  "ai-slop",
+                  "security-scan",
+                  "test-noise",
+                  "performance",
+                  "hydration",
+                  "dead-code",
+                  "migration-hint"
+                ]
+              }
+            },
+            "excludeTags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vue",
+                  "nuxt",
+                  "design",
+                  "ai-slop",
+                  "security-scan",
+                  "test-noise",
+                  "performance",
+                  "hydration",
+                  "dead-code",
+                  "migration-hint"
+                ]
+              }
+            },
+            "includeCategories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "excludeCategories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": {}

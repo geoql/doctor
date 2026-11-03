@@ -10,25 +10,43 @@ export {
 } from './check-dead-code.js';
 export { checkNuxtProject } from './check-nuxt-project.js';
 export {
+  applyConfigFilters,
   BUILT_IN_RECOMMENDED,
   ConfigCycleError,
   ConfigFileNotFoundError,
+  defaultRuleLevel,
   InvalidConfigError,
   buildJsonSchema,
   defineConfig,
   DoctorUserConfigSchema,
+  IgnoreOverrideSchema,
+  IgnoreSchema,
+  isDiagnosticOnSurface,
+  isRuleLevel,
   LevelSchema,
   loadDoctorConfig,
   mergeCliOverrides,
   RuleEntrySchema,
+  setRuleLevel,
+  SurfaceControlsSchema,
+  SurfacesSchema,
+  upsertRuleInSource,
   validateConfig,
 } from './config/index.js';
 export type {
+  ApplyConfigFiltersOptions,
   CliOverrides,
   ConfigSource,
+  DoctorIgnoreConfig,
+  DoctorSurface,
+  DoctorSurfacesConfig,
   DoctorUserConfig,
   DoctorUserConfigInput,
   ResolvedDoctorConfig,
+  RuleLevel,
+  SetRuleLevelOptions,
+  SetRuleLevelResult,
+  SurfaceControls,
 } from './config/index.js';
 export { detectProject } from './detect-project.js';
 export {
@@ -122,12 +140,16 @@ export {
 } from './rule-docs.js';
 export { renderAgentPlaybook, renderRulePrompt } from './rule-prompt.js';
 export {
+  deriveRuleTags,
   listRules,
   RULE_REGISTRY,
+  RULE_TAGS,
   type ListRulesFilter,
   type RegisteredRule,
   type RuleCategory,
+  type RuleDefinition,
   type RuleSource,
+  type RuleTag,
 } from './rule-registry.js';
 export { scoreDiagnostics } from './score.js';
 export { filterReportByRules } from './audit-filter.js';

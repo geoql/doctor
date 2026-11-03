@@ -458,6 +458,22 @@ Loaded via `c12` so it can:
 6. `"doctor"` key in `./package.json`
 7. Built-in `recommended` preset (no config)
 
+**Ignore + surfaces** (react.doctor parity, additive):
+
+- `ignore.rules` (drop findings, rule still runs), `ignore.files` (globs excluded from the scan),
+  `ignore.tags` (rules carrying the tag are off unless set explicitly in `rules`),
+  `ignore.overrides: [{ files, rules? }]` (per-glob drops; no `rules` = every rule).
+- `surfaces.{cli,score,prComment,ciGate}` each take `include|exclude` × `Rules|Tags|Categories`;
+  includes win. `cli` = listed findings, `score` = scored findings + severity counts,
+  `prComment` = `--pr-comment` body, `ciGate` = `--fail-on` gate. No built-in exclusions
+  (unlike react.doctor's default `design` exclusion), so the score formula and default
+  results are unchanged.
+- Every registered rule carries `tags` (`vue`, `nuxt`, `design`, `ai-slop`, `security-scan`,
+  `test-noise`, `performance`, `hydration`, `dead-code`, `migration-hint`), shown by
+  `list-rules` / `explain` and their JSON.
+- `rules set <rule> <off|info|warn|error>` / `rules enable|disable <rule>` edit the config
+  found by the order above (creating `doctor.config.json` when none exists).
+
 ---
 
 ## 9. Rule set — cross-referenced & owned
