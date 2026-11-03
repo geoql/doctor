@@ -50,7 +50,7 @@
     },
     "scope": {
       "type": "string",
-      "enum": ["full", "files", "changed", "lines"]
+      "enum": ["full", "files", "changed", "lines", "contextual"]
     },
     "base": {
       "type": "string",

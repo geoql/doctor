@@ -134,6 +134,38 @@ describe(`${BIN} --scope`, () => {
     expect(report.baseline.matchedCount).toBe(1);
   });
 
+  it('contextual: an edit inside an element surfaces its unchanged finding', async () => {
+    const multi = (body: string): string =>
+      [
+        '<template>',
+        '  <div',
+        '    v-html="html"',
+        '    class="x"',
+        '  >',
+        `    {{ ${body} }}`,
+        '  </div>',
+        '</template>',
+        '',
+      ].join('\n');
+    writeFileSync(join(dir, 'src', 'Multi.vue'), multi('i'));
+    sh('add', 'src/Multi.vue');
+    sh('commit', '-qm', 'multi');
+    writeFileSync(join(dir, 'src', 'Multi.vue'), multi('i + 1'));
+    const inMulti = (report: { diagnostics: JsonDiag[] }): string[] =>
+      where(report).filter((w) => w.startsWith('src/Multi.vue'));
+    const lines = await runJson('--scope', 'lines', '--base', 'HEAD');
+    expect(inMulti(lines.report)).toEqual([]);
+    const contextual = await runJson('--scope', 'contextual', '--base', 'HEAD');
+    expect(contextual.report.scope).toEqual({
+      mode: 'contextual',
+      base: 'HEAD',
+    });
+    expect(inMulti(contextual.report)).toEqual(['src/Multi.vue:3']);
+    for (const d of contextual.report.diagnostics) {
+      expect(d).not.toHaveProperty('contextRanges');
+    }
+  });
+
   it('reads scope and base defaults from config', async () => {
     writeFileSync(
       join(dir, 'doctor.config.json'),

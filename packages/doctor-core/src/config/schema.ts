@@ -98,8 +98,9 @@ const BaseUserConfigSchema = z
     fixExcludes: z.array(z.string()).optional(),
     includeTestFiles: z.boolean().optional(),
     scope: z
-      .enum(['full', 'files', 'changed', 'lines'], {
-        error: "must be one of 'full', 'files', 'changed', 'lines'",
+      .enum(['full', 'files', 'changed', 'lines', 'contextual'], {
+        error:
+          "must be one of 'full', 'files', 'changed', 'lines', 'contextual'",
       })
       .optional(),
     base: z.string().min(1).optional(),

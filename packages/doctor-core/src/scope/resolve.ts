@@ -11,6 +11,7 @@ export const SCOPE_MODES: readonly ScopeMode[] = [
   'files',
   'changed',
   'lines',
+  'contextual',
 ];
 
 export function isScopeMode(value: unknown): value is ScopeMode {

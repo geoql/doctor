@@ -248,10 +248,13 @@ DIAGNOSTIC SURFACES (toggle layers)
   --no-dead-code           skip dead-code layer
 
 SCOPING (how much of a change set to report)
-  --scope <mode>           full (default) | files | changed | lines   (config key: scope)
+  --scope <mode>           full (default) | files | changed | lines | contextual   (config key: scope)
                              files   = every finding in the changed source files
                              changed = only findings new vs the base revision (§7.2 matcher)
                              lines   = only findings whose span touches a changed line
+                             contextual = lines + findings whose owner (rule diffScope:
+                               template-element | function | component | file; default line)
+                               contains an edit or deletion
   --base <ref>             base for non-full scopes (config key: base); default = merge-base
                            with GITHUB_BASE_REF | origin/HEAD | main | master; unresolvable exits 2
   --staged                 change set = git index vs HEAD (alone: --scope files)
@@ -437,6 +440,7 @@ Because the dimensions partition the categories, each ruleId belongs to exactly 
 - **The score is unchanged**: it is computed over all current findings with the §7 formula. The `--fail-on` gate, severity counts, and listed diagnostics cover new findings only. `--push` sends the full current findings.
 - The JSON report gains additive optional fields (schema version stays `1`): `diagnostics[].fingerprint`, `sourceRevision` (`git rev-parse HEAD`), `configHash` (hash of rules, include/exclude, inline-disable handling, enabled passes), and `baseline: { file, matchedCount, newCount, fixedCount }`.
 - Non-full `--scope` runs (§5) score all findings of the changed files with the §7 formula; `changed` / `lines` narrow only the gate, counts, and listed diagnostics. JSON gains additive `scope: { mode, base? }`; `changed` fills `baseline` with `file: "git:<base>"`. With `--baseline`, the saved report replaces the git base and its findings outside the scanned files are ignored.
+- `contextual` ownership: rules declare a `diffScope` (`RULE_DIFF_SCOPES`). `template-element` = innermost template element minus child elements; `function` = innermost enclosing function minus nested functions; `component` = the SFC, or the `defineComponent(...)` / `export default` in a script file; `file` = whole file. A diagnostic may carry internal `contextRanges` (react.doctor `contextNodes`) that override the rule scope. An unresolvable owner falls back to line matching. Ownership data is never serialized (JSON, SARIF, push).
 - A baseline is rejected (exit 2) when it is not a schema-`1` report, lacks fingerprints or `configHash`, has a different `configHash`, is `incomplete`, is itself a comparison (`baseline` present), or was not a full-scope scan.
 
 ---

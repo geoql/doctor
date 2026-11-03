@@ -31,6 +31,13 @@ export interface Diagnostic {
    * line numbers) used to match findings against a `--baseline` report.
    */
   fingerprint?: string;
+  /**
+   * INTERNAL ownership ranges for `--scope contextual` (react.doctor's
+   * `contextNodes`): when set they override the rule's `diffScope`, and the
+   * finding is reported if any range intersects the change. Never written to
+   * JSON, SARIF, or push payloads.
+   */
+  contextRanges?: ReadonlyArray<{ line: number; endLine: number }>;
 }
 
 /** Result of comparing a scan against a saved baseline (or base revision). */

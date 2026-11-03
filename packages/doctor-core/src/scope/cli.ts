@@ -6,6 +6,7 @@ import type {
   ScopeMode,
 } from '../types.js';
 import { compareWithBaseRevision } from './base-snapshot.js';
+import { createContextualMatcher } from './contextual.js';
 import { createLinesMatcher } from './match.js';
 import {
   isScopeMode,
@@ -147,7 +148,10 @@ export async function applyScopePlan(
   if (plan.mode === 'files') return { report: scoped };
   return {
     report: scoped,
-    keep: createLinesMatcher(options.rootDir, plan.changes),
+    keep:
+      plan.mode === 'contextual'
+        ? createContextualMatcher(options.rootDir, plan.changes)
+        : createLinesMatcher(options.rootDir, plan.changes),
   };
 }
 
