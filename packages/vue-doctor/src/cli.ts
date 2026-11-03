@@ -9,7 +9,10 @@ import { basename, dirname, relative, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import {
+  applyBaseline,
   audit,
+  combineConfigHashes,
+  computeConfigHash,
   detectProject,
   detectSummary,
   encodeAnnotations,
@@ -25,6 +28,7 @@ import {
   normalizeInitAnswers,
   planInit,
   pushFindings,
+  readSourceRevision,
   scaffoldCiWorkflow,
   renderVerboseTrace,
   scoreDiagnostics,
@@ -350,6 +354,7 @@ interface CliFlags {
   includeUntracked?: boolean;
   includeTestFiles?: boolean;
   full?: boolean;
+  baseline?: string;
   project?: string;
   prComment?: string | true;
   fix?: boolean;
@@ -373,12 +378,6 @@ interface PreparedOptions {
   positionalScope: string[] | undefined;
   announceNested: boolean;
   outputSurface: 'cli' | 'prComment';
-}
-
-interface SingleAuditResult {
-  report: AuditReport;
-  source: ConfigSource;
-  failOn: 'error' | 'warn' | 'none';
 }
 
 function toArray(value: string | string[] | undefined): string[] | undefined {
@@ -557,7 +556,40 @@ async function runSingleAudit(
     includeTestFiles: merged.includeTestFiles ?? false,
     outputSurface: prepared.outputSurface,
   });
-  return { report: filtered, source: resolved.source, failOn: merged.failOn };
+  const configHash = computeConfigHash({
+    rules: Object.fromEntries(
+      Object.entries(merged.rules).filter(([id]) => allowedRuleIds.has(id)),
+    ),
+    include: merged.include,
+    exclude: merged.exclude,
+    respectInlineDisables: flags.respectInlineDisables !== false,
+    lint: flags.lint !== false,
+    deadCode: flags.deadCode !== false,
+    filters: {
+      ignore: merged.ignore,
+      surfaces: merged.surfaces,
+      outputSurface: prepared.outputSurface,
+    },
+  });
+  return {
+    report: { ...filtered, configHash },
+    source: resolved.source,
+    gate: {
+      failOn: merged.failOn,
+      includeTestFiles: merged.includeTestFiles ?? false,
+    },
+  };
+}
+
+interface ReportGate {
+  failOn: 'error' | 'warn' | 'none';
+  includeTestFiles: boolean;
+}
+
+interface SingleAuditResult {
+  report: AuditReport;
+  source: ConfigSource;
+  gate: ReportGate;
 }
 
 function aggregateReports(
@@ -600,6 +632,7 @@ function aggregateReports(
     ruleCounts,
     incomplete: reports.some((r) => r.incomplete),
     ...(skippedCheckReasons.length > 0 ? { skippedCheckReasons } : {}),
+    configHash: combineConfigHashes(reports.map((r) => r.configHash!)),
   };
 }
 
@@ -621,6 +654,9 @@ function emitReport(
     ...(report.skippedCheckReasons
       ? { skippedCheckReasons: report.skippedCheckReasons }
       : {}),
+    ...(report.sourceRevision ? { sourceRevision: report.sourceRevision } : {}),
+    configHash: report.configHash,
+    ...(report.baseline ? { baseline: report.baseline } : {}),
   };
   const out = format(input, reporter, {
     color: flags.color,
@@ -710,7 +746,7 @@ async function runProjectAudits(
   const byName = new Map(packages.map((p) => [p.name, p]));
   const reports: AuditReport[] = [];
   let source: ConfigSource = 'built-in';
-  let failOn: SingleAuditResult['failOn'] = 'error';
+  let gate: ReportGate = { failOn: 'error', includeTestFiles: false };
   for (const name of requested) {
     const match = byName.get(name);
     if (!match) {
@@ -722,7 +758,7 @@ async function runProjectAudits(
     const single = await runSingleAudit(match.dir, flags, prepared);
     reports.push(single.report);
     source = single.source;
-    failOn = single.failOn;
+    gate = single.gate;
   }
   if (reports.length === 0) {
     process.stderr.write(
@@ -731,7 +767,7 @@ async function runProjectAudits(
     return null;
   }
   const { root } = await findMonorepoRoot(rootDir);
-  return { report: aggregateReports(reports, root), source, failOn };
+  return { report: aggregateReports(reports, root), source, gate };
 }
 
 async function runInit(dir: string, flags: InitCliFlags): Promise<void> {
@@ -1105,6 +1141,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     )
     .option('--full', 'Force a complete scan (overrides scope flags)')
     .option(
+      '--baseline <report.json>',
+      'Report and gate only findings that are new vs a saved --json report (score still covers all findings)',
+    )
+    .option(
       '--project <name>',
       'Comma-separated workspace project names to audit (monorepo)',
     )
@@ -1232,7 +1272,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
 
         let report: AuditReport;
         let configSource: ConfigSource;
-        let failOn: SingleAuditResult['failOn'];
+        let gate: ReportGate;
         if (flags.project && workspacePackages.length > 0) {
           const aggregated = await runProjectAudits(
             rootDir,
@@ -1246,12 +1286,23 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           }
           report = aggregated.report;
           configSource = aggregated.source;
-          failOn = aggregated.failOn;
+          gate = aggregated.gate;
         } else {
           const single = await runSingleAudit(rootDir, flags, prepared);
           report = single.report;
           configSource = single.source;
-          failOn = single.failOn;
+          gate = single.gate;
+        }
+        const sourceRevision = await readSourceRevision(rootDir);
+        if (sourceRevision) report = { ...report, sourceRevision };
+        // --push always ships the full current findings: the dashboard tracks
+        // project health, not the delta against a local baseline.
+        const pushReport = report;
+        if (flags.baseline) {
+          report = await applyBaseline(report, {
+            baselineFile: flags.baseline,
+            ...gate,
+          });
         }
 
         if (flags.verbose) {
@@ -1270,10 +1321,13 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         } else {
           emitReport(report, reporter, flags);
         }
-        await maybePushFindings(report, flags, rootDir);
+        await maybePushFindings(pushReport, flags, rootDir);
         process.exitCode = flags.score
           ? report.exitCode
-          : resolveExitCode(report, { failOn, warningExitCode });
+          : resolveExitCode(report, {
+              failOn: gate.failOn,
+              warningExitCode,
+            });
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         process.stderr.write(`vue-doctor: ${msg}\n`);

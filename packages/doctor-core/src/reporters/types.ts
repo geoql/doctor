@@ -1,5 +1,9 @@
 import type { ScoreResult } from '../score.js';
-import type { Diagnostic, SkippedCheckReason } from '../types.js';
+import type {
+  BaselineSummary,
+  Diagnostic,
+  SkippedCheckReason,
+} from '../types.js';
 import type { Framework } from '../types/project-info.js';
 
 export interface ProjectInfoLite {
@@ -22,6 +26,9 @@ export interface ReporterInput {
   readonly projectInfo: ProjectInfoLite;
   readonly incomplete?: boolean;
   readonly skippedCheckReasons?: readonly SkippedCheckReason[];
+  readonly sourceRevision?: string;
+  readonly configHash?: string;
+  readonly baseline?: BaselineSummary;
 }
 
 export interface ReporterOptions {

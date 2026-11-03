@@ -279,6 +279,7 @@ CI BEHAVIOR
   --threshold <number>     fail if score < threshold (overrides --fail-on)
   --warning-exit-code <n>  exit n (2-255) when the gate finds warnings but no errors
                            (ignored with --fail-on none / --score)
+  --baseline <report.json> report + gate only findings new vs a saved --json report (§7.2)
   -y, --yes                skip prompts (non-interactive)
 
 DIAGNOSIS HELPERS
@@ -420,6 +421,16 @@ function dimensionScore(diagnosticsInDimension: Finding[]): number {
 ```
 
 Because the dimensions partition the categories, each ruleId belongs to exactly one dimension, so the per-dimension **penalties** sum to the overall penalty (before clamping/rounding). The per-dimension **scores** do **not** sum to 100 — `max(0, …)` and `round()` are applied independently per dimension. Sub-scores are diagnostic aids, not components that combine into the overall score. Dimensions with no findings score 100. `byDimension` is additive to `ScoreResult` and to the JSON reporter's `score` object (schema version stays `1`); it does not alter the single-score contract or the external score-API push payload.
+
+### 7.2 Baseline comparison (additive)
+
+`--baseline <report.json>` narrows a run to the findings that are **new** relative to a saved `--json` report.
+
+- Every JSON diagnostic carries `fingerprint` = sha256(ruleId · project-relative POSIX path · whitespace-collapsed source evidence). Evidence is the diagnostic's exact span when an end position is known, else its whole line, else the message. **Line numbers are never part of the fingerprint.**
+- Matching is count-based: group by `(file, ruleId)`, following git renames since the baseline's `sourceRevision` (an untracked recreation of a deleted tracked file counts as a rename). A group whose head count ≤ base count reports nothing new. A grown group reports exactly `head − base` new findings, chosen by fingerprint+message, fingerprint, message (closest git-mapped line), then message similarity / line distance.
+- **The score is unchanged**: it is computed over all current findings with the §7 formula. The `--fail-on` gate, severity counts, and listed diagnostics cover new findings only. `--push` sends the full current findings.
+- The JSON report gains additive optional fields (schema version stays `1`): `diagnostics[].fingerprint`, `sourceRevision` (`git rev-parse HEAD`), `configHash` (hash of rules, include/exclude, inline-disable handling, enabled passes), and `baseline: { file, matchedCount, newCount, fixedCount }`.
+- A baseline is rejected (exit 2) when it is not a schema-`1` report, lacks fingerprints or `configHash`, has a different `configHash`, is `incomplete`, is itself a comparison (`baseline` present), or was not a full-scope scan.
 
 ---
 

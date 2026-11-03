@@ -25,6 +25,23 @@ export interface Diagnostic {
   codeSnippet?: string;
   /** Present only for test/story/fixture files; omitted for prod source. */
   surface?: 'test';
+  /**
+   * Stable identity (rule + relative path + normalized source evidence, no
+   * line numbers) used to match findings against a `--baseline` report.
+   */
+  fingerprint?: string;
+}
+
+/** Result of comparing a scan against a saved baseline (or base revision). */
+export interface BaselineSummary {
+  /** The baseline report file, or `git:<ref>` for a base-revision comparison. */
+  file: string;
+  /** Current findings that already existed in the baseline. */
+  matchedCount: number;
+  /** Current findings that are new relative to the baseline. */
+  newCount: number;
+  /** Baseline findings that no longer occur. */
+  fixedCount: number;
 }
 
 export interface AuditConfig {
@@ -80,4 +97,10 @@ export interface AuditReport {
    * made them differ from the scored counts. Absent otherwise.
    */
   gate?: { errorCount: number; warnCount: number };
+  /** `git rev-parse HEAD` of the scanned tree, when it is a git checkout. */
+  sourceRevision?: string;
+  /** Hash of the finding-affecting settings (see `computeConfigHash`). */
+  configHash?: string;
+  /** Present when findings were narrowed to the new ones vs a baseline. */
+  baseline?: BaselineSummary;
 }
