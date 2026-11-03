@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.3](https://github.com/geoql/doctor/compare/oxlint-plugin-vue-doctor-v1.4.2...oxlint-plugin-vue-doctor-v1.4.3) (2026-11-03)
+
+
+### Miscellaneous
+
+* **deps:** bump all dependencies (nuxt 4.6.4) ([f143d51](https://github.com/geoql/doctor/commit/f143d51de715dcde23e21a2014053302aed878bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.4.3
+
 ## [1.4.2](https://github.com/geoql/doctor/compare/oxlint-plugin-vue-doctor-v1.4.1...oxlint-plugin-vue-doctor-v1.4.2) (2026-10-28)
 
 

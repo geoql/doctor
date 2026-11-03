@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.16](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.15...doctor-language-server-v0.1.16) (2026-11-03)
+
+
+### Miscellaneous
+
+* **deps:** bump all dependencies (nuxt 4.6.4) ([f143d51](https://github.com/geoql/doctor/commit/f143d51de715dcde23e21a2014053302aed878bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.8.4
+
 ## [0.1.15](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.14...doctor-language-server-v0.1.15) (2026-10-28)
 
 
