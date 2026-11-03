@@ -232,6 +232,22 @@ describe('nuxt-doctor init + --pr-comment', () => {
     });
   });
 
+  it('defaults to the current directory when no [dir] is given', async () => {
+    vi.spyOn(process, 'cwd').mockReturnValue(dir);
+    const { run } = await import('../src/cli.js');
+    const code = await run([
+      'node',
+      'nuxt-doctor',
+      'init',
+      '--yes',
+      '--dry-run',
+    ]);
+    expect(code).toBe(0);
+    expect(stdout.join('')).toContain(
+      `[dry-run] would write ${join(dir, 'doctor.config.ts')}`,
+    );
+  });
+
   it('stringifies a non-Error thrown and exits 2', async () => {
     mockPromptAdapter.default.mockRejectedValueOnce({
       toString: () => 'plain str failure',

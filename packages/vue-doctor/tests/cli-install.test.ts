@@ -222,4 +222,109 @@ describe('vue-doctor install', () => {
       process.chdir(originalCwd);
     }
   });
+
+  describe('--agent-hooks', () => {
+    const readJson = (rel: string) =>
+      JSON.parse(readFileSync(join(dir, rel), 'utf8'));
+
+    it('writes the skill plus Claude Code and Cursor stop hooks', async () => {
+      const { run } = await import('../src/cli.js');
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'install',
+        '--yes',
+        '--agent-hooks',
+        dir,
+      ]);
+      expect(code).toBe(0);
+      expect(existsSync(join(dir, SKILL_REL))).toBe(true);
+      expect(
+        readJson('.claude/settings.json').hooks.Stop[0].hooks[0].command,
+      ).toBe('node "$CLAUDE_PROJECT_DIR/.claude/hooks/vue-doctor.mjs"');
+      expect(existsSync(join(dir, '.claude', 'hooks', 'vue-doctor.mjs'))).toBe(
+        true,
+      );
+      expect(readJson('.cursor/hooks.json').hooks.stop).toEqual([
+        { command: 'node .cursor/hooks/vue-doctor.mjs', timeout: 120 },
+      ]);
+      expect(existsSync(join(dir, '.cursor', 'hooks', 'vue-doctor.mjs'))).toBe(
+        true,
+      );
+    });
+
+    it('is idempotent and keeps an existing skill and settings', async () => {
+      mkdirSync(join(dir, '.claude'));
+      writeFileSync(
+        join(dir, '.claude', 'settings.json'),
+        JSON.stringify({
+          model: 'opus',
+          hooks: { Stop: [{ hooks: [{ type: 'command', command: 'mine' }] }] },
+        }),
+      );
+      const { run } = await import('../src/cli.js');
+      for (let i = 0; i < 2; i++) {
+        expect(
+          await run([
+            'node',
+            'vue-doctor',
+            'install',
+            '--yes',
+            '--agent-hooks',
+            dir,
+          ]),
+        ).toBe(0);
+      }
+      expect(stdout.join('')).toContain('kept existing');
+      const settings = readJson('.claude/settings.json');
+      expect(settings.model).toBe('opus');
+      expect(settings.hooks.Stop).toHaveLength(2);
+      expect(settings.hooks.Stop[0].hooks[0].command).toBe('mine');
+    });
+
+    it('lists the hook files under --dry-run and writes nothing', async () => {
+      const { run } = await import('../src/cli.js');
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'install',
+        '--dry-run',
+        '--agent-hooks',
+        dir,
+      ]);
+      expect(code).toBe(0);
+      expect(stdout.join('')).toContain(
+        `[dry-run] would write ${join(dir, '.cursor', 'hooks.json')}`,
+      );
+      expect(existsSync(join(dir, '.cursor'))).toBe(false);
+    });
+
+    it('mentions the hooks in the interactive confirm', async () => {
+      mockPromptAdapter.default.mockResolvedValue({ confirm: true });
+      const { run } = await import('../src/cli.js');
+      await run(['node', 'vue-doctor', 'install', '--agent-hooks', dir]);
+      expect(mockPromptAdapter.default).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('end-of-turn hooks'),
+        }),
+        expect.anything(),
+      );
+    });
+
+    it('exits 2 on an unparseable settings file', async () => {
+      mkdirSync(join(dir, '.claude'));
+      writeFileSync(join(dir, '.claude', 'settings.json'), '{ nope');
+      const { run } = await import('../src/cli.js');
+      const code = await run([
+        'node',
+        'vue-doctor',
+        'install',
+        '--yes',
+        '--agent-hooks',
+        dir,
+      ]);
+      expect(code).toBe(2);
+      expect(stderr.join('')).toContain('invalid JSON');
+    });
+  });
 });

@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import process from 'node:process';
+import { planAgentHooks, writeAgentHooks } from '@geoql/doctor-core';
 import prompts from 'prompts';
 
 interface InstallSkillOptions {
@@ -9,6 +10,7 @@ interface InstallSkillOptions {
   yes?: boolean;
   dryRun?: boolean;
   force?: boolean;
+  agentHooks?: boolean;
 }
 
 const PLUGIN = 'nuxt-doctor';
@@ -55,7 +57,7 @@ Pair it with the matching per-rule prompts at \`${RULES_URL_BASE}<rule>.md\` (fe
 
 ## Configuring or explaining rules
 
-When the user wants to understand a rule, disagrees with one, or wants to tune which rules run (not fix code), start with \`npx ${PACKAGE}@latest explain <rule>\` (alias \`why\`), then list everything with \`npx ${PACKAGE}@latest list-rules\` (alias \`rules\`), and edit your \`doctor.config.*\` to disable or re-level a rule.
+When the user wants to understand a rule, disagrees with one, or wants to tune which rules run (not fix code), start with \`npx ${PACKAGE}@latest explain <rule>\` (alias \`why\`), then list everything with \`npx ${PACKAGE}@latest list-rules\` (alias \`rules\`; filter with \`--tag <tag>\`). Change a rule with \`npx ${PACKAGE}@latest rules set <rule> <off|info|warn|error>\` (or \`rules disable <rule>\` / \`rules enable <rule>\`). Pick the narrowest control: a rule level, then \`ignore.tags\` / \`ignore.overrides\`, then \`surfaces\` to hide a finding from only the score, PR comment, or CI gate.
 
 ## Command
 
@@ -80,15 +82,24 @@ export async function runInstallSkill(
   const skillDir = join(targetDir, '.agents', 'skills', PLUGIN);
   const skillPath = join(skillDir, 'SKILL.md');
   const content = buildSkillMarkdown(options.version);
+  const hookWrites = options.agentHooks
+    ? planAgentHooks({ projectRoot: targetDir, bin: PLUGIN })
+    : [];
 
   if (options.dryRun) {
     process.stdout.write(`[dry-run] would write ${skillPath}\n`);
     process.stdout.write(`${content}\n`);
+    for (const write of hookWrites) {
+      process.stdout.write(`[dry-run] would write ${write.path}\n`);
+    }
     process.exitCode = 0;
     return;
   }
 
-  if (existsSync(skillPath) && !options.force) {
+  // With --agent-hooks a re-run stays idempotent: keep the existing skill
+  // and (re)install only the hooks.
+  const skillExists = existsSync(skillPath) && !options.force;
+  if (skillExists && !options.agentHooks) {
     process.stderr.write(
       `${PLUGIN} install: ${skillPath} already exists. Run with --force to overwrite.\n`,
     );
@@ -101,7 +112,9 @@ export async function runInstallSkill(
       {
         type: 'confirm',
         name: 'confirm',
-        message: `Scaffold the ${PLUGIN} agent skill at ${skillPath}?`,
+        message: options.agentHooks
+          ? `Scaffold the ${PLUGIN} agent skill and Claude Code / Cursor end-of-turn hooks in ${targetDir}?`
+          : `Scaffold the ${PLUGIN} agent skill at ${skillPath}?`,
         initial: true,
       },
       {
@@ -118,14 +131,23 @@ export async function runInstallSkill(
     }
   }
 
-  mkdirSync(skillDir, { recursive: true });
-  writeFileSync(skillPath, content, 'utf8');
-  process.stdout.write(`${PLUGIN} install: wrote ${skillPath}\n`);
+  if (skillExists) {
+    process.stdout.write(`${PLUGIN} install: kept existing ${skillPath}\n`);
+  } else {
+    mkdirSync(skillDir, { recursive: true });
+    writeFileSync(skillPath, content, 'utf8');
+    process.stdout.write(`${PLUGIN} install: wrote ${skillPath}\n`);
+  }
 
   const claudePath = join(targetDir, '.claude');
   if (!existsSync(claudePath)) {
     symlinkSync('.agents', claudePath);
     process.stdout.write(`${PLUGIN} install: linked .claude -> .agents\n`);
+  }
+
+  writeAgentHooks(hookWrites);
+  for (const write of hookWrites) {
+    process.stdout.write(`${PLUGIN} install: wrote ${write.path}\n`);
   }
 
   process.exitCode = 0;

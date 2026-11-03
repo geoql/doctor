@@ -1,5 +1,6 @@
 export { encodeAnnotation, encodeAnnotations } from './annotations.js';
 export { audit } from './audit.js';
+export { normalizeCliArgv } from './cli-argv.js';
 export { checkBuildQuality } from './check-build-quality.js';
 export { checkDeps } from './check-deps.js';
 export {
@@ -64,6 +65,18 @@ export {
   type ResolvedInitAnswers,
 } from './init/index.js';
 export { detectCiProvider, type CiProvider } from './ci/provider-detect.js';
+export {
+  AGENT_HOOK_MAX_CONTINUATIONS,
+  AGENT_HOOK_TIMEOUT_SECONDS,
+  buildAgentHookScript,
+  claudeHookCommand,
+  cursorHookCommand,
+  planAgentHooks,
+  writeAgentHooks,
+  type AgentHookWrite,
+  type AgentHooksOptions,
+  type DoctorBin,
+} from './install/agent-hooks.js';
 export {
   scaffoldCiWorkflow,
   type CiScaffoldOptions,

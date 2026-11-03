@@ -71,6 +71,9 @@ export default defineNuxtConfig({
   // home route should not be a second landing page.
   routeRules: {
     '/': { redirect: { to: '/getting-started/installation', statusCode: 301 } },
+    // llms.txt / llms-full.txt are built from the content tree at build time.
+    '/llms.txt': { prerender: true },
+    '/llms-full.txt': { prerender: true },
   },
 
   colorMode: {
@@ -168,6 +171,14 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    // The raw Markdown tree (hand-written + generated rule pages) backs
+    // server/routes/llms*.txt via useStorage('assets:docs').
+    serverAssets: [
+      {
+        baseName: 'docs',
+        dir: fileURLToPath(new URL('./content', import.meta.url)),
+      },
+    ],
     // Workers, not Pages: the Pages build wraps the WASM OG-image route
     // (@cf-wasm/resvg) in a CJS `require` shim that workerd cannot execute,
     // so `wrangler pages deploy` dies with "require is not defined".

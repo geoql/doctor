@@ -20,6 +20,7 @@ import {
   listWorkspacePackages,
   loadDoctorConfig,
   loadRuleDoc,
+  normalizeCliArgv,
   mergeCliOverrides,
   normalizeInitAnswers,
   planInit,
@@ -63,6 +64,7 @@ interface InstallCliFlags {
   yes?: boolean;
   force?: boolean;
   dryRun?: boolean;
+  agentHooks?: boolean;
 }
 
 interface DesignCliFlags {
@@ -1398,6 +1400,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     )
     .option('-y, --yes', 'Non-interactive, write defaults without prompting')
     .option('--force', 'Overwrite an existing skill')
+    .option(
+      '--agent-hooks',
+      'Also install Claude Code (.claude/settings.json) and Cursor (.cursor/hooks.json) end-of-turn hooks that audit changed files',
+    )
     .option('--dry-run', 'Print what would be written, touch nothing')
     .action(async (dir: string | undefined, flags: InstallCliFlags) => {
       try {
@@ -1407,6 +1413,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           yes: flags.yes,
           force: flags.force,
           dryRun: flags.dryRun,
+          agentHooks: flags.agentHooks,
         });
       } catch (err) {
         process.stderr.write(
@@ -1480,7 +1487,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
 
   cli.help();
   cli.version(readVersion());
-  cli.parse(argv, { run: false });
+  cli.parse(normalizeCliArgv(argv), { run: false });
   await cli.runMatchedCommand();
   return process.exitCode ?? 0;
 }
