@@ -31,6 +31,8 @@ minimumReleaseAgeExclude:
   - shadscan-vue
   - eslint-plugin-oxlint
   - '@types/*'
+  - nitropack@2.13.6
+  - unrouting@0.3.2
 
 overrides:
   # unhead >=3.2.1 fixes nuxt#35670 (streaming IIFE corruption in the unhead
@@ -40,9 +42,9 @@ overrides:
   vite@*: 'catalog:'
   vitest@*: 'catalog:'
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@1.3.0
+  vite: npm:@voidzero-dev/vite-plus-core@1.4.0
   vitest: 5.0.5
-  vite-plus: 1.3.0
+  vite-plus: 1.4.0
   '@vitest/coverage-v8': 5.0.5
 peerDependencyRules:
   allowAny:

@@ -53,8 +53,8 @@
     "@geoql/doctor-rule-core": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^26.6.5",
-    "oxc-parser": "^0.155.0",
+    "@types/node": "^26.6.6",
+    "oxc-parser": "^0.157.0",
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
