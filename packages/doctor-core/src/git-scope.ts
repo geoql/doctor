@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import { resolve } from 'node:path';
 import { promisify } from 'node:util';
+import { gitEnv } from './git-env.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -27,7 +28,10 @@ export interface GitScopeOptions {
 }
 
 async function gitLines(rootDir: string, args: string[]): Promise<string[]> {
-  const { stdout } = await execFileAsync('git', args, { cwd: rootDir });
+  const { stdout } = await execFileAsync('git', args, {
+    cwd: rootDir,
+    env: gitEnv(),
+  });
   return stdout
     .split('\n')
     .map((line) => line.trim())
@@ -42,6 +46,7 @@ async function resolveRef(rootDir: string, ref: string): Promise<void> {
   try {
     await execFileAsync('git', ['rev-parse', '--verify', `${ref}^{commit}`], {
       cwd: rootDir,
+      env: gitEnv(),
     });
   } catch {
     throw new GitRefError(ref);

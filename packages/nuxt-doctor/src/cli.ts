@@ -1,5 +1,11 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { basename, dirname, resolve } from 'node:path';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  realpathSync,
+  writeFileSync,
+} from 'node:fs';
+import { basename, dirname, relative, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import {
@@ -23,7 +29,12 @@ import {
   scoreDiagnostics,
   filterReportByRules,
   filterRuleIdsByCategory,
+  findGitRoot,
+  findNestedWorkspaceExclusion,
+  parseWarningExitCode,
   resolveCategoryScope,
+  resolveExitCode,
+  resolvePositionalScanInput,
   type AuditReport,
   type ConfigSource,
   type InitConfigFormat,
@@ -334,6 +345,7 @@ interface CliFlags {
   category?: string | string[];
   dimension?: string | string[];
   maxDuration?: string | number;
+  warningExitCode?: string | number;
 }
 
 interface PreparedOptions {
@@ -341,6 +353,14 @@ interface PreparedOptions {
   threshold: number | undefined;
   categoryScope: ReadonlySet<RuleCategory> | undefined;
   maxDurationMs: number | undefined;
+  positionalScope: string[] | undefined;
+  announceNested: boolean;
+}
+
+interface SingleAuditResult {
+  report: AuditReport;
+  source: ConfigSource;
+  failOn: 'error' | 'warn' | 'none';
 }
 
 function toArray(value: string | string[] | undefined): string[] | undefined {
@@ -421,11 +441,21 @@ function parseMaxDurationMs(
   return seconds * 1000;
 }
 
+function intersectScopes(
+  a: string[] | undefined,
+  b: string[] | undefined,
+): string[] | undefined {
+  if (a === undefined) return b;
+  if (b === undefined) return a;
+  const keep = new Set(b);
+  return a.filter((file) => keep.has(file));
+}
+
 async function runSingleAudit(
   rootDir: string,
   flags: CliFlags,
   prepared: PreparedOptions,
-): Promise<{ report: AuditReport; source: ConfigSource }> {
+): Promise<SingleAuditResult> {
   let scopeFiles: string[] | undefined;
   const scopeActive =
     flags.diff === true ||
@@ -442,6 +472,17 @@ async function runSingleAudit(
       ...(flags.changedFilesFrom ? { ref: flags.changedFilesFrom } : {}),
       ...(flags.includeUntracked ? { includeUntracked: true } : {}),
     });
+  }
+  scopeFiles = intersectScopes(scopeFiles, prepared.positionalScope);
+  const nested = await findNestedWorkspaceExclusion(
+    rootDir,
+    prepared.positionalScope ?? [],
+  );
+  if (prepared.announceNested && nested.excluded.length > 0 && !flags.quiet) {
+    const names = nested.excluded.map((p) => p.name).join(', ');
+    process.stderr.write(
+      `nuxt-doctor: skipped ${nested.excluded.length} nested workspace project${nested.excluded.length === 1 ? '' : 's'} (${names}); audit them with --project <name> or from their own directory.\n`,
+    );
   }
   const resolved = await loadDoctorConfig(rootDir, {
     ...(flags.config ? { explicitPath: flags.config } : {}),
@@ -460,7 +501,7 @@ async function runSingleAudit(
   const report = await audit({
     rootDir: merged.rootDir,
     include: merged.include,
-    exclude: merged.exclude,
+    exclude: [...merged.exclude, ...nested.globs],
     rules: merged.rules,
     failOn: merged.failOn,
     threshold: merged.threshold,
@@ -491,7 +532,7 @@ async function runSingleAudit(
     undefined,
     merged.includeTestFiles ?? false,
   );
-  return { report: filtered, source: resolved.source };
+  return { report: filtered, source: resolved.source, failOn: merged.failOn };
 }
 
 function aggregateReports(
@@ -636,7 +677,7 @@ async function runProjectAudits(
   flags: CliFlags,
   prepared: PreparedOptions,
   packages: WorkspacePackage[],
-): Promise<{ report: AuditReport; source: ConfigSource } | null> {
+): Promise<SingleAuditResult | null> {
   const requested = flags
     .project!.split(',')
     .map((name) => name.trim())
@@ -644,6 +685,7 @@ async function runProjectAudits(
   const byName = new Map(packages.map((p) => [p.name, p]));
   const reports: AuditReport[] = [];
   let source: ConfigSource = 'built-in';
+  let failOn: SingleAuditResult['failOn'] = 'error';
   for (const name of requested) {
     const match = byName.get(name);
     if (!match) {
@@ -655,6 +697,7 @@ async function runProjectAudits(
     const single = await runSingleAudit(match.dir, flags, prepared);
     reports.push(single.report);
     source = single.source;
+    failOn = single.failOn;
   }
   if (reports.length === 0) {
     process.stderr.write(
@@ -663,7 +706,7 @@ async function runProjectAudits(
     return null;
   }
   const { root } = await findMonorepoRoot(rootDir);
-  return { report: aggregateReports(reports, root), source };
+  return { report: aggregateReports(reports, root), source, failOn };
 }
 
 async function runInit(dir: string, flags: InitCliFlags): Promise<void> {
@@ -798,7 +841,12 @@ async function runCiInstall(
   dir: string,
   flags: CiInstallCliFlags,
 ): Promise<void> {
-  const targetDir = resolve(dir);
+  const projectDir = existsSync(resolve(dir))
+    ? realpathSync(resolve(dir))
+    : resolve(dir);
+  const gitRoot = await findGitRoot(projectDir);
+  const targetDir = gitRoot ?? projectDir;
+  const workingDirectory = relative(targetDir, projectDir);
   const provider = flags.provider ?? 'auto';
   if (!VALID_CI_PROVIDERS.has(provider)) {
     process.stderr.write(
@@ -816,6 +864,7 @@ async function runCiInstall(
     pr: flags.pr === true,
     noComments: flags.comments === false,
     force: flags.force === true,
+    workingDirectory,
   });
 
   if (plan.conflict) {
@@ -869,7 +918,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
   const cli = cac('nuxt-doctor');
 
   cli
-    .command('[path]', 'Audit a Nuxt project')
+    .command(
+      '[...paths]',
+      'Audit a Nuxt project (one directory), or only the given files/directories',
+    )
     .option(
       '--format <kind>',
       'Output format (agent|pretty|json|json-compact|sarif|html|pr-comment)',
@@ -972,7 +1024,11 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       '--max-duration <seconds>',
       'Abort remaining audit passes after N seconds; the report gains incomplete=true + skippedCheckReasons',
     )
-    .action(async (path: string | undefined, flags: CliFlags) => {
+    .option(
+      '--warning-exit-code <code>',
+      'Exit with this code (2-255) when the gate trips on warnings only; errors still exit 1. Ignored with --score',
+    )
+    .action(async (paths: string[], flags: CliFlags) => {
       const reporter = resolveFormat(flags);
       if (flags.failOn !== undefined && !isFailOnLevel(flags.failOn)) {
         process.stderr.write(
@@ -981,9 +1037,13 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         process.exitCode = 2;
         return;
       }
-      const rootDir = resolve(path ?? '.');
-
       try {
+        const warningExitCode =
+          flags.warningExitCode === undefined
+            ? undefined
+            : parseWarningExitCode(flags.warningExitCode);
+        const positional = await resolvePositionalScanInput(paths);
+        const rootDir = positional.rootDir;
         if (flags.score && (flags.json || flags.jsonCompact)) {
           throw new Error(
             '--score and --json are mutually exclusive (--score outputs a plaintext integer).',
@@ -1035,6 +1095,8 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           threshold,
           categoryScope,
           maxDurationMs: parseMaxDurationMs(flags.maxDuration),
+          positionalScope: positional.scopeFiles,
+          announceNested: !flags.project,
         };
 
         const workspacePackages = flags.project
@@ -1048,6 +1110,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
 
         let report: AuditReport;
         let configSource: ConfigSource;
+        let failOn: SingleAuditResult['failOn'];
         if (flags.project && workspacePackages.length > 0) {
           const aggregated = await runProjectAudits(
             rootDir,
@@ -1061,10 +1124,12 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           }
           report = aggregated.report;
           configSource = aggregated.source;
+          failOn = aggregated.failOn;
         } else {
           const single = await runSingleAudit(rootDir, flags, prepared);
           report = single.report;
           configSource = single.source;
+          failOn = single.failOn;
         }
 
         if (flags.verbose) {
@@ -1084,7 +1149,9 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           emitReport(report, reporter, flags);
         }
         await maybePushFindings(report, flags, rootDir);
-        process.exitCode = report.exitCode;
+        process.exitCode = flags.score
+          ? report.exitCode
+          : resolveExitCode(report, { failOn, warningExitCode });
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         process.stderr.write(`nuxt-doctor: ${msg}\n`);

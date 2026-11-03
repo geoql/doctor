@@ -225,10 +225,12 @@ Tagline: _"Your agent writes bad Vue/Nuxt. This catches it."_
 
 ```
 USAGE
-  npx -y @geoql/vue-doctor [options] [path]
+  npx -y @geoql/vue-doctor [options] [path...]
 
 ARGS
   [dir]                    project dir to scan (default: ".")
+  <file|dir>...            several paths, or any file path: audit the project at "."
+                           but report only those files (dirs expand); must be inside "."
 
 CORE OPTIONS
   --preset <name>          recommended (default) | strict | minimal | all
@@ -253,6 +255,8 @@ SCOPING (which files to scan)
   --include-untracked      fold non-ignored untracked files into --staged / --changed-files-from
   --full                   force full scan (overrides all scope flags)
   --project <name>         scan specific workspace project (comma-separated for multiple)
+                           (an ancestor scan never descends into nested workspace packages;
+                           they are scanned only when selected via --project or a file path)
 
 SUPPRESSIONS
   --respect-inline-disables    honor inline `// oxlint-disable*` / `// doctor-disable*` (default)
@@ -273,6 +277,8 @@ CI BEHAVIOR
   --pr-comment             tune output for sticky PR comments (drops weak-signal families)
   --fail-on <level>        exit non-zero on: error (default) | warning | none
   --threshold <number>     fail if score < threshold (overrides --fail-on)
+  --warning-exit-code <n>  exit n (2-255) when the gate finds warnings but no errors
+                           (ignored with --fail-on none / --score)
   -y, --yes                skip prompts (non-interactive)
 
 DIAGNOSIS HELPERS
@@ -299,6 +305,7 @@ EXIT CODES
   1    score < threshold OR --fail-on level triggered
   2    invalid args / config error
   3    no source files matched (likely misconfigured --include)
+  N    warnings only, with --warning-exit-code N (2-255)
 ```
 
 `@geoql/nuxt-doctor` has the **same surface** — it just loads both vue + nuxt plugin rule sets by default. Flags map 1:1 between react-doctor and our tools (intentional — easier for AI agents to learn one mental model).
