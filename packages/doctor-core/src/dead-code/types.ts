@@ -10,7 +10,7 @@ export type KnipIssueKind =
   | 'files'
   | 'exports'
   | 'types'
-  | 'deps'
+  | 'dependencies'
   | 'devDependencies'
   | 'unlisted'
   | 'duplicates'

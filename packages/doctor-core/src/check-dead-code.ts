@@ -35,7 +35,7 @@ interface KnipIssues {
   files: KnipIssueRecords;
   exports: KnipIssueRecords;
   types: KnipIssueRecords;
-  deps: KnipIssueRecords;
+  dependencies: KnipIssueRecords;
   devDependencies: KnipIssueRecords;
   unlisted: KnipIssueRecords;
   duplicates: KnipIssueRecords;
@@ -53,7 +53,7 @@ const MAPPED_KINDS: KnipIssueKind[] = [
   'files',
   'exports',
   'types',
-  'deps',
+  'dependencies',
   'devDependencies',
   'unlisted',
   'duplicates',

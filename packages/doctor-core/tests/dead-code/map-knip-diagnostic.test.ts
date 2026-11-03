@@ -70,11 +70,11 @@ describe('mapKnipDiagnostic', () => {
     expect(d!.severity).toBe('info');
   });
 
-  it('maps unused dependency (deps kind)', () => {
+  it('maps unused dependency (dependencies kind)', () => {
     const issue: KnipIssue = {
       file: 'package.json',
       symbol: 'lodash',
-      kind: 'deps',
+      kind: 'dependencies',
     };
     const d = mapKnipDiagnostic(root, issue);
     expect(d).not.toBeNull();
