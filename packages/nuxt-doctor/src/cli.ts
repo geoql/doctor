@@ -1171,11 +1171,11 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--no-ci', 'Disable CI auto-detection even when CI env is set')
     .option(
       '--scope <mode>',
-      'What to report: full (default) | files (all findings in changed files) | changed (only findings new vs --base) | lines (findings on changed lines)',
+      'What to report: full (default) | files (all findings in changed files) | changed (only findings new vs --base) | lines (findings on changed lines) | contextual (findings whose owning element/function/component/file changed)',
     )
     .option(
       '--base <ref>',
-      'Base git ref for --scope files/changed/lines (default: merge-base with the PR base / default branch)',
+      'Base git ref for --scope files/changed/lines/contextual (default: merge-base with the PR base / default branch)',
     )
     .option(
       '--diff',

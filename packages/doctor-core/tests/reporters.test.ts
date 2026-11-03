@@ -459,6 +459,12 @@ describe('json reporter', () => {
     expect(plain).not.toHaveProperty('configHash');
     expect(plain).not.toHaveProperty('baseline');
     expect(plain.diagnostics[0]).not.toHaveProperty('fingerprint');
+    const internal = buildDoctorReport(
+      makeInput({
+        diagnostics: [diag({ contextRanges: [{ line: 1, endLine: 2 }] })],
+      }),
+    );
+    expect(internal.diagnostics[0]).not.toHaveProperty('contextRanges');
 
     const report = buildDoctorReport({
       ...makeInput({ diagnostics: [diag({ fingerprint: 'abc' })] }),

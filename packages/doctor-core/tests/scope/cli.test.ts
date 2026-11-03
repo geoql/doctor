@@ -182,6 +182,16 @@ describe('applyScopePlan / finishScopedReport', () => {
     expect(done.warnCount).toBe(0);
   });
 
+  it('uses the ownership matcher for contextual scope', async () => {
+    const owned = diag({ line: 9, contextRanges: [{ line: 1, endLine: 3 }] });
+    const out = await applyScopePlan(reportOf([owned]), plan('contextual'), {
+      rootDir: '/r',
+      auditBase: never,
+    });
+    expect(out.keep!(owned)).toBe(true);
+    expect(out.keep!(diag({ line: 9 }))).toBe(false);
+  });
+
   it('skips the base comparison for changed when a baseline replaces it', async () => {
     const out = await applyScopePlan(
       reportOf([diag()]),

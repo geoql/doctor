@@ -46,6 +46,16 @@ describe('stripFindings', () => {
     expect(actualKeys).toEqual([...allowedKeys].sort());
   });
 
+  it('never ships internal ownership ranges or fingerprints', () => {
+    const [finding] = stripFindings([
+      makeDiag({
+        contextRanges: [{ line: 1, endLine: 9 }],
+        fingerprint: 'abc',
+      }),
+    ]);
+    expect(finding).not.toHaveProperty('contextRanges');
+    expect(finding).not.toHaveProperty('fingerprint');
+  });
   it('maps Diagnostic.column to the col field (the push schema uses col)', () => {
     const out = stripFindings([makeDiag({ column: 42 })]);
     expect(out[0]!.col).toBe(42);

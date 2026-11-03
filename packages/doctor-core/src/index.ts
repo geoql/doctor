@@ -252,6 +252,13 @@ export {
   type ScopeFlags,
   type ScopeGate,
 } from './scope/cli.js';
+export { createContextualMatcher, deletionPoints } from './scope/contextual.js';
+export {
+  getRuleDiffScope,
+  RULE_DIFF_SCOPES,
+  type DiffScope,
+} from './scope/diff-scope.js';
+export { resolveOwnerRanges } from './scope/owner.js';
 export {
   addedLineRanges,
   createLinesMatcher,
