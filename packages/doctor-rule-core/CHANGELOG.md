@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.4.3...doctor-rule-core-v1.5.0) (2026-11-03)
+
+
+### Features
+
+* **core:** port react.doctor 0.9.x rule fixes ([#258](https://github.com/geoql/doctor/issues/258)) ([ffd6d34](https://github.com/geoql/doctor/commit/ffd6d349344ebd67efd6233aface5ce5a2a36a79))
+
 ## [1.4.3](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.4.2...doctor-rule-core-v1.4.3) (2026-11-03)
 
 
