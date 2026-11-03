@@ -25,6 +25,11 @@ updates:
       time: '00:00'
     assignees:
       - vinayakkulkarni
+    open-pull-requests-limit: 10
+    ignore:
+      # TypeScript 7 drops the API vue-tsc/@volar use (vuejs/language-tools#5381).
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
     commit-message:
       prefix: fix
       prefix-development: chore
