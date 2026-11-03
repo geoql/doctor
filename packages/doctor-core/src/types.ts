@@ -1,5 +1,6 @@
 import type { ScoreResult } from './score.js';
 import type { ProjectInfoLite } from './reporters/types.js';
+import type { ProjectInfo } from './types/project-info.js';
 
 export type Severity = 'error' | 'warn' | 'info';
 
@@ -59,6 +60,20 @@ export interface AuditConfig {
   fixExcludes?: string[];
   maxDurationMs?: number;
   includeTestFiles?: boolean;
+  /**
+   * Reuse already-detected project info instead of detecting it from
+   * `rootDir` (a base-revision snapshot has no installed dependencies).
+   */
+  projectInfo?: ProjectInfo;
+}
+
+/** How much of a change set a scan reports. */
+export type ScopeMode = 'full' | 'files' | 'changed' | 'lines' | 'contextual';
+
+export interface ReportScope {
+  mode: ScopeMode;
+  /** The ref the change set was computed against (absent for --staged). */
+  base?: string;
 }
 
 export interface SkippedCheckReason {
@@ -103,4 +118,6 @@ export interface AuditReport {
   configHash?: string;
   /** Present when findings were narrowed to the new ones vs a baseline. */
   baseline?: BaselineSummary;
+  /** Present for every scope other than `full`. */
+  scope?: ReportScope;
 }

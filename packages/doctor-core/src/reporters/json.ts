@@ -1,6 +1,7 @@
 import { relative } from 'node:path';
 import type {
   BaselineSummary,
+  ReportScope,
   Severity,
   SkippedCheckReason,
 } from '../types.js';
@@ -65,6 +66,7 @@ export interface DoctorReport {
   sourceRevision?: string;
   configHash?: string;
   baseline?: BaselineSummary;
+  scope?: ReportScope;
 }
 
 export function buildDoctorReport(input: ReporterInput): DoctorReport {
@@ -139,6 +141,7 @@ export function buildDoctorReport(input: ReporterInput): DoctorReport {
     ...(input.sourceRevision ? { sourceRevision: input.sourceRevision } : {}),
     ...(input.configHash ? { configHash: input.configHash } : {}),
     ...(input.baseline ? { baseline: { ...input.baseline } } : {}),
+    ...(input.scope ? { scope: { ...input.scope } } : {}),
   };
 }
 

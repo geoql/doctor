@@ -232,11 +232,50 @@ export {
   type FileChange,
   type Hunk,
 } from './scope/git-changes.js';
+export {
+  compareWithBaseRevision,
+  materializeBaseSnapshot,
+  type BaseComparison,
+  type BaseSnapshot,
+  type CompareWithBaseOptions,
+} from './scope/base-snapshot.js';
+export {
+  applyScopePlan,
+  finishScopedReport,
+  mergeScopeParts,
+  scopeRequestFromFlags,
+  type ScopeParts,
+  type ApplyScopeOptions,
+  type FinishScopeOptions,
+  type ScopeConfigDefaults,
+  type ScopedReport,
+  type ScopeFlags,
+  type ScopeGate,
+} from './scope/cli.js';
+export {
+  addedLineRanges,
+  createLinesMatcher,
+  diagnosticRange,
+  rangesIntersect,
+  type LineRange,
+} from './scope/match.js';
+export {
+  detectDefaultBase,
+  isScopeMode,
+  resolveScopePlan,
+  ScopeError,
+  SCOPE_MODES,
+  type LegacyScopeFlag,
+  type ScopePlan,
+  type ScopeRequest,
+} from './scope/resolve.js';
 export type {
   AuditConfig,
   AuditReport,
   AuditTimings,
   BaselineSummary,
+  ReportScope,
+  ScopeMode,
   Diagnostic,
   DiagnosticSource,
   Severity,

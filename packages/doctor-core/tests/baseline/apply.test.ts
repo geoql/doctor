@@ -266,6 +266,13 @@ describe('applyBaseline', () => {
       newCount: 1,
       fixedCount: 1,
     });
+    const scoped = await applyBaseline(report, {
+      baselineFile: file,
+      failOn: 'error',
+      scopeFiles: new Set(['/r/a.ts', '/r/b.ts']),
+    });
+    // gone.ts is outside the scanned scope: ignored, not "fixed".
+    expect(scoped.baseline!.fixedCount).toBe(0);
   });
 
   it('rejects a baseline produced with different settings', async () => {
@@ -365,7 +372,15 @@ describe('applyBaseline', () => {
     });
     const out = await applyBaseline(
       reportOf([moved, shiftedOld, added, same1, same2], { rootDir: dir }),
-      { baselineFile: baseFile, failOn: 'error' },
+      {
+        baselineFile: baseFile,
+        failOn: 'error',
+        scopeFiles: new Set(
+          ['src/new.ts', 'src/edited.ts', 'src/same.ts'].map((p) =>
+            join(dir, p),
+          ),
+        ),
+      },
     );
     expect(out.diagnostics).toEqual([added, same2]);
     expect(out.baseline!.fixedCount).toBe(0);

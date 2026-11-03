@@ -94,6 +94,11 @@ export interface ApplyBaselineOptions {
   readonly baselineFile: string;
   readonly failOn: 'error' | 'warn' | 'none';
   readonly includeTestFiles?: boolean;
+  /**
+   * Absolute head paths a `--scope` run covered. Baseline findings outside
+   * them are ignored instead of being counted as fixed.
+   */
+  readonly scopeFiles?: ReadonlySet<string>;
 }
 
 interface GitContext {
@@ -155,9 +160,15 @@ export async function applyBaseline(
   const git = baseline.sourceRevision
     ? await readGitContext(report.rootDir, baseline.sourceRevision)
     : undefined;
+  const scopeFiles = options.scopeFiles;
+  const inScope = scopeFiles
+    ? base.filter((d) =>
+        scopeFiles.has(git?.renamedFiles.get(d.file) ?? d.file),
+      )
+    : base;
   const delta = computeDiagnosticDelta({
     head: report.diagnostics,
-    base,
+    base: inScope,
     ...(git
       ? {
           renamedFiles: git.renamedFiles,

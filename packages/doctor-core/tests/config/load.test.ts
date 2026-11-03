@@ -79,6 +79,25 @@ describe('loadDoctorConfig', () => {
     expect(result.includeTestFiles).toBe(true);
   });
 
+  it('resolves scope and base defaults from a config file', async () => {
+    writeFileSync(
+      join(tmp, 'doctor.config.json'),
+      JSON.stringify({ scope: 'lines', base: 'origin/dev' }),
+    );
+    const result = await loadDoctorConfig(tmp);
+    expect(result.scope).toBe('lines');
+    expect(result.base).toBe('origin/dev');
+    expect((await loadDoctorConfig(tmp)).rootDir).toBe(tmp);
+  });
+
+  it('rejects an unknown scope in config', async () => {
+    writeFileSync(
+      join(tmp, 'doctor.config.json'),
+      JSON.stringify({ scope: 'everything' }),
+    );
+    await expect(loadDoctorConfig(tmp)).rejects.toThrow(/scope/);
+  });
+
   it('leaves includeTestFiles undefined when not declared', async () => {
     const result = await loadDoctorConfig(tmp);
     expect(result.includeTestFiles).toBeUndefined();

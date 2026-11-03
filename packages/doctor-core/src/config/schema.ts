@@ -97,6 +97,12 @@ const BaseUserConfigSchema = z
     extends: z.array(z.string()).optional(),
     fixExcludes: z.array(z.string()).optional(),
     includeTestFiles: z.boolean().optional(),
+    scope: z
+      .enum(['full', 'files', 'changed', 'lines'], {
+        error: "must be one of 'full', 'files', 'changed', 'lines'",
+      })
+      .optional(),
+    base: z.string().min(1).optional(),
     rules: RulesSchema.optional(),
     ignore: IgnoreSchema.optional(),
     surfaces: SurfacesSchema.optional(),

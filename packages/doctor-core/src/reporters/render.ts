@@ -128,6 +128,11 @@ export function render(
     '',
     findingsLine(input.score),
   ];
+  if (input.scope) {
+    segments.push(
+      `SCOPE: ${input.scope.mode}${input.scope.base ? ` (vs ${input.scope.base})` : ' (staged)'}`,
+    );
+  }
   if (input.baseline) {
     const b = input.baseline;
     segments.push(

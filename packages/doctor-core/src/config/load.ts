@@ -150,5 +150,7 @@ export async function loadDoctorConfig(
       : {}),
     ...(raw.ignore ? { ignore: raw.ignore } : {}),
     ...(raw.surfaces ? { surfaces: raw.surfaces } : {}),
+    ...(raw.scope ? { scope: raw.scope } : {}),
+    ...(raw.base ? { base: raw.base } : {}),
   };
 }

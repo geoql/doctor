@@ -247,12 +247,18 @@ DIAGNOSTIC SURFACES (toggle layers)
   --dead-code              enable knip dead-code analysis (default)
   --no-dead-code           skip dead-code layer
 
-SCOPING (which files to scan)
-  --diff                   scan only files changed vs HEAD (unions non-ignored untracked)
-  --staged                 scan only git-index staged files (pre-commit hooks)
-  --changed-files-from <ref>  scan only source files changed since <ref> (e.g. origin/main)
-                           unresolvable ref exits 2; mutually exclusive with --diff/--staged
-  --include-untracked      fold non-ignored untracked files into --staged / --changed-files-from
+SCOPING (how much of a change set to report)
+  --scope <mode>           full (default) | files | changed | lines   (config key: scope)
+                             files   = every finding in the changed source files
+                             changed = only findings new vs the base revision (§7.2 matcher)
+                             lines   = only findings whose span touches a changed line
+  --base <ref>             base for non-full scopes (config key: base); default = merge-base
+                           with GITHUB_BASE_REF | origin/HEAD | main | master; unresolvable exits 2
+  --staged                 change set = git index vs HEAD (alone: --scope files)
+  --include-untracked      fold non-ignored untracked files into the change set
+  --diff                   [deprecated] = --scope files --base HEAD (untracked included)
+  --changed-files-from <ref>  [deprecated] = --scope files, direct diff vs <ref> (no merge-base)
+                           --diff/--staged/--changed-files-from are mutually exclusive
   --full                   force full scan (overrides all scope flags)
   --project <name>         scan specific workspace project (comma-separated for multiple)
                            (an ancestor scan never descends into nested workspace packages;
@@ -430,6 +436,7 @@ Because the dimensions partition the categories, each ruleId belongs to exactly 
 - Matching is count-based: group by `(file, ruleId)`, following git renames since the baseline's `sourceRevision` (an untracked recreation of a deleted tracked file counts as a rename). A group whose head count ≤ base count reports nothing new. A grown group reports exactly `head − base` new findings, chosen by fingerprint+message, fingerprint, message (closest git-mapped line), then message similarity / line distance.
 - **The score is unchanged**: it is computed over all current findings with the §7 formula. The `--fail-on` gate, severity counts, and listed diagnostics cover new findings only. `--push` sends the full current findings.
 - The JSON report gains additive optional fields (schema version stays `1`): `diagnostics[].fingerprint`, `sourceRevision` (`git rev-parse HEAD`), `configHash` (hash of rules, include/exclude, inline-disable handling, enabled passes), and `baseline: { file, matchedCount, newCount, fixedCount }`.
+- Non-full `--scope` runs (§5) score all findings of the changed files with the §7 formula; `changed` / `lines` narrow only the gate, counts, and listed diagnostics. JSON gains additive `scope: { mode, base? }`; `changed` fills `baseline` with `file: "git:<base>"`. With `--baseline`, the saved report replaces the git base and its findings outside the scanned files are ignored.
 - A baseline is rejected (exit 2) when it is not a schema-`1` report, lacks fingerprints or `configHash`, has a different `configHash`, is `incomplete`, is itself a comparison (`baseline` present), or was not a full-scope scan.
 
 ---

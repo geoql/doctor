@@ -490,6 +490,21 @@ describe('agent reporter baseline line', () => {
     );
     expect(agentReport(makeInput())).not.toContain('BASELINE:');
   });
+
+  it('names the scope and its base', () => {
+    expect(
+      agentReport({ ...makeInput(), scope: { mode: 'lines', base: 'main' } }),
+    ).toContain('SCOPE: lines (vs main)');
+    expect(agentReport({ ...makeInput(), scope: { mode: 'files' } })).toContain(
+      'SCOPE: files (staged)',
+    );
+    const json = buildDoctorReport({
+      ...makeInput(),
+      scope: { mode: 'changed', base: 'origin/main' },
+    });
+    expect(json.scope).toEqual({ mode: 'changed', base: 'origin/main' });
+    expect(buildDoctorReport(makeInput())).not.toHaveProperty('scope');
+  });
 });
 
 describe('json-compact reporter', () => {
