@@ -299,6 +299,9 @@ SUBCOMMANDS
   list-rules [--preset]    print all rules + severities + categories
   explain <rule-id>        show full rule docs in terminal
   inspect [dir]            print detected project capabilities (framework, version, modules)
+  install [dir]            scaffold the agent SKILL.md; --agent-hooks also writes Claude Code
+                           (.claude/settings.json Stop) + Cursor (.cursor/hooks.json stop)
+                           end-of-turn hooks that audit changed files (idempotent, merged)
 
 EXIT CODES
   0    score >= threshold, --fail-on level not triggered

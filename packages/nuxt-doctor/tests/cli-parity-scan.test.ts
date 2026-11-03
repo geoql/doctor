@@ -301,3 +301,26 @@ describe(`${BIN} react.doctor parity — scan surface`, () => {
     });
   });
 });
+
+describe('nuxt-doctor kebab boolean flags before a positional', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('does not swallow the directory after --dry-run', async () => {
+    const out: string[] = [];
+    vi.spyOn(process.stdout, 'write').mockImplementation((chunk: unknown) => {
+      out.push(String(chunk));
+      return true;
+    });
+    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'nuxt-doctor-argv-')));
+    try {
+      expect(
+        await run(['node', 'nuxt-doctor', 'install', '--dry-run', dir]),
+      ).toBe(0);
+      expect(out.join('')).toContain(join(dir, '.agents'));
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
