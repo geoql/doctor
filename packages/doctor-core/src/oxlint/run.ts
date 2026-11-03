@@ -53,6 +53,7 @@ export async function runScriptPass(
       oxlintBin,
       timeoutMs: opts.timeoutMs,
       fix: opts.fix,
+      ignorePatterns: opts.exclude,
       signal: opts.signal,
     });
     return {

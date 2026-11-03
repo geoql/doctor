@@ -57,6 +57,37 @@ describe('audit', () => {
     expect(report.exitCode).toBe(0);
   });
 
+  // react.doctor #1852/#1983: deploy-adapter build output (.cloudflare,
+  // .wrangler, .vercel, .netlify) holds bundled code, not app source.
+  it('never scans deploy-adapter build output with the default exclude', async () => {
+    const leak = [
+      '<script>',
+      'export default {',
+      '  computed: {',
+      '    foo() {',
+      '      const x = 1;',
+      '    },',
+      '  },',
+      '};',
+      '</script>',
+      '',
+    ].join('\n');
+    const dir = await fixture({
+      'Control.vue': leak,
+      '.cloudflare/worker/Leak.vue': leak,
+      '.wrangler/tmp/Leak.vue': leak,
+      '.vercel/output/Leak.vue': leak,
+      '.netlify/functions/Leak.vue': leak,
+      '.nuxt/Leak.vue': leak,
+    });
+    const report = await audit({ rootDir: dir, deadCode: false });
+    const files = report.diagnostics
+      .filter((d) => d.ruleId === 'vue/return-in-computed-property')
+      .map((d) => d.file);
+    expect(files).toHaveLength(1);
+    expect(files[0]).toContain('Control.vue');
+  });
+
   it('fires new vue builtin rules through the real oxlint script pass', async () => {
     const dir = await fixture({
       'Computed.vue': [

@@ -8,6 +8,10 @@ exports[`BUILT_IN_RECOMMENDED > matches the locked snapshot 1`] = `
     "**/.nuxt/**",
     "**/.output/**",
     "**/coverage/**",
+    "**/.cloudflare/**",
+    "**/.wrangler/**",
+    "**/.vercel/**",
+    "**/.netlify/**",
   ],
   "failOn": "error",
   "include": [

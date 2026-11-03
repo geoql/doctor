@@ -73,6 +73,13 @@ function captureKey(node: AstNode | undefined): string {
     }
     return 'false';
   }
+  // `cond ? a : b` is only provable when both branches select the same
+  // capture flag (e.g. differing only in `passive`).
+  if (node.type === 'ConditionalExpression') {
+    const consequent = captureKey(node.consequent as AstNode);
+    const alternate = captureKey(node.alternate as AstNode);
+    return consequent === alternate ? consequent : 'unknown';
+  }
   return 'unknown';
 }
 

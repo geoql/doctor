@@ -181,4 +181,27 @@ describe('reactivity/effect-listener-cleanup-mismatch', () => {
     );
     expect(reports).toHaveLength(1);
   });
+
+  // react.doctor #1928: conditional options whose branches agree on capture.
+  it('does not fire when conditional options agree on the capture flag', () => {
+    const reports = runRule(
+      rule,
+      `watchEffect((onCleanup) => {
+         window.addEventListener('scroll', onScroll, passive ? { passive: true } : { passive: false });
+         onCleanup(() => window.removeEventListener('scroll', onScroll));
+       });`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('fires when conditional options disagree on the capture flag', () => {
+    const reports = runRule(
+      rule,
+      `watchEffect((onCleanup) => {
+         window.addEventListener('scroll', onScroll, early ? true : false);
+         onCleanup(() => window.removeEventListener('scroll', onScroll, false));
+       });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
 });

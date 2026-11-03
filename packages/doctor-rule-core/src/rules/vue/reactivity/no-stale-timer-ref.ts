@@ -1,4 +1,5 @@
 import { defineRule } from '../../../define-rule.js';
+import { nativeGlobalName } from '../../../shared/global-namespace.js';
 import type { AstNode, RuleContext } from '../../../types.js';
 
 const DOCS_URL = 'https://vuejs.org/guide/essentials/reactivity-fundamentals';
@@ -57,13 +58,8 @@ export const noStaleTimerRef = defineRule({
       ArrowFunctionExpression: enterFunction,
       'ArrowFunctionExpression:exit': exitFunction,
       CallExpression(node: AstNode) {
-        const callee = node.callee as AstNode | undefined;
-        if (
-          callee?.type !== 'Identifier' ||
-          !CLEAR_CALLS.has(callee.name as string)
-        ) {
-          return;
-        }
+        const name = nativeGlobalName(node.callee as AstNode | undefined);
+        if (name === undefined || !CLEAR_CALLS.has(name)) return;
         const args = node.arguments as AstNode[];
         const refName = refValueTarget(args[0]);
         if (refName === undefined) return;

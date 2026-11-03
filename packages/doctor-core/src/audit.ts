@@ -38,6 +38,11 @@ const DEFAULT_EXCLUDE = [
   '**/.nuxt/**',
   '**/.output/**',
   '**/coverage/**',
+  // Deploy-adapter build output (bundled code, not app source).
+  '**/.cloudflare/**',
+  '**/.wrangler/**',
+  '**/.vercel/**',
+  '**/.netlify/**',
 ];
 
 function countRuleCounts(diagnostics: Diagnostic[]): Record<string, number> {
