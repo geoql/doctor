@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.9.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.8.4...nuxt-doctor-v1.9.0) (2026-11-03)
+
+
+### Features
+
+* **core:** add --baseline comparison with stable diagnostic fingerprints ([#259](https://github.com/geoql/doctor/issues/259)) ([9c20f84](https://github.com/geoql/doctor/commit/9c20f849e013f002eaf8aded9b1d4df83c8c400d))
+* **core:** add --scope contextual with per-rule diffScope ownership ([#263](https://github.com/geoql/doctor/issues/263)) ([1354bb1](https://github.com/geoql/doctor/commit/1354bb19a848374493bc0e2e5840a53cab218b97))
+* **core:** add --scope files|changed|lines with --base and merge-base detection ([#262](https://github.com/geoql/doctor/issues/262)) ([608a212](https://github.com/geoql/doctor/commit/608a21246e5988c8bdb0bc376e1a6822472d3a73))
+* **core:** add install --agent-hooks and docs llms.txt / llms-full.txt ([#261](https://github.com/geoql/doctor/issues/261)) ([84dc417](https://github.com/geoql/doctor/commit/84dc417657efe91551e89a1c021c941feaf2d7ce))
+* **core:** add rule tags, config ignore/surfaces, and rules set/enable/disable ([#260](https://github.com/geoql/doctor/issues/260)) ([44c55b9](https://github.com/geoql/doctor/commit/44c55b9986bbef668e5e8d1fb09e073c0027358f))
+* **vue-cli:** add --warning-exit-code, positional files, nested-workspace exclusion ([#256](https://github.com/geoql/doctor/issues/256)) ([7f14baa](https://github.com/geoql/doctor/commit/7f14baaf2e9a1b311d5a41dd98adc67f65e72887))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.9.0
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 1.2.5
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.4.4
+
 ## [1.8.4](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.8.3...nuxt-doctor-v1.8.4) (2026-11-03)
 
 
