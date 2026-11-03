@@ -16,6 +16,8 @@ import type { ProjectInfoLite } from './reporters/types.js';
 import { scoreDiagnostics } from './score.js';
 import { isTestSurfacePath } from './test-surface.js';
 import { runSfcPass } from './sfc/run.js';
+import { clearSfcDescriptorCache } from './sfc/parse-sfc-descriptor.js';
+import { clearSfcCache } from './template/parse-sfc.js';
 import { runCrossFilePass } from './nuxt/cross-file/run.js';
 import { runTemplatePass } from './template/run.js';
 import type {
@@ -62,6 +64,10 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
   const threshold = config.threshold ?? 0;
   const lintEnabled = config.lint !== false;
 
+  // The SFC parse caches are path-keyed; a second audit in the same process
+  // (base-vs-head comparisons, long-lived hosts) must re-read edited files.
+  clearSfcCache();
+  clearSfcDescriptorCache();
   const files = await listSourceFiles({ rootDir, include, exclude });
 
   const overallStart = performance.now();
@@ -77,7 +83,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     deadlineTimer = setTimeout(() => deadlineController.abort(), maxDurationMs);
   }
 
-  const project = await detectProject(rootDir);
+  const project = config.projectInfo ?? (await detectProject(rootDir));
 
   const templateStart = performance.now();
   let templateDiagnostics: Diagnostic[] = [];

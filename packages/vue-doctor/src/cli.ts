@@ -10,6 +10,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import {
   applyBaseline,
+  applyScopePlan,
   audit,
   combineConfigHashes,
   computeConfigHash,
@@ -17,18 +18,21 @@ import {
   detectSummary,
   encodeAnnotations,
   findMonorepoRoot,
+  finishScopedReport,
   format,
-  listChangedFiles,
   listRules,
   listWorkspacePackages,
   loadDoctorConfig,
   loadRuleDoc,
   normalizeCliArgv,
   mergeCliOverrides,
+  mergeScopeParts,
   normalizeInitAnswers,
   planInit,
   pushFindings,
   readSourceRevision,
+  resolveScopePlan,
+  scopeRequestFromFlags,
   scaffoldCiWorkflow,
   renderVerboseTrace,
   scoreDiagnostics,
@@ -44,7 +48,10 @@ import {
   resolveCategoryScope,
   resolveExitCode,
   resolvePositionalScanInput,
+  type AuditConfig,
   type AuditReport,
+  type BaselineSummary,
+  type Diagnostic,
   type ConfigSource,
   type InitConfigFormat,
   type ListRulesFilter,
@@ -354,6 +361,8 @@ interface CliFlags {
   includeUntracked?: boolean;
   includeTestFiles?: boolean;
   full?: boolean;
+  scope?: string;
+  base?: string;
   baseline?: string;
   project?: string;
   prComment?: string | true;
@@ -473,24 +482,6 @@ async function runSingleAudit(
   flags: CliFlags,
   prepared: PreparedOptions,
 ): Promise<SingleAuditResult> {
-  let scopeFiles: string[] | undefined;
-  const scopeActive =
-    flags.diff === true ||
-    flags.staged === true ||
-    flags.changedFilesFrom !== undefined;
-  if (!flags.full && scopeActive) {
-    scopeFiles = await listChangedFiles({
-      rootDir,
-      mode: flags.changedFilesFrom
-        ? 'changed-from'
-        : flags.staged
-          ? 'staged'
-          : 'diff',
-      ...(flags.changedFilesFrom ? { ref: flags.changedFilesFrom } : {}),
-      ...(flags.includeUntracked ? { includeUntracked: true } : {}),
-    });
-  }
-  scopeFiles = intersectScopes(scopeFiles, prepared.positionalScope);
   const nested = await findNestedWorkspaceExclusion(
     rootDir,
     prepared.positionalScope ?? [],
@@ -505,6 +496,10 @@ async function runSingleAudit(
     ...(flags.config ? { explicitPath: flags.config } : {}),
     ...(flags.preset ? { presetOverride: flags.preset } : {}),
   });
+  const plan = await resolveScopePlan(
+    rootDir,
+    scopeRequestFromFlags(flags, resolved),
+  );
   const fixExclude = toArray(flags.fixExclude);
   const merged: ResolvedDoctorConfig = mergeCliOverrides(resolved, {
     failOn: flags.failOn as 'error' | 'warn' | 'none' | undefined,
@@ -515,26 +510,6 @@ async function runSingleAudit(
     ...(fixExclude ? { fixExcludes: fixExclude } : {}),
     ...(flags.includeTestFiles ? { includeTestFiles: true } : {}),
   });
-  const report = await audit({
-    rootDir: merged.rootDir,
-    include: merged.include,
-    exclude: [...merged.exclude, ...nested.globs],
-    rules: merged.rules,
-    failOn: merged.failOn,
-    threshold: merged.threshold,
-    deadCode: flags.deadCode,
-    lint: flags.lint,
-    respectInlineDisables: flags.respectInlineDisables,
-    ...(merged.includeTestFiles !== undefined
-      ? { includeTestFiles: merged.includeTestFiles }
-      : {}),
-    scopeFiles,
-    fix: flags.fix,
-    ...(merged.fixExcludes ? { fixExcludes: merged.fixExcludes } : {}),
-    ...(prepared.maxDurationMs !== undefined
-      ? { maxDurationMs: prepared.maxDurationMs }
-      : {}),
-  });
   let allowedRuleIds = new Set(Object.keys(merged.rules));
   if (prepared.categoryScope) {
     allowedRuleIds = filterRuleIdsByCategory(
@@ -542,20 +517,51 @@ async function runSingleAudit(
       prepared.categoryScope,
     );
   }
-  const ruleFiltered = filterReportByRules(
-    report,
-    allowedRuleIds,
-    merged.failOn,
-    undefined,
-    merged.includeTestFiles ?? false,
-  );
-  const filtered = applyConfigFilters(ruleFiltered, {
-    ...(merged.ignore ? { ignore: merged.ignore } : {}),
-    ...(merged.surfaces ? { surfaces: merged.surfaces } : {}),
+  const gate: ReportGate = {
     failOn: merged.failOn,
     includeTestFiles: merged.includeTestFiles ?? false,
-    outputSurface: prepared.outputSurface,
-  });
+  };
+  const runAudit = async (overrides: AuditConfig): Promise<AuditReport> =>
+    applyConfigFilters(
+      filterReportByRules(
+        await audit({
+          rootDir: merged.rootDir,
+          include: merged.include,
+          exclude: [...merged.exclude, ...nested.globs],
+          rules: merged.rules,
+          failOn: merged.failOn,
+          threshold: merged.threshold,
+          deadCode: flags.deadCode,
+          lint: flags.lint,
+          respectInlineDisables: flags.respectInlineDisables,
+          ...(merged.includeTestFiles !== undefined
+            ? { includeTestFiles: merged.includeTestFiles }
+            : {}),
+          fix: flags.fix,
+          ...(merged.fixExcludes ? { fixExcludes: merged.fixExcludes } : {}),
+          ...(prepared.maxDurationMs !== undefined
+            ? { maxDurationMs: prepared.maxDurationMs }
+            : {}),
+          ...overrides,
+        }),
+        allowedRuleIds,
+        merged.failOn,
+        undefined,
+        gate.includeTestFiles,
+      ),
+      {
+        ...(merged.ignore ? { ignore: merged.ignore } : {}),
+        ...(merged.surfaces ? { surfaces: merged.surfaces } : {}),
+        failOn: merged.failOn,
+        includeTestFiles: gate.includeTestFiles,
+        outputSurface: prepared.outputSurface,
+      },
+    );
+  const scopeFiles = intersectScopes(
+    plan ? [...plan.files] : undefined,
+    prepared.positionalScope,
+  );
+  const filtered = await runAudit(scopeFiles ? { scopeFiles } : {});
   const configHash = computeConfigHash({
     rules: Object.fromEntries(
       Object.entries(merged.rules).filter(([id]) => allowedRuleIds.has(id)),
@@ -571,13 +577,28 @@ async function runSingleAudit(
       outputSurface: prepared.outputSurface,
     },
   });
+  const report: AuditReport = { ...filtered, configHash };
+  if (!plan) return { report, source: resolved.source, gate };
+  const projectInfo = await detectProject(rootDir);
+  const scoped = await applyScopePlan(report, plan, {
+    rootDir,
+    skipBaseComparison: flags.baseline !== undefined,
+    auditBase: (snapshotRoot, files) =>
+      runAudit({
+        rootDir: snapshotRoot,
+        scopeFiles: [...files],
+        deadCode: false,
+        fix: false,
+        projectInfo,
+      }),
+  });
   return {
-    report: { ...filtered, configHash },
+    report: scoped.report,
     source: resolved.source,
-    gate: {
-      failOn: merged.failOn,
-      includeTestFiles: merged.includeTestFiles ?? false,
-    },
+    gate,
+    scopeFiles: plan.files,
+    ...(scoped.keep ? { keep: scoped.keep } : {}),
+    ...(scoped.summary ? { summary: scoped.summary } : {}),
   };
 }
 
@@ -590,6 +611,12 @@ interface SingleAuditResult {
   report: AuditReport;
   source: ConfigSource;
   gate: ReportGate;
+  /** Files a non-full scope covered (absolute). */
+  scopeFiles?: readonly string[];
+  /** Scope filter, applied after aggregation and --baseline. */
+  keep?: (d: Diagnostic) => boolean;
+  /** `--scope changed` base-revision summary. */
+  summary?: BaselineSummary;
 }
 
 function aggregateReports(
@@ -633,6 +660,7 @@ function aggregateReports(
     incomplete: reports.some((r) => r.incomplete),
     ...(skippedCheckReasons.length > 0 ? { skippedCheckReasons } : {}),
     configHash: combineConfigHashes(reports.map((r) => r.configHash!)),
+    scope: first.scope,
   };
 }
 
@@ -657,6 +685,7 @@ function emitReport(
     ...(report.sourceRevision ? { sourceRevision: report.sourceRevision } : {}),
     configHash: report.configHash,
     ...(report.baseline ? { baseline: report.baseline } : {}),
+    ...(report.scope ? { scope: report.scope } : {}),
   };
   const out = format(input, reporter, {
     color: flags.color,
@@ -745,6 +774,7 @@ async function runProjectAudits(
     .filter((name) => name.length > 0);
   const byName = new Map(packages.map((p) => [p.name, p]));
   const reports: AuditReport[] = [];
+  const singles: SingleAuditResult[] = [];
   let source: ConfigSource = 'built-in';
   let gate: ReportGate = { failOn: 'error', includeTestFiles: false };
   for (const name of requested) {
@@ -756,6 +786,7 @@ async function runProjectAudits(
       continue;
     }
     const single = await runSingleAudit(match.dir, flags, prepared);
+    singles.push(single);
     reports.push(single.report);
     source = single.source;
     gate = single.gate;
@@ -767,7 +798,12 @@ async function runProjectAudits(
     return null;
   }
   const { root } = await findMonorepoRoot(rootDir);
-  return { report: aggregateReports(reports, root), source, gate };
+  return {
+    report: aggregateReports(reports, root),
+    source,
+    gate,
+    ...mergeScopeParts(singles),
+  };
 }
 
 async function runInit(dir: string, flags: InitCliFlags): Promise<void> {
@@ -1125,15 +1161,29 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     .option('--annotations', 'Emit GitHub Actions ::error::/::warning:: lines')
     .option('--ci', 'Auto-enable CI behavior (--annotations on GitHub Actions)')
     .option('--no-ci', 'Disable CI auto-detection even when CI env is set')
-    .option('--diff', 'Only report findings in files changed vs HEAD')
-    .option('--staged', 'Only report findings in staged files')
+    .option(
+      '--scope <mode>',
+      'What to report: full (default) | files (all findings in changed files) | changed (only findings new vs --base) | lines (findings on changed lines)',
+    )
+    .option(
+      '--base <ref>',
+      'Base git ref for --scope files/changed/lines (default: merge-base with the PR base / default branch)',
+    )
+    .option(
+      '--diff',
+      '[deprecated: --scope files --base HEAD] Only report findings in files changed vs HEAD',
+    )
+    .option(
+      '--staged',
+      'Use staged (index) changes as the change set; alone = --scope files on staged files',
+    )
     .option(
       '--changed-files-from <ref>',
-      'Only report findings in source files changed since <ref> (e.g. origin/main)',
+      '[deprecated: --scope files --base <ref>] Only report findings in source files changed since <ref>',
     )
     .option(
       '--include-untracked',
-      'Fold non-ignored untracked files into --staged / --changed-files-from scope',
+      'Fold non-ignored untracked files into the --scope / --staged change set',
     )
     .option(
       '--include-test-files',
@@ -1221,27 +1271,12 @@ export async function run(argv: string[] = process.argv): Promise<number> {
             `--threshold must be an integer 0-100, got "${flags.threshold}".`,
           );
         }
-        const scopeSelectors = [
-          flags.diff === true,
-          flags.staged === true,
-          flags.changedFilesFrom !== undefined,
-        ].filter(Boolean).length;
-        if (scopeSelectors > 1) {
-          throw new Error(
-            '--diff, --staged, and --changed-files-from are mutually exclusive.',
-          );
-        }
+        // Validate scope flags up front (conflicts / unknown mode → exit 2).
+        scopeRequestFromFlags(flags);
         if (flags.verbose && flags.quiet) {
           throw new Error('--verbose and --quiet are mutually exclusive.');
         }
         const fixActive = flags.fix === true;
-        const fixSkippedForScope =
-          fixActive && !flags.full && scopeSelectors > 0;
-        if (fixSkippedForScope) {
-          process.stderr.write(
-            'vue-doctor: --fix skipped in --diff/--staged mode (auto-fix only runs on a full scan to avoid rewriting files outside the diff).\n',
-          );
-        }
         if (fixActive && flags.fixExclude !== undefined) {
           process.stderr.write(
             'vue-doctor: --fix-exclude is not enforced for built-in vue/* rules (oxlint applies their fixes globally); it currently scopes only future doctor plugin fixes.\n',
@@ -1270,9 +1305,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           );
         }
 
-        let report: AuditReport;
-        let configSource: ConfigSource;
-        let gate: ReportGate;
+        let result: SingleAuditResult;
         if (flags.project && workspacePackages.length > 0) {
           const aggregated = await runProjectAudits(
             rootDir,
@@ -1284,15 +1317,12 @@ export async function run(argv: string[] = process.argv): Promise<number> {
             process.exitCode = 2;
             return;
           }
-          report = aggregated.report;
-          configSource = aggregated.source;
-          gate = aggregated.gate;
+          result = aggregated;
         } else {
-          const single = await runSingleAudit(rootDir, flags, prepared);
-          report = single.report;
-          configSource = single.source;
-          gate = single.gate;
+          result = await runSingleAudit(rootDir, flags, prepared);
         }
+        const { source: configSource, gate } = result;
+        let report = result.report;
         const sourceRevision = await readSourceRevision(rootDir);
         if (sourceRevision) report = { ...report, sourceRevision };
         // --push always ships the full current findings: the dashboard tracks
@@ -1302,8 +1332,16 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           report = await applyBaseline(report, {
             baselineFile: flags.baseline,
             ...gate,
+            ...(result.scopeFiles
+              ? { scopeFiles: new Set(result.scopeFiles) }
+              : {}),
           });
         }
+        report = finishScopedReport(report, {
+          ...gate,
+          ...(result.keep ? { keep: result.keep } : {}),
+          ...(result.summary ? { summary: result.summary } : {}),
+        });
 
         if (flags.verbose) {
           const verboseOutput = renderVerboseTrace(report, {
@@ -1311,7 +1349,11 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           });
           process.stderr.write(`${verboseOutput}\n`);
         }
-        if (fixActive && !fixSkippedForScope) {
+        if (fixActive && report.scope !== undefined) {
+          process.stderr.write(
+            'vue-doctor: --fix skipped for a scoped run (auto-fix only runs on a full scan to avoid rewriting files outside the change).\n',
+          );
+        } else if (fixActive) {
           process.stderr.write(
             `vue-doctor: applied oxlint --fix; ${report.diagnostics.length} finding${report.diagnostics.length === 1 ? '' : 's'} remain (re-run to see them).\n`,
           );

@@ -2,6 +2,7 @@ import type { ScoreResult } from '../score.js';
 import type {
   BaselineSummary,
   Diagnostic,
+  ReportScope,
   SkippedCheckReason,
 } from '../types.js';
 import type { Framework } from '../types/project-info.js';
@@ -29,6 +30,7 @@ export interface ReporterInput {
   readonly sourceRevision?: string;
   readonly configHash?: string;
   readonly baseline?: BaselineSummary;
+  readonly scope?: ReportScope;
 }
 
 export interface ReporterOptions {

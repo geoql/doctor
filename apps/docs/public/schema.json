@@ -48,6 +48,14 @@
     "includeTestFiles": {
       "type": "boolean"
     },
+    "scope": {
+      "type": "string",
+      "enum": ["full", "files", "changed", "lines"]
+    },
+    "base": {
+      "type": "string",
+      "minLength": 1
+    },
     "rules": {
       "type": "object",
       "properties": {

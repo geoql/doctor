@@ -37,6 +37,10 @@ export interface ResolvedDoctorConfig {
   includeTestFiles?: boolean;
   ignore?: DoctorIgnoreConfig;
   surfaces?: DoctorSurfacesConfig;
+  /** Default `--scope` (CLI flags win). */
+  scope?: NonNullable<DoctorUserConfig['scope']>;
+  /** Default `--base` ref for non-full scopes (CLI flags win). */
+  base?: string;
 }
 
 export type DoctorIgnoreConfig = NonNullable<DoctorUserConfig['ignore']>;
