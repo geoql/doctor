@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.7.4](https://github.com/geoql/doctor/compare/vue-doctor-v1.7.3...vue-doctor-v1.7.4) (2026-11-03)
+
+
+### Bug Fixes
+
+* **deps:** bump c12 from 4.0.0-rc.2 to 4.0.0-rc.4 ([#253](https://github.com/geoql/doctor/issues/253)) ([135b663](https://github.com/geoql/doctor/commit/135b663f3874a30685c4b1ab2b51484a2bf0d830))
+
+
+### Miscellaneous
+
+* **deps:** bump all dependencies (nuxt 4.6.4) ([f143d51](https://github.com/geoql/doctor/commit/f143d51de715dcde23e21a2014053302aed878bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.8.4
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.4.3
+
 ## [1.7.3](https://github.com/geoql/doctor/compare/vue-doctor-v1.7.2...vue-doctor-v1.7.3) (2026-10-28)
 
 
