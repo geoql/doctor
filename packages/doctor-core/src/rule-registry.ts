@@ -25,7 +25,27 @@ export type RuleCategory =
 
 export type RuleSource = 'doctor' | 'oxlint-builtin' | 'eslint-plugin-vue';
 
-export interface RegisteredRule {
+/**
+ * Behavioral rule families, orthogonal to `category`. A rule can carry
+ * several. Used by `list-rules --tag`, config `ignore.tags`, and the
+ * per-surface `includeTags` / `excludeTags` controls.
+ */
+export const RULE_TAGS = [
+  'vue',
+  'nuxt',
+  'design',
+  'ai-slop',
+  'security-scan',
+  'test-noise',
+  'performance',
+  'hydration',
+  'dead-code',
+  'migration-hint',
+] as const;
+
+export type RuleTag = (typeof RULE_TAGS)[number];
+
+export interface RuleDefinition {
   readonly id: string;
   readonly severity: Severity;
   readonly category: RuleCategory;
@@ -33,7 +53,48 @@ export interface RegisteredRule {
   readonly recommended: boolean;
 }
 
-export const RULE_REGISTRY: readonly RegisteredRule[] = [
+export interface RegisteredRule extends RuleDefinition {
+  readonly tags: readonly RuleTag[];
+}
+
+/**
+ * Rules whose findings are dominated by noise in test, story, and fixture
+ * code (intentional dead exports, fake secrets, `!` on refs, prose copy).
+ */
+const TEST_NOISE_RULE_IDS: ReadonlySet<string> = new Set([
+  'dead-code/unused-export',
+  'dead-code/unused-type-export',
+  'dead-code/unused-member',
+  'dead-code/duplicate-export',
+  'vue-doctor/security/no-secrets-in-source',
+  'vue-doctor/no-non-null-assertion-on-ref-value',
+  'vue-doctor/no-em-dash-in-string',
+  'vue-doctor/performance/prefer-module-scope-static-value',
+  'vue-doctor/performance/prefer-module-scope-pure-function',
+]);
+
+const MIGRATION_HINT_PATTERN =
+  /deprecated|no-vue-cli|major-current|incompatible-with-nuxt-4|uses-app-directory|no-mixed-options-and-composition-api/;
+
+/** Derive a rule's tags from its id, category, and source. */
+export function deriveRuleTags(rule: RuleDefinition): RuleTag[] {
+  const tags: RuleTag[] = [];
+  if (rule.id.startsWith('nuxt-doctor/')) tags.push('nuxt');
+  else if (rule.id.startsWith('vue')) tags.push('vue');
+  if (rule.category === 'design') tags.push('design');
+  if (rule.category === 'ai-slop') tags.push('ai-slop');
+  if (rule.category === 'security') tags.push('security-scan');
+  if (TEST_NOISE_RULE_IDS.has(rule.id)) tags.push('test-noise');
+  if (rule.category === 'performance' || rule.category === 'template-perf') {
+    tags.push('performance');
+  }
+  if (rule.category === 'hydration') tags.push('hydration');
+  if (rule.category === 'dead-code') tags.push('dead-code');
+  if (MIGRATION_HINT_PATTERN.test(rule.id)) tags.push('migration-hint');
+  return tags;
+}
+
+const RULE_DEFINITIONS: readonly RuleDefinition[] = [
   {
     id: 'vue/no-export-in-script-setup',
     severity: 'error',
@@ -884,11 +945,16 @@ export const RULE_REGISTRY: readonly RegisteredRule[] = [
   },
 ];
 
+export const RULE_REGISTRY: readonly RegisteredRule[] = RULE_DEFINITIONS.map(
+  (rule) => ({ ...rule, tags: deriveRuleTags(rule) }),
+);
+
 export interface ListRulesFilter {
   readonly preset?: 'recommended' | 'all';
   readonly category?: RuleCategory;
   readonly source?: RuleSource;
   readonly severity?: Severity;
+  readonly tag?: RuleTag;
 }
 
 export function listRules(filter: ListRulesFilter = {}): RegisteredRule[] {
@@ -904,6 +970,10 @@ export function listRules(filter: ListRulesFilter = {}): RegisteredRule[] {
   }
   if (filter.severity) {
     rules = rules.filter((r) => r.severity === filter.severity);
+  }
+  if (filter.tag) {
+    const tag = filter.tag;
+    rules = rules.filter((r) => r.tags.includes(tag));
   }
   return rules.sort((a, b) => a.id.localeCompare(b.id));
 }

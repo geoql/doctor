@@ -75,4 +75,9 @@ export interface AuditReport {
   ruleCounts: Record<string, number>;
   incomplete: boolean;
   skippedCheckReasons?: readonly SkippedCheckReason[];
+  /**
+   * Severity counts the `--fail-on` gate saw, when config `surfaces.ciGate`
+   * made them differ from the scored counts. Absent otherwise.
+   */
+  gate?: { errorCount: number; warnCount: number };
 }

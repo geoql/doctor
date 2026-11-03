@@ -38,13 +38,14 @@ export interface ResolveExitCodeOptions {
  * exits 2, and `failOn: 'none'` keeps the run advisory (exit 0).
  */
 export function resolveExitCode(
-  report: Pick<AuditReport, 'exitCode' | 'errorCount' | 'warnCount'>,
+  report: Pick<AuditReport, 'exitCode' | 'errorCount' | 'warnCount' | 'gate'>,
   options: ResolveExitCodeOptions,
 ): number {
   if (report.exitCode === 2) return 2;
   if (options.warningExitCode === undefined) return report.exitCode;
   if (options.failOn === 'none') return report.exitCode;
-  if (report.errorCount > 0) return report.exitCode;
-  if (report.warnCount > 0) return options.warningExitCode;
+  const counts = report.gate ?? report;
+  if (counts.errorCount > 0) return report.exitCode;
+  if (counts.warnCount > 0) return options.warningExitCode;
   return report.exitCode;
 }

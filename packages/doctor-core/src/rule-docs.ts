@@ -10,6 +10,7 @@ export interface RuleDoc {
   readonly title: string;
   readonly severity: string;
   readonly category: string;
+  readonly tags: readonly string[];
   readonly recommended: boolean;
   readonly source: string;
   readonly helpUri: string;
@@ -54,6 +55,7 @@ export function loadRuleDoc(
     title: rule.id,
     severity: rule.severity,
     category: rule.category,
+    tags: rule.tags,
     recommended: rule.recommended,
     source: rule.source,
     helpUri: docsUrl(rule.id),
