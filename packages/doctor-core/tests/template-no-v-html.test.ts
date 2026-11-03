@@ -2,6 +2,7 @@ import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vite-plus/test';
+import { isEscapedJsonStringifyExpression } from '../src/template/escaped-json.js';
 import { clearSfcCache } from '../src/template/parse-sfc.js';
 import { runTemplatePass } from '../src/template/run.js';
 
@@ -64,5 +65,46 @@ describe('runTemplatePass — no-v-html', () => {
     const path = await writeVue('<template><div :title="t" /></template>');
     const diags = await runTemplatePass({ files: [path] });
     expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  // react.doctor #2011: JSON.stringify output with `<` escaped cannot open a
+  // tag, so it is safe to inject as raw HTML (e.g. JSON-LD).
+  it.each([
+    String.raw`JSON.stringify(ld).replace(/</g, '\\u003c')`,
+    String.raw`JSON.stringify(ld).replaceAll('<', '\\u003c')`,
+    String.raw`JSON.stringify(ld).replaceAll(/</g, '\\u003C')`,
+    String.raw`JSON.stringify(toLd(post)).replace(/</g, '&amp;lt;').replace(/>/g, '\\u003e')`,
+  ])('does not flag escaped JSON.stringify output: %s', async (exp) => {
+    const path = await writeVue(
+      `<template><Script type="application/ld+json" v-html="${exp}" /></template>`,
+    );
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.some((d) => d.ruleId === RULE)).toBe(false);
+  });
+
+  it.each([
+    'JSON.stringify(ld)',
+    String.raw`JSON.stringify(ld).replace(/>/g, '\\u003e')`,
+    String.raw`JSON.stringify(ld).replace(/</, '\\u003c')`,
+    String.raw`JSON.stringify(ld).replace(/</g, '\u003c')`,
+    String.raw`JSON.stringify(ld).replace(/</g, fn)`,
+    String.raw`JSON.stringify(ld).replace(/</g)`,
+    String.raw`JSON.stringify(ld).replace(re, '\\u003c')`,
+    String.raw`JSON.stringify(ld).replace('<', '\\u003c')`,
+    String.raw`JSON.stringify(ld).replaceAll('>', '\\u003c')`,
+    String.raw`JSON.stringify(ld).replace`,
+    String.raw`JSON.stringify(ld)[method](/</g, '\\u003c')`,
+    String.raw`bio.replace(/</g, '\\u003c')`,
+    String.raw`JSON.parse(ld).replace(/</g, '\\u003c')`,
+    String.raw`stringify(ld).replace(/</g, '\\u003c')`,
+    String.raw`JSON['stringify'](ld).replace(/</g, '\\u003c')`,
+  ])('still flags unescaped or unproven JSON output: %s', async (exp) => {
+    const path = await writeVue(`<template><div v-html="${exp}" /></template>`);
+    const diags = await runTemplatePass({ files: [path] });
+    expect(diags.filter((d) => d.ruleId === RULE)).toHaveLength(1);
+  });
+
+  it('treats an expression that is not a statement as unproven', () => {
+    expect(isEscapedJsonStringifyExpression('')).toBe(false);
   });
 });

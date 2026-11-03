@@ -1,4 +1,5 @@
 import { defineRule } from '../../../define-rule.js';
+import { isEscapedJsonStringify } from '../../../shared/escaped-json.js';
 import type { AstNode, RuleContext } from '../../../types.js';
 
 const DOCS_URL =
@@ -21,6 +22,7 @@ export const noInnerHtml = defineRule({
     return {
       AssignmentExpression(node: AstNode) {
         if (!isHtmlSinkTarget(node.left as AstNode)) return;
+        if (isEscapedJsonStringify(node.right as AstNode)) return;
         context.report({ node, message: MESSAGE });
       },
     };

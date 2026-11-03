@@ -41,4 +41,28 @@ describe('security/no-inner-html', () => {
     const reports = runRule(rule, `el.innerHTML = x;`);
     expect(reports[0]!.message).toContain('developer.mozilla.org');
   });
+
+  // react.doctor #2011: escaped JSON.stringify output is not an XSS sink.
+  it.each([
+    String.raw`el.innerHTML = JSON.stringify(ld).replace(/</g, '\\u003c');`,
+    String.raw`el.innerHTML = JSON.stringify(ld).replaceAll('<', '\\u003c');`,
+  ])('does NOT fire on escaped JSON.stringify output: %s', (code) => {
+    expect(runRule(rule, code)).toEqual([]);
+  });
+
+  it.each([
+    'el.innerHTML = JSON.stringify(ld);',
+    String.raw`el.innerHTML = JSON.stringify(ld).replace(/>/g, '\\u003e');`,
+    String.raw`el.innerHTML = JSON.stringify(ld).replace(/</g, '\u003c');`,
+    String.raw`el.innerHTML = JSON.stringify(ld).replace('<', '\\u003c');`,
+    String.raw`el.innerHTML = JSON.stringify(ld).replace(re, '\\u003c');`,
+    String.raw`el.innerHTML = JSON.stringify(ld).replaceAll('>', '\\u003c');`,
+    String.raw`el.innerHTML = JSON.stringify(ld)[m](/</g, '\\u003c');`,
+    String.raw`el.innerHTML = JSON.stringify(ld).trim();`,
+    String.raw`el.innerHTML = render(ld);`,
+    String.raw`el.innerHTML = stringify(ld).replace(/</g, '\\u003c');`,
+    String.raw`el.innerHTML = JSON['stringify'](ld).replace(/</g, '\\u003c');`,
+  ])('still fires on unescaped JSON.stringify output: %s', (code) => {
+    expect(runRule(rule, code)).toHaveLength(1);
+  });
 });

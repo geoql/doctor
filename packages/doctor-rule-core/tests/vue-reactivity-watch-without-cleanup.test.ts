@@ -255,4 +255,97 @@ describe('reactivity/watch-without-cleanup', () => {
     );
     expect(reports).toEqual([]);
   });
+
+  // react.doctor #2309: native timers reached through a global namespace
+  // still need cleanup.
+  it.each(['globalThis', 'window', 'self', 'global'])(
+    'fires for %s.setInterval without cleanup',
+    (ns) => {
+      const reports = runRule(
+        rule,
+        `watch(src, () => { ${ns}.setInterval(tick, 1000); });`,
+      );
+      expect(reports).toHaveLength(1);
+    },
+  );
+
+  it('does not fire for a timer-named method on an arbitrary receiver', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => { socket.setTimeout(5000); });`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does not fire for a timer-named method on a computed member', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => { timers['setTimeout'](tick); });`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('fires for a namespace-qualified observer constructor without cleanup', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => { new window.ResizeObserver(cb); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('does not fire for a non-resource constructor on a namespace', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => { new window.Date(); new lib.Thing(); });`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  // react.doctor #1908/#1932/#1939: object URLs pin a Blob until revoked.
+  it('fires for URL.createObjectURL without cleanup', () => {
+    const reports = runRule(
+      rule,
+      `watch(file, (f) => { preview.value = URL.createObjectURL(f); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('fires for a namespace-qualified URL.createObjectURL without cleanup', () => {
+    const reports = runRule(
+      rule,
+      `watchEffect(() => { url.value = window.URL.createObjectURL(blob.value); });`,
+    );
+    expect(reports).toHaveLength(1);
+  });
+
+  it('does not fire when the object URL is revoked in onCleanup', () => {
+    const reports = runRule(
+      rule,
+      `watch(file, (f, _old, onCleanup) => {
+         const url = URL.createObjectURL(f);
+         preview.value = url;
+         onCleanup(() => URL.revokeObjectURL(url));
+       });`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does not fire for createObjectURL on an unrelated receiver', () => {
+    const reports = runRule(
+      rule,
+      `watch(file, (f) => { link.value = storage.createObjectURL(f); });`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does not fire for timers or object URLs on nested or computed receivers', () => {
+    const reports = runRule(
+      rule,
+      `watch(src, () => {
+         this.timers.setTimeout(tick);
+         URL['createObjectURL'](blob);
+       });`,
+    );
+    expect(reports).toEqual([]);
+  });
 });

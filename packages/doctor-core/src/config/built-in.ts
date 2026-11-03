@@ -11,6 +11,11 @@ export const BUILT_IN_RECOMMENDED: Omit<
     '**/.nuxt/**',
     '**/.output/**',
     '**/coverage/**',
+    // Deploy-adapter build output (bundled code, not app source).
+    '**/.cloudflare/**',
+    '**/.wrangler/**',
+    '**/.vercel/**',
+    '**/.netlify/**',
   ],
   failOn: 'error' as const,
   threshold: 0,

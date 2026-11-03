@@ -96,4 +96,32 @@ describe('reactivity/no-stale-timer-ref', () => {
     );
     expect(reports).toHaveLength(1);
   });
+
+  // react.doctor #2309: qualified native clears behave like bare ones.
+  it.each(['globalThis', 'window', 'self', 'global'])(
+    'fires for %s.clearTimeout(ref.value) without reset',
+    (ns) => {
+      const reports = runRule(
+        rule,
+        `function stop() { ${ns}.clearTimeout(timer.value); }`,
+      );
+      expect(reports).toHaveLength(1);
+    },
+  );
+
+  it('does not fire for a qualified clear followed by a reset', () => {
+    const reports = runRule(
+      rule,
+      `function stop() { window.clearInterval(timer.value); timer.value = null; }`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does not fire for clearTimeout on an arbitrary receiver', () => {
+    const reports = runRule(
+      rule,
+      `function stop() { scheduler.clearTimeout(timer.value); }`,
+    );
+    expect(reports).toEqual([]);
+  });
 });

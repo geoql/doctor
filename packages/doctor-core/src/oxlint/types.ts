@@ -30,6 +30,8 @@ export interface OxlintRunOptions {
   timeoutMs?: number;
   maxOutputBytes?: number;
   fix?: boolean;
+  /** Globs relative to rootDir (the spawn cwd), passed as --ignore-pattern. */
+  ignorePatterns?: string[];
   signal?: AbortSignal;
 }
 

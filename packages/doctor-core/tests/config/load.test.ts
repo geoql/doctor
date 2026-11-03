@@ -42,6 +42,10 @@ describe('loadDoctorConfig', () => {
       '**/.nuxt/**',
       '**/.output/**',
       '**/coverage/**',
+      '**/.cloudflare/**',
+      '**/.wrangler/**',
+      '**/.vercel/**',
+      '**/.netlify/**',
     ]);
     expect(result.preset).toBe('recommended');
     // recommended preset includes error + warn rules from RULE_REGISTRY
@@ -305,6 +309,10 @@ describe('loadDoctorConfig', () => {
       '**/.nuxt/**',
       '**/.output/**',
       '**/coverage/**',
+      '**/.cloudflare/**',
+      '**/.wrangler/**',
+      '**/.vercel/**',
+      '**/.netlify/**',
     ]);
   });
 

@@ -23,6 +23,10 @@ describe('BUILT_IN_RECOMMENDED', () => {
       '**/.nuxt/**',
       '**/.output/**',
       '**/coverage/**',
+      '**/.cloudflare/**',
+      '**/.wrangler/**',
+      '**/.vercel/**',
+      '**/.netlify/**',
     ]);
   });
 

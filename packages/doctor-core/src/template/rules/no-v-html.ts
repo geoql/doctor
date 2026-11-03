@@ -1,6 +1,7 @@
 import type { DirectiveNode, ElementNode } from '@vue/compiler-core';
 import type { Diagnostic } from '../../types.js';
 import { findDirective } from '../directive-helpers.js';
+import { isEscapedJsonStringifyExpression } from '../escaped-json.js';
 import { walkElements } from '../walk.js';
 import type { TemplateRuleContext, TemplateRuleResult } from './types.js';
 
@@ -9,6 +10,8 @@ export function check(ctx: TemplateRuleContext): TemplateRuleResult {
   walkElements(ctx.template, (el: ElementNode) => {
     const vHtml: DirectiveNode | undefined = findDirective(el, 'html');
     if (!vHtml) return;
+    const exp = vHtml.exp as { content?: string } | undefined;
+    if (exp?.content && isEscapedJsonStringifyExpression(exp.content)) return;
     diagnostics.push({
       file: ctx.file,
       line: vHtml.loc.start.line,

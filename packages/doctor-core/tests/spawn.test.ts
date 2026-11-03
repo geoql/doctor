@@ -126,6 +126,18 @@ describe('runOxlint', () => {
     expect(res.diagnostics).toEqual([]);
   });
 
+  it('passes each ignore pattern as an --ignore-pattern arg', async () => {
+    const bin = await fakeBin(
+      `printf '{"diagnostics":[{"filename":"a.vue","message":"%s","severity":"error"}]}' "$*"`,
+    );
+    const res = await runOxlint(
+      opts(bin, { ignorePatterns: ['**/.wrangler/**', '**/dist/**'] }),
+    );
+    expect(res.diagnostics[0]?.message).toContain(
+      '--ignore-pattern **/.wrangler/** --ignore-pattern **/dist/**',
+    );
+  });
+
   it('omits --fix when fix is not set', async () => {
     const bin = await fakeBin(`printf '{"diagnostics":[]}'`);
     const res = await runOxlint(opts(bin));

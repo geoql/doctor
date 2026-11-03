@@ -28,6 +28,11 @@ export async function runOxlint(
   return new Promise<OxlintRunResult>((resolve, reject) => {
     const args = ['-c', opts.configPath, '--format', 'json'];
     if (opts.fix) args.push('--fix');
+    // Config-file ignorePatterns resolve against the generated config's own
+    // directory (a cache/temp dir), so project excludes never matched there.
+    for (const pattern of opts.ignorePatterns ?? []) {
+      args.push('--ignore-pattern', pattern);
+    }
     args.push(opts.targetPath);
     const child = spawn(opts.oxlintBin, args, {
       cwd: opts.rootDir,

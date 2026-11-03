@@ -1,4 +1,5 @@
 import { defineRule } from '../../../define-rule.js';
+import { nativeGlobalName } from '../../../shared/global-namespace.js';
 import type { AstNode, RuleContext } from '../../../types.js';
 
 const DOCS_URL =
@@ -10,11 +11,11 @@ const MESSAGE_EFFECT =
   'This watcher registers a listener, timer, or observer but never cleans it up, so it leaks across re-runs and hot reloads. Return a cleanup function (or call onWatcherCleanup) inside the watcher. See ' +
   DOCS_URL;
 
-const REGISTER_CALLS = new Set([
-  'addEventListener',
-  'setInterval',
-  'setTimeout',
-]);
+// Listeners are registered on arbitrary targets; timers only count when they
+// resolve to the native global (bare or via globalThis/window/self/global),
+// so `socket.setTimeout(ms)` is not mistaken for a timer.
+const LISTENER_CALLS = new Set(['addEventListener']);
+const TIMER_CALLS = new Set(['setInterval', 'setTimeout']);
 const RETAINED_RESOURCE_CONSTRUCTORS = new Set([
   'IntersectionObserver',
   'MutationObserver',
@@ -50,6 +51,27 @@ function calledMethodName(node: AstNode): string | undefined {
   return undefined;
 }
 
+/** `URL.createObjectURL(...)` (optionally namespace-qualified) pins a Blob. */
+function isCreateObjectUrl(node: AstNode): boolean {
+  const callee = node.callee as AstNode | undefined;
+  if (callee?.type !== 'MemberExpression' || callee.computed === true) {
+    return false;
+  }
+  const property = callee.property as AstNode;
+  return (
+    (property.name as string) === 'createObjectURL' &&
+    nativeGlobalName(callee.object as AstNode) === 'URL'
+  );
+}
+
+function isRegistration(node: AstNode): boolean {
+  const method = calledMethodName(node);
+  if (method !== undefined && LISTENER_CALLS.has(method)) return true;
+  const timer = nativeGlobalName(node.callee as AstNode | undefined);
+  if (timer !== undefined && TIMER_CALLS.has(timer)) return true;
+  return isCreateObjectUrl(node);
+}
+
 function isFunction(node: AstNode | undefined): boolean {
   return (
     node?.type === 'ArrowFunctionExpression' ||
@@ -80,7 +102,7 @@ export const watchWithoutCleanup = defineRule({
         if (watchStack.length === 0) return;
         const top = watchStack[watchStack.length - 1]!;
         const method = calledMethodName(node);
-        if (method !== undefined && REGISTER_CALLS.has(method)) {
+        if (isRegistration(node)) {
           top.hasRegistration = true;
         }
         // onCleanup (the watch callback's third argument) and onWatcherCleanup
@@ -94,11 +116,8 @@ export const watchWithoutCleanup = defineRule({
       },
       NewExpression(node: AstNode) {
         if (watchStack.length === 0) return;
-        const callee = node.callee as AstNode | undefined;
-        if (
-          callee?.type === 'Identifier' &&
-          RETAINED_RESOURCE_CONSTRUCTORS.has(callee.name as string)
-        ) {
+        const name = nativeGlobalName(node.callee as AstNode | undefined);
+        if (name !== undefined && RETAINED_RESOURCE_CONSTRUCTORS.has(name)) {
           watchStack[watchStack.length - 1]!.hasRegistration = true;
         }
       },
