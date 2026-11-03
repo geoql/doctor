@@ -231,3 +231,49 @@ describe('scaffoldCiWorkflow — provider auto-detect', () => {
     }
   });
 });
+
+describe('scaffoldCiWorkflow — nested working directory', () => {
+  it('emits working-directory on both GitHub workflows', async () => {
+    const dir = await tmpDir();
+    const plan = await scaffoldCiWorkflow({
+      bin: 'nuxt-doctor',
+      framework: 'nuxt',
+      dir,
+      provider: 'github',
+      pr: true,
+      workingDirectory: 'apps\\web',
+    });
+    expect(plan.writes).toHaveLength(2);
+    for (const write of plan.writes) {
+      expect(write.content).toContain(
+        'framework: nuxt\n          working-directory: apps/web\n',
+      );
+    }
+  });
+
+  it('omits working-directory at the repository root', async () => {
+    const dir = await tmpDir();
+    const plan = await scaffoldCiWorkflow({
+      bin: 'vue-doctor',
+      framework: 'vue',
+      dir,
+      provider: 'github',
+      workingDirectory: '',
+    });
+    expect(plan.writes[0].content).not.toContain('working-directory');
+  });
+
+  it('cds into the package on GitLab', async () => {
+    const dir = await tmpDir();
+    const plan = await scaffoldCiWorkflow({
+      bin: 'vue-doctor',
+      framework: 'vue',
+      dir,
+      provider: 'gitlab',
+      workingDirectory: 'packages/app',
+    });
+    expect(plan.writes[0].content).toContain(
+      '- cd packages/app && npx -y @geoql/vue-doctor@latest --fail-on error',
+    );
+  });
+});

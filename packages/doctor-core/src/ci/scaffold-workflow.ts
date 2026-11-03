@@ -13,6 +13,13 @@ export interface CiScaffoldOptions {
   noComments?: boolean;
   force?: boolean;
   env?: Readonly<Record<string, string | undefined>>;
+  /**
+   * Project directory relative to `dir` (the repository root) when the
+   * project is a nested package. Emitted as the action's
+   * `working-directory` (GitHub) or a `cd` (GitLab). Omit or `''` for a
+   * project at the repository root.
+   */
+  workingDirectory?: string;
 }
 
 export interface CiScaffoldPlan {
@@ -22,9 +29,16 @@ export interface CiScaffoldPlan {
   provider: 'github' | 'gitlab';
 }
 
+function workingDirectoryInput(workingDirectory: string): string {
+  return workingDirectory
+    ? `\n          working-directory: ${workingDirectory}`
+    : '';
+}
+
 function renderGithubWorkflow(opts: {
   framework: 'vue' | 'nuxt';
   prComment: boolean;
+  workingDirectory: string;
 }): string {
   return `name: doctor
 
@@ -46,7 +60,7 @@ jobs:
       - name: Run doctor
         uses: geoql/doctor-action@v2
         with:
-          framework: ${opts.framework}
+          framework: ${opts.framework}${workingDirectoryInput(opts.workingDirectory)}
           preset: recommended
           threshold: '0'
           fail-on: error
@@ -56,7 +70,10 @@ jobs:
 `;
 }
 
-function renderGithubPrWorkflow(opts: { framework: 'vue' | 'nuxt' }): string {
+function renderGithubPrWorkflow(opts: {
+  framework: 'vue' | 'nuxt';
+  workingDirectory: string;
+}): string {
   return `name: doctor-pr
 
 on:
@@ -77,7 +94,7 @@ jobs:
       - name: Doctor PR review
         uses: geoql/doctor-action@v2
         with:
-          framework: ${opts.framework}
+          framework: ${opts.framework}${workingDirectoryInput(opts.workingDirectory)}
           preset: recommended
           fail-on: error
           diff: 'true'
@@ -88,13 +105,17 @@ jobs:
 `;
 }
 
-function renderGitlabPipeline(opts: { bin: string }): string {
+function renderGitlabPipeline(opts: {
+  bin: string;
+  workingDirectory: string;
+}): string {
+  const cd = opts.workingDirectory ? `cd ${opts.workingDirectory} && ` : '';
   return `# Doctor quality gate — https://docs.the-doctor.report
 doctor:
   image: node:24
   stage: test
   script:
-    - npx -y @geoql/${opts.bin}@latest --fail-on error
+    - ${cd}npx -y @geoql/${opts.bin}@latest --fail-on error
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
@@ -113,6 +134,7 @@ export async function scaffoldCiWorkflow(
     provider = requested;
   }
 
+  const workingDirectory = (opts.workingDirectory ?? '').replace(/\\/g, '/');
   const writes: InitFileWrite[] = [];
   let conflict = false;
   let conflictPath: string | null = null;
@@ -125,7 +147,7 @@ export async function scaffoldCiWorkflow(
     } else {
       writes.push({
         path: pipelinePath,
-        content: renderGitlabPipeline({ bin: opts.bin }),
+        content: renderGitlabPipeline({ bin: opts.bin, workingDirectory }),
       });
     }
     return { writes, conflict, conflictPath, provider };
@@ -143,13 +165,17 @@ export async function scaffoldCiWorkflow(
     content: renderGithubWorkflow({
       framework: opts.framework,
       prComment: opts.noComments !== true,
+      workingDirectory,
     }),
   });
 
   if (opts.pr === true) {
     writes.push({
       path: join(opts.dir, '.github', 'workflows', 'doctor-pr.yml'),
-      content: renderGithubPrWorkflow({ framework: opts.framework }),
+      content: renderGithubPrWorkflow({
+        framework: opts.framework,
+        workingDirectory,
+      }),
     });
   }
 

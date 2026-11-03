@@ -64,6 +64,22 @@ export {
   type DirectiveSet,
 } from './disables/index.js';
 export { listChangedFiles, type GitScopeMode } from './git-scope.js';
+export { findGitRoot, gitEnv } from './git-env.js';
+export {
+  MAX_WARNING_EXIT_CODE,
+  MIN_WARNING_EXIT_CODE,
+  parseWarningExitCode,
+  resolveExitCode,
+  type ResolveExitCodeOptions,
+} from './exit-code.js';
+export {
+  resolvePositionalScanInput,
+  type PositionalScanInput,
+} from './positional-input.js';
+export {
+  findNestedWorkspaceExclusion,
+  type NestedWorkspaceExclusion,
+} from './project-info/nested-workspace-projects.js';
 export {
   listWorkspacePackages,
   type WorkspacePackage,
