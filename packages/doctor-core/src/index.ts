@@ -186,10 +186,44 @@ export type {
   MonorepoKind,
   ProjectInfo,
 } from './types/project-info.js';
+export {
+  applyBaseline,
+  BaselineError,
+  readBaselineReport,
+  type ApplyBaselineOptions,
+  type BaselineReport,
+} from './baseline/apply.js';
+export {
+  combineConfigHashes,
+  computeConfigHash,
+  type ConfigHashInput,
+} from './baseline/config-hash.js';
+export {
+  computeDiagnosticDelta,
+  type DeltaDiagnostic,
+  type DiagnosticDelta,
+  type DiagnosticDeltaInput,
+} from './baseline/delta.js';
+export {
+  attachFingerprints,
+  diagnosticEvidence,
+  fingerprintDiagnostic,
+} from './baseline/fingerprint.js';
+export { narrowReport, type NarrowReportOptions } from './narrow-report.js';
+export {
+  mapLineThroughHunks,
+  parseUnifiedDiff,
+  readChangeSet,
+  readSourceRevision,
+  type ChangeSetOptions,
+  type FileChange,
+  type Hunk,
+} from './scope/git-changes.js';
 export type {
   AuditConfig,
   AuditReport,
   AuditTimings,
+  BaselineSummary,
   Diagnostic,
   DiagnosticSource,
   Severity,

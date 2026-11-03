@@ -6,6 +6,7 @@ import { checkDeps } from './check-deps.js';
 import { checkNuxtProject } from './check-nuxt-project.js';
 import { dedupeDeadCodeAgainstLint } from './dead-code/dedupe.js';
 import { applyInlineDisables } from './disables/index.js';
+import { attachFingerprints } from './baseline/fingerprint.js';
 import { attachCodeSnippets } from './code-snippet.js';
 import { detectProject } from './detect-project.js';
 import { listSourceFiles } from './file-scan.js';
@@ -272,7 +273,9 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
       scope.has(resolve(rootDir, d.file)),
     );
   }
-  const diagnostics = (await attachCodeSnippets(afterDisables)).map((d) =>
+  const diagnostics = (
+    await attachFingerprints(await attachCodeSnippets(afterDisables), rootDir)
+  ).map((d) =>
     isTestSurfacePath(relative(rootDir, d.file))
       ? { ...d, surface: 'test' as const }
       : d,

@@ -128,6 +128,12 @@ export function render(
     '',
     findingsLine(input.score),
   ];
+  if (input.baseline) {
+    const b = input.baseline;
+    segments.push(
+      `BASELINE: ${b.newCount} new, ${b.matchedCount} existing, ${b.fixedCount} fixed (vs ${b.file}; score covers all current findings)`,
+    );
+  }
 
   const sorted = sortDiagnostics(input.diagnostics, input.rootDirectory);
   sorted.forEach((diagnostic, i) => {

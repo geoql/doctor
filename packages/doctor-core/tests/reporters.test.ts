@@ -452,6 +452,44 @@ describe('json reporter', () => {
     const input = makeInput({ diagnostics: [diag({})] });
     expect(jsonReport(input)).toBe(jsonReport(input));
   });
+
+  it('emits fingerprints, sourceRevision, configHash, and baseline additively', () => {
+    const plain = buildDoctorReport(makeInput({ diagnostics: [diag({})] }));
+    expect(plain).not.toHaveProperty('sourceRevision');
+    expect(plain).not.toHaveProperty('configHash');
+    expect(plain).not.toHaveProperty('baseline');
+    expect(plain.diagnostics[0]).not.toHaveProperty('fingerprint');
+
+    const report = buildDoctorReport({
+      ...makeInput({ diagnostics: [diag({ fingerprint: 'abc' })] }),
+      sourceRevision: 'f00',
+      configHash: 'h',
+      baseline: { file: 'b.json', matchedCount: 1, newCount: 2, fixedCount: 3 },
+    });
+    expect(report.schemaVersion).toBe('1');
+    expect(report.diagnostics[0]?.fingerprint).toBe('abc');
+    expect(report.sourceRevision).toBe('f00');
+    expect(report.configHash).toBe('h');
+    expect(report.baseline).toEqual({
+      file: 'b.json',
+      matchedCount: 1,
+      newCount: 2,
+      fixedCount: 3,
+    });
+  });
+});
+
+describe('agent reporter baseline line', () => {
+  it('summarizes the baseline delta under the findings line', () => {
+    const out = agentReport({
+      ...makeInput(),
+      baseline: { file: 'b.json', matchedCount: 4, newCount: 0, fixedCount: 1 },
+    });
+    expect(out).toContain(
+      'BASELINE: 0 new, 4 existing, 1 fixed (vs b.json; score covers all current findings)',
+    );
+    expect(agentReport(makeInput())).not.toContain('BASELINE:');
+  });
 });
 
 describe('json-compact reporter', () => {

@@ -1,5 +1,9 @@
 import { relative } from 'node:path';
-import type { Severity, SkippedCheckReason } from '../types.js';
+import type {
+  BaselineSummary,
+  Severity,
+  SkippedCheckReason,
+} from '../types.js';
 import type { ReporterInput } from './types.js';
 
 export const DOCTOR_REPORT_SCHEMA_VERSION = '1';
@@ -15,6 +19,8 @@ export interface DoctorReportDiagnostic {
   message: string;
   source: string;
   recommendation?: string;
+  surface?: 'test';
+  fingerprint?: string;
 }
 
 export interface DoctorReportBreakdownEntry {
@@ -56,6 +62,9 @@ export interface DoctorReport {
   timing: { elapsedMs: number; analyzedFileCount: number };
   incomplete?: boolean;
   skippedCheckReasons?: SkippedCheckReason[];
+  sourceRevision?: string;
+  configHash?: string;
+  baseline?: BaselineSummary;
 }
 
 export function buildDoctorReport(input: ReporterInput): DoctorReport {
@@ -110,6 +119,7 @@ export function buildDoctorReport(input: ReporterInput): DoctorReport {
       source: d.source,
       recommendation: d.recommendation,
       ...(d.surface ? { surface: d.surface } : {}),
+      ...(d.fingerprint ? { fingerprint: d.fingerprint } : {}),
     })),
     timing: {
       elapsedMs: input.elapsedMs,
@@ -126,6 +136,9 @@ export function buildDoctorReport(input: ReporterInput): DoctorReport {
           })),
         }
       : {}),
+    ...(input.sourceRevision ? { sourceRevision: input.sourceRevision } : {}),
+    ...(input.configHash ? { configHash: input.configHash } : {}),
+    ...(input.baseline ? { baseline: { ...input.baseline } } : {}),
   };
 }
 
