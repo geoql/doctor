@@ -54,7 +54,7 @@ const mockKnipResult = {
       },
       exports: {},
       types: {},
-      deps: {},
+      dependencies: {},
       devDependencies: {},
       unlisted: {},
       duplicates: {},

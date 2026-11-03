@@ -31,7 +31,7 @@ const KIND_MAP: Record<
     severity: 'info',
     message: 'Unused namespace member',
   },
-  deps: {
+  dependencies: {
     ruleId: 'dead-code/unused-dependency',
     severity: 'warn',
     message: 'Unused dependency',

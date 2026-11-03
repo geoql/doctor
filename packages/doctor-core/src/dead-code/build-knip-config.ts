@@ -2,6 +2,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { ProjectInfo } from '../types/project-info.js';
 import type { ResolvedDoctorConfig } from '../config/types.js';
+import { parseViteAutoResolve } from './parse-vite-auto-resolve.js';
 
 export interface KnipConfig {
   cwd: string;
@@ -168,6 +169,20 @@ export async function buildKnipConfig(
     projectInfo.hasComponentsAutoImport ||
     projectInfo.hasVueRouter;
 
+  const viteAutoResolve = isNuxt
+    ? { entryDirs: [], packages: [] }
+    : await parseViteAutoResolve(projectInfo.rootDirectory);
+
+  const conventionEntries = usesConventionResolution
+    ? [
+        'src/pages/**/*.vue',
+        'src/layouts/**/*.vue',
+        'src/components/**/*.vue',
+        'src/composables/**/*.ts',
+        'src/stores/**/*.ts',
+      ]
+    : [];
+
   const entry = isNuxt
     ? [
         'app/**/*.vue',
@@ -180,15 +195,7 @@ export async function buildKnipConfig(
         'src/App.vue',
         'index.html',
         'vite.config.{ts,js}',
-        ...(usesConventionResolution
-          ? [
-              'src/pages/**/*.vue',
-              'src/layouts/**/*.vue',
-              'src/components/**/*.vue',
-              'src/composables/**/*.ts',
-              'src/stores/**/*.ts',
-            ]
-          : []),
+        ...new Set([...conventionEntries, ...viteAutoResolve.entryDirs]),
       ];
 
   const catalogDependencies = await resolveCatalogDependencies(
@@ -212,6 +219,8 @@ export async function buildKnipConfig(
         '@geoql/vue-doctor',
         '@geoql/nuxt-doctor',
         ...catalogDependencies,
+        // Packages consumed only through AutoImport `imports` presets.
+        ...viteAutoResolve.packages,
       ]),
     ],
     ignoreWorkspaces: [...DEMO_WORKSPACES],

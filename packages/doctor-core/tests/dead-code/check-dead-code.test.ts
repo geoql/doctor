@@ -72,7 +72,7 @@ const mockKnipIssues = {
   files: {},
   exports: {},
   types: {},
-  deps: {},
+  dependencies: {},
   devDependencies: {},
   unlisted: {},
   duplicates: {},
@@ -144,6 +144,43 @@ describe('checkDeadCode', () => {
     expect(result[0].severity).toBe('warn');
     expect(result[0].source).toBe('dead-code');
     expect(result[0].file).toContain('src/utils.ts');
+  });
+
+  // knip names the unused-production-dependency bucket `dependencies`, not
+  // `deps`; reading the wrong key silently dropped every such finding.
+  it('maps knip `dependencies` issues to dead-code/unused-dependency', async () => {
+    vi.spyOn(_knipLoader, 'load').mockResolvedValue({
+      createOptions: vi.fn().mockResolvedValue({}),
+      run: vi.fn().mockResolvedValue({
+        results: {
+          issues: {
+            ...mockKnipIssues,
+            dependencies: {
+              'package.json': {
+                'lodash-es': {
+                  filePath: 'package.json',
+                  symbol: 'lodash-es',
+                  line: 8,
+                  col: 6,
+                  type: 'dependencies',
+                },
+              },
+            },
+          },
+        },
+      }),
+    });
+
+    const result = await checkDeadCode({
+      projectInfo: vueProjectInfo,
+      doctorConfig: baseConfig,
+      enabled: true,
+      timeoutMs: 30_000,
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].ruleId).toBe('dead-code/unused-dependency');
+    expect(result[0].message).toBe('Unused dependency: lodash-es');
   });
 
   it('throws DeadCodeImportFailed when knip import fails', async () => {

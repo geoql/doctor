@@ -1,0 +1,19 @@
+{
+  "name": "vue3-vite-auto-resolve-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vueuse/core": "^13.0.0",
+    "lodash-es": "^4.17.21",
+    "pinia": "^3.0.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "unplugin-auto-import": "^19.0.0",
+    "unplugin-vue-components": "^28.0.0",
+    "unplugin-vue-router": "^0.12.0",
+    "vite-plugin-vue-layouts": "^0.11.0"
+  }
+}

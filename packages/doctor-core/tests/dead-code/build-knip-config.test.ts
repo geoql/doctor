@@ -154,6 +154,25 @@ describe('buildKnipConfig', () => {
     expect(config.entry).not.toContain('src/composables/**/*.ts');
   });
 
+  it('adds vite.config auto-resolve dirs as entries and preset packages to ignoreDependencies (#85)', async () => {
+    const root = await tmp();
+    await writeFile(
+      join(root, 'vite.config.ts'),
+      `import AutoImport from 'unplugin-auto-import/vite';\nimport Components from 'unplugin-vue-components/vite';\nexport default { plugins: [Components(), AutoImport({ imports: ['pinia'], dirs: ['src/utils'] })] };\n`,
+    );
+    const config = await buildKnipConfig(
+      { ...vueProjectInfo, rootDirectory: root, hasComponentsAutoImport: true },
+      baseConfig,
+    );
+    expect(config.entry).toContain(
+      'src/utils/**/*.{ts,tsx,js,jsx,mts,mjs,vue}',
+    );
+    expect(config.entry).toContain(
+      'src/components/**/*.{ts,tsx,js,jsx,mts,mjs,vue}',
+    );
+    expect(config.ignoreDependencies).toContain('pinia');
+  });
+
   it('handles unknown framework as vue (fallback)', async () => {
     const unknownProject: ProjectInfo = {
       ...vueProjectInfo,

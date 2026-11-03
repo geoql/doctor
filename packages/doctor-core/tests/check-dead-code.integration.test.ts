@@ -25,6 +25,13 @@ const WITH_EXAMPLE_FIXTURE = resolve(
   'vue3-with-example',
 );
 
+const VITE_AUTO_RESOLVE_FIXTURE = resolve(
+  import.meta.dirname,
+  'fixtures',
+  'dead-code',
+  'vue3-vite-auto-resolve',
+);
+
 describe('checkDeadCode integration', () => {
   it('detects unused export in vue3 fixture', async () => {
     const projectInfo = await detectProject(FIXTURE);
@@ -140,6 +147,47 @@ describe('checkDeadCode integration', () => {
     expect(
       flaggedTypeExports.some((f) => f.includes('composables/useAuto')),
     ).toBe(false);
+  }, 60_000);
+
+  // Fresh checkout of a Vue 3 + Vite app whose generated auto-imports.d.ts /
+  // components.d.ts are gitignored: the only record of what the build-time
+  // plugins resolve is vite.config.ts. Custom plugin dirs (src/utils,
+  // src/ui, src/views, src/shells) and packages consumed only through
+  // AutoImport `imports` presets (pinia, @vueuse/core) must not be reported.
+  it('reads vite.config plugin options so auto-resolved dirs and preset packages are not flagged (#85)', async () => {
+    const projectInfo = await detectProject(VITE_AUTO_RESOLVE_FIXTURE);
+    const doctorConfig = await loadDoctorConfig(VITE_AUTO_RESOLVE_FIXTURE);
+
+    const diagnostics = await checkDeadCode({
+      projectInfo,
+      doctorConfig,
+      enabled: true,
+      timeoutMs: 60_000,
+    });
+
+    const unusedFiles = diagnostics
+      .filter((d) => d.ruleId === 'dead-code/unused-file')
+      .map((d) => d.file);
+    for (const autoResolved of [
+      'src/utils/format.ts',
+      'src/ui/AppButton.vue',
+      'src/views/index.vue',
+      'src/shells/default.vue',
+      'src/composables/useSessionStore.ts',
+    ]) {
+      expect(unusedFiles.some((f) => f.endsWith(autoResolved))).toBe(false);
+    }
+    expect(unusedFiles.some((f) => f.endsWith('src/legacy/orphan.ts'))).toBe(
+      true,
+    );
+
+    const unusedDeps = diagnostics
+      .filter((d) => d.ruleId === 'dead-code/unused-dependency')
+      .map((d) => d.message);
+    expect(unusedDeps.some((m) => m.endsWith(': pinia'))).toBe(false);
+    expect(unusedDeps.some((m) => m.endsWith(': @vueuse/core'))).toBe(false);
+    expect(unusedDeps.some((m) => m.endsWith(': vue-router'))).toBe(false);
+    expect(unusedDeps).toContain('Unused dependency: lodash-es');
   }, 60_000);
 
   // A demo workspace (example/) declares its own vite.config.ts that imports
