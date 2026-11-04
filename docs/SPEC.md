@@ -276,6 +276,7 @@ OUTPUT FORMAT
   --json                   shorthand for --format json
   --json-compact           with --json, emit single-line JSON
   --output <file>          write report to file (default: stdout)
+  --sarif-output <file>    also write a SARIF 2.1.0 report from the same audit (any --format, --score too)
   --verbose                show every rule + per-file detail (default shows top 3)
   --quiet                  only show summary
   --no-color               disable colors

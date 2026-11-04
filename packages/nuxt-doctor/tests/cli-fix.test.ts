@@ -95,6 +95,25 @@ describe('nuxt-doctor --fix', () => {
     }
   }, 60_000);
 
+  it('reports --fix as skipped when scoped by positional file paths', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'nuxt-cli-fix-positional-'));
+    const file = join(dir, 'Comp.vue');
+    const cwd = process.cwd();
+    try {
+      process.chdir(dir);
+      writeFileSync(join(dir, 'package.json'), '{"name":"x"}\n');
+      writeFileSync(file, VIOLATING_VUE);
+      await run(['node', 'nuxt-doctor', 'Comp.vue', '--no-dead-code', '--fix']);
+      expect(readFileSync(file, 'utf8')).toBe(VIOLATING_VUE);
+      const err = stderr.join('');
+      expect(err).toMatch(/--fix skipped for a scoped run/);
+      expect(err).not.toMatch(/applied oxlint --fix/);
+    } finally {
+      process.chdir(cwd);
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }, 60_000);
+
   it('SAFETY: --fix combined with --diff does NOT write to disk', async () => {
     const gitDir = mkdtempSync(join(tmpdir(), 'vue-cli-fix-diff-'));
     const sh = (...args: string[]) =>

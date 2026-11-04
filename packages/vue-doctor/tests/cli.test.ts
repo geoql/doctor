@@ -318,6 +318,70 @@ describe('run', () => {
     rmSync(outFile, { force: true });
   });
 
+  it('--sarif-output writes SARIF alongside the primary format in one run', async () => {
+    const jsonFile = resolve(import.meta.dirname, '.cli-multi-output.json');
+    const sarifFile = resolve(import.meta.dirname, '.cli-multi-output.sarif');
+    try {
+      const code = await run([
+        'node',
+        'vue-doctor',
+        '--no-dead-code',
+        '--no-ci',
+        '--format',
+        'json',
+        '--output',
+        jsonFile,
+        '--sarif-output',
+        sarifFile,
+        violationDir,
+      ]);
+      expect(code).toBe(1);
+      expect(stdout.join('')).toBe('');
+      const report = JSON.parse(readFileSync(jsonFile, 'utf-8')) as {
+        diagnostics: { ruleId: string }[];
+      };
+      const sarif = JSON.parse(readFileSync(sarifFile, 'utf-8')) as {
+        version: string;
+        runs: {
+          tool: { driver: { name: string } };
+          results: { ruleId: string }[];
+        }[];
+      };
+      expect(sarif.version).toBe('2.1.0');
+      expect(sarif.runs[0]!.tool.driver.name).toBe('@geoql/vue-doctor');
+      expect(report.diagnostics.length).toBeGreaterThan(0);
+      expect(sarif.runs[0]!.results.map((r) => r.ruleId)).toEqual(
+        report.diagnostics.map((d) => d.ruleId),
+      );
+    } finally {
+      rmSync(jsonFile, { force: true });
+      rmSync(sarifFile, { force: true });
+    }
+  });
+
+  it('--sarif-output also writes SARIF with --score', async () => {
+    const sarifFile = resolve(import.meta.dirname, '.cli-score-output.sarif');
+    try {
+      await run([
+        'node',
+        'vue-doctor',
+        '--no-dead-code',
+        '--no-ci',
+        '--score',
+        '--sarif-output',
+        sarifFile,
+        violationDir,
+      ]);
+      expect(stdout.join('')).toMatch(/^\d+\n$/);
+      const sarif = JSON.parse(readFileSync(sarifFile, 'utf-8')) as {
+        version: string;
+      };
+      expect(sarif.version).toBe('2.1.0');
+    } finally {
+      rmSync(sarifFile, { force: true });
+    }
+  });
+
   it('emits SARIF v2.1.0 with --format sarif', async () => {
     const code = await run([
       'node',
