@@ -353,6 +353,7 @@ interface CliFlags {
   quiet?: boolean;
   verbose?: boolean;
   output?: string;
+  sarifOutput?: string;
   rule?: string | string[];
   include?: string | string[];
   exclude?: string | string[];
@@ -672,12 +673,8 @@ function aggregateReports(
   };
 }
 
-function emitReport(
-  report: AuditReport,
-  reporter: ReporterFormat,
-  flags: CliFlags,
-): void {
-  const input: ReporterInput = {
+function toReporterInput(report: AuditReport): ReporterInput {
+  return {
     toolName: '@geoql/nuxt-doctor',
     toolVersion: readVersion(),
     rootDirectory: report.rootDir,
@@ -695,6 +692,18 @@ function emitReport(
     ...(report.baseline ? { baseline: report.baseline } : {}),
     ...(report.scope ? { scope: report.scope } : {}),
   };
+}
+
+function writeSarifReport(report: AuditReport, file: string): void {
+  writeFileSync(resolve(file), format(toReporterInput(report), 'sarif'));
+}
+
+function emitReport(
+  report: AuditReport,
+  reporter: ReporterFormat,
+  flags: CliFlags,
+): void {
+  const input = toReporterInput(report);
   const out = format(input, reporter, {
     color: flags.color,
     quiet: flags.quiet,
@@ -1207,10 +1216,14 @@ export async function run(argv: string[] = process.argv): Promise<number> {
       'Comma-separated workspace project names to audit (monorepo)',
     )
     .option('--output <file>', 'Write the report to a file instead of stdout')
+    .option(
+      '--sarif-output <file>',
+      'Also write a SARIF 2.1.0 report to this file, alongside the primary --format output (one audit, two reports)',
+    )
     .option('--pr-comment', 'Emit a focused Markdown PR-comment body')
     .option(
       '--fix',
-      'Auto-fix oxlint-pass findings in place (built-in vue/* rules only; template/SFC/dead-code/project findings are not fixable). Skipped in --diff/--staged mode.',
+      'Auto-fix oxlint-pass findings in place (built-in vue/* rules only; template/SFC/dead-code/project findings are not fixable). Skipped for scoped runs (--scope/--diff/--staged or file paths).',
     )
     .option(
       '--fix-exclude <ruleId>',
@@ -1357,7 +1370,10 @@ export async function run(argv: string[] = process.argv): Promise<number> {
           });
           process.stderr.write(`${verboseOutput}\n`);
         }
-        if (fixActive && report.scope !== undefined) {
+        if (
+          fixActive &&
+          (report.scope !== undefined || positional.scopeFiles !== undefined)
+        ) {
           process.stderr.write(
             'nuxt-doctor: --fix skipped for a scoped run (auto-fix only runs on a full scan to avoid rewriting files outside the change).\n',
           );
@@ -1371,6 +1387,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         } else {
           emitReport(report, reporter, flags);
         }
+        if (flags.sarifOutput) writeSarifReport(report, flags.sarifOutput);
         await maybePushFindings(pushReport, flags, rootDir);
         process.exitCode = flags.score
           ? report.exitCode
