@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.10.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.9.0...nuxt-doctor-v1.10.0) (2026-11-04)
+
+
+### Features
+
+* **core:** add --sarif-output and report --fix skip for file-path scopes ([#264](https://github.com/geoql/doctor/issues/264)) ([516a367](https://github.com/geoql/doctor/commit/516a3672a6a554c162e5ebec5b858c74cdeff2dd))
+
+
+### Bug Fixes
+
+* **core:** report --fix as skipped for file-path scoped runs ([516a367](https://github.com/geoql/doctor/commit/516a3672a6a554c162e5ebec5b858c74cdeff2dd))
+
 ## [1.9.0](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.8.4...nuxt-doctor-v1.9.0) (2026-11-03)
 
 
