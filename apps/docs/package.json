@@ -30,7 +30,7 @@
     "@nuxtjs/color-mode": "^4.1.0",
     "@nuxtjs/robots": "^7.0.2",
     "@nuxtjs/sitemap": "^9.1.0",
-    "@openpanel/nuxt": "^0.4.3",
+    "@openpanel/nuxt": "^0.4.4",
     "@vueuse/core": "^15.0.0",
     "@vueuse/nuxt": "^15.0.0",
     "better-sqlite3": "^13.0.3",
