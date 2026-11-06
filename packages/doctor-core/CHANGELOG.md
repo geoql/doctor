@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/geoql/doctor/compare/doctor-core-v1.9.0...doctor-core-v1.9.1) (2026-11-06)
+
+
+### Bug Fixes
+
+* **deps:** bump semver from 7.8.5 to 7.8.6 ([#272](https://github.com/geoql/doctor/issues/272)) ([d50cde2](https://github.com/geoql/doctor/commit/d50cde243bb084672b8218246376c843a75b7c79))
+
 ## [1.9.0](https://github.com/geoql/doctor/compare/doctor-core-v1.8.4...doctor-core-v1.9.0) (2026-11-03)
 
 
