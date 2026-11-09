@@ -515,8 +515,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       shadscan-vue:
-        specifier: ^0.3.3
-        version: 0.3.3
+        specifier: ^0.3.4
+        version: 0.3.4
     devDependencies:
       '@types/node':
         specifier: ^26.6.6
@@ -633,8 +633,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       shadscan-vue:
-        specifier: ^0.3.3
-        version: 0.3.3
+        specifier: ^0.3.4
+        version: 0.3.4
     devDependencies:
       '@types/node':
         specifier: ^26.6.6
@@ -7174,8 +7174,8 @@ packages:
   shadcn-nuxt@2.9.0:
     resolution: {integrity: sha512-w7zKOtfF7K1phRD+MuD9VzBCX38UUCIH2q/JaS0srWDUjy7Et8S+0tBZFVIsICAT4lTabIcVPno+yExLXFQ8vQ==}
 
-  shadscan-vue@0.3.3:
-    resolution: {integrity: sha512-tb2GKMNJo3a9H1hFLaJS934yWJzwUK9TCTM4OktdnlrZdYr1SDy6rlp37jDC5avzBCLqb+09AvrVhaqsB5AeJQ==}
+  shadscan-vue@0.3.4:
+    resolution: {integrity: sha512-tt6jWAWFLrPq1kH32NfsJ5nNLhOawZZv/TYpxfPNtWIDqhyGLB21Svbk74bpsJM+6Ebp8g6cNDnPY2YwQbrG6Q==}
     engines: {node: '>=20.19.0'}
     hasBin: true
 
@@ -7408,9 +7408,6 @@ packages:
 
   tailwind-merge@3.7.0:
     resolution: {integrity: sha512-XPPUyAc+cvspz3lHTcR/QgPfW2A0lv/xQNIjX3HGhLR+Nq2lHaLq5MtTesHn8GUr3W3DguT2KT5x3NVgRtYwmA==}
-
-  tailwindcss@4.3.3:
-    resolution: {integrity: sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==}
 
   tailwindcss@4.3.4:
     resolution: {integrity: sha512-PCJZTFFdG+sL3gvnP1Do9o6GbkvH2q0p04xSs3f7cSvmAeK+sttG+/7ncK1fdRwKFfC7n+wDDJaOMBSefkI9ow==}
@@ -15807,7 +15804,7 @@ snapshots:
       - '@emnapi/runtime'
       - magicast
 
-  shadscan-vue@0.3.3:
+  shadscan-vue@0.3.4:
     dependencies:
       '@vue/compiler-dom': 3.5.44
       '@vue/compiler-sfc': 3.5.44
@@ -16049,8 +16046,6 @@ snapshots:
   tailwind-csstree@0.3.3: {}
 
   tailwind-merge@3.7.0: {}
-
-  tailwindcss@4.3.3: {}
 
   tailwindcss@4.3.4: {}
 
