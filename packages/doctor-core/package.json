@@ -58,7 +58,7 @@
   "dependencies": {
     "@geoql/oxlint-plugin-nuxt-doctor": "workspace:*",
     "@geoql/oxlint-plugin-vue-doctor": "workspace:^",
-    "@vue/compiler-sfc": "^3.5.44",
+    "@vue/compiler-sfc": "^3.5.45",
     "c12": "4.0.0-rc.4",
     "kolorist": "^1.8.0",
     "oxc-parser": "^0.157.0",
