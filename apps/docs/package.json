@@ -48,7 +48,7 @@
     "@geoql/doctor-core": "workspace:^",
     "@nuxt/eslint": "^1.17.0",
     "@nuxt/eslint-config": "^1.17.0",
-    "@tailwindcss/vite": "^4.3.4",
+    "@tailwindcss/vite": "^4.3.5",
     "@types/node": "^26.6.6",
     "eslint": "^10.14.0",
     "eslint-plugin-better-tailwindcss": "^4.10.0",
