@@ -221,8 +221,8 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0(react@19.3.1)
       '@iconify-json/lucide':
-        specifier: ^1.2.151
-        version: 1.2.151
+        specifier: ^1.2.152
+        version: 1.2.152
       '@lucide/vue':
         specifier: ^1.70.0
         version: 1.70.0(vue@3.5.45(typescript@6.0.3))
@@ -1316,8 +1316,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@iconify-json/lucide@1.2.151':
-    resolution: {integrity: sha512-OCp+cNzynOlOI7zHq8bFGhBBzmSSWFICvOSTxZrajhFJC4YizvlLiBJMbaLzzlpMaGRidmZmAA8GpovoDKiy/w==}
+  '@iconify-json/lucide@1.2.152':
+    resolution: {integrity: sha512-OQTsOaQ+kD8yhy5EATMD5QHe5O+XJVibExdaRCaXP3hvNPNkn6wVUcTrGA16yU2luqe0ImE4qP74WBK8JuwwNA==}
 
   '@iconify/collections@1.0.760':
     resolution: {integrity: sha512-y0j4RSI9zXGvtQHNlc6pLQ9QkYWRkdhYMgmws9m7W//jTXiWKT+pahkFvPhWArQz/HppNaNCk0pyRicO3tquRA==}
@@ -9105,7 +9105,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@iconify-json/lucide@1.2.151':
+  '@iconify-json/lucide@1.2.152':
     dependencies:
       '@iconify/types': 2.0.0
 
