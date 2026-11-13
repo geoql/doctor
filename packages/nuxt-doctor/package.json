@@ -69,7 +69,7 @@
     "@vue/compiler-core": "^3.5.45",
     "@vue/compiler-sfc": "^3.5.45",
     "c12": "4.0.0-rc.4",
-    "oxc-parser": "^0.157.0",
+    "oxc-parser": "^0.158.0",
     "picocolors": "^1.1.1",
     "semver": "^7.8.6",
     "tinyglobby": "^0.2.17",
