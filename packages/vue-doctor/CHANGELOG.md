@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.9.1](https://github.com/geoql/doctor/compare/vue-doctor-v1.9.0...vue-doctor-v1.9.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* **deps:** bump @vue/compiler-sfc from 3.5.44 to 3.5.45 ([#281](https://github.com/geoql/doctor/issues/281)) ([f4d6009](https://github.com/geoql/doctor/commit/f4d600907059dc6e800edd98aba470e9f56cef78))
+* **deps:** bump oxc-parser from 0.157.0 to 0.158.0 ([#300](https://github.com/geoql/doctor/issues/300)) ([0205368](https://github.com/geoql/doctor/commit/02053689866a35caf9e372bb4c22e8eec74082db))
+* **deps:** bump oxlint from 1.90.0 to 1.91.0 ([#285](https://github.com/geoql/doctor/issues/285)) ([9c352ab](https://github.com/geoql/doctor/commit/9c352ab3e347456ce41d1c97ec252e5ffb9e0e29))
+* **deps:** bump oxlint from 1.91.0 to 1.92.0 ([#291](https://github.com/geoql/doctor/issues/291)) ([26b329d](https://github.com/geoql/doctor/commit/26b329de64cbd794dffb01febb541c56a0844d5c))
+* **deps:** bump oxlint from 1.92.0 to 1.93.0 ([#299](https://github.com/geoql/doctor/issues/299)) ([e842294](https://github.com/geoql/doctor/commit/e8422940a8e1001d81719be4d2d011ef978451c7))
+* **deps:** bump semver from 7.8.5 to 7.8.6 ([#272](https://github.com/geoql/doctor/issues/272)) ([d50cde2](https://github.com/geoql/doctor/commit/d50cde243bb084672b8218246376c843a75b7c79))
+* **deps:** bump shadscan-vue from 0.3.3 to 0.3.4 ([#284](https://github.com/geoql/doctor/issues/284)) ([8d7e970](https://github.com/geoql/doctor/commit/8d7e970e037bbcccb0eb402aa4a786f15a9897ce))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @vue/compiler-core from 3.5.44 to 3.5.45 ([#277](https://github.com/geoql/doctor/issues/277)) ([927830c](https://github.com/geoql/doctor/commit/927830ca79a135611893629438a7341e371f432e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.9.1
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.4.5
+
 ## [1.9.0](https://github.com/geoql/doctor/compare/vue-doctor-v1.8.0...vue-doctor-v1.9.0) (2026-11-04)
 
 
