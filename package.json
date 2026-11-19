@@ -49,7 +49,7 @@
     "@vitest/coverage-v8": "catalog:",
     "husky": "^9.1.7",
     "is-ci": "^4.1.0",
-    "lint-staged": "^17.6.0",
+    "lint-staged": "^17.6.1",
     "typescript": "^6.0.3",
     "vite-plus": "catalog:",
     "vitest": "catalog:"
