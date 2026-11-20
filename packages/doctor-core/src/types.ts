@@ -119,6 +119,15 @@ export interface AuditReport {
    * made them differ from the scored counts. Absent otherwise.
    */
   gate?: { errorCount: number; warnCount: number };
+  /**
+   * Findings the score and severity counts cover, when config `ignore` /
+   * `surfaces` made them differ from the listed `diagnostics`. Absent =
+   * the listed findings (minus test files unless `includeTestFiles`).
+   * Lets a `--project` roll-up and `--push` use what each project scored.
+   */
+  scoredDiagnostics?: Diagnostic[];
+  /** Findings the `--fail-on` gate sees, under the same rule as `scoredDiagnostics`. */
+  gatedDiagnostics?: Diagnostic[];
   /** `git rev-parse HEAD` of the scanned tree, when it is a git checkout. */
   sourceRevision?: string;
   /** Hash of the finding-affecting settings (see `computeConfigHash`). */

@@ -36,8 +36,9 @@ import {
   scopeRequestFromFlags,
   scaffoldCiWorkflow,
   renderVerboseTrace,
+  gatedFindings,
   scoreDiagnostics,
-  scoredSurfaceDiagnostics,
+  scoredFindings,
   applyConfigFilters,
   defaultRuleLevel,
   filterReportByRules,
@@ -641,12 +642,24 @@ function aggregateReports(
   for (const d of diagnostics) {
     ruleCounts[d.ruleId] = (ruleCounts[d.ruleId] ?? 0) + 1;
   }
-  // Score the same findings each project scored and gated: test/story-file
-  // findings stay listed but out of the score unless includeTestFiles.
-  const scoreResult = scoreDiagnostics(
-    scoredSurfaceDiagnostics(diagnostics, includeTestFiles),
-    { threshold: first.scoreResult.threshold },
+  // Score and gate what each project scored and gated (its own surfaces,
+  // ignore and test-file settings), not just what it listed.
+  const scoredDiagnostics = reports.flatMap((r) =>
+    scoredFindings(r, includeTestFiles),
   );
+  const gatedDiagnostics = reports.flatMap((r) =>
+    gatedFindings(r, includeTestFiles),
+  );
+  const scoreResult = scoreDiagnostics(scoredDiagnostics, {
+    threshold: first.scoreResult.threshold,
+  });
+  const gate = reports.some((r) => r.gate)
+    ? {
+        errorCount: gatedDiagnostics.filter((d) => d.severity === 'error')
+          .length,
+        warnCount: gatedDiagnostics.filter((d) => d.severity === 'warn').length,
+      }
+    : undefined;
   const skippedCheckReasons = reports.flatMap(
     (r) => r.skippedCheckReasons ?? [],
   );
@@ -668,6 +681,9 @@ function aggregateReports(
     ...(skippedCheckReasons.length > 0 ? { skippedCheckReasons } : {}),
     configHash: combineConfigHashes(reports.map((r) => r.configHash!)),
     scope: first.scope,
+    scoredDiagnostics,
+    gatedDiagnostics,
+    ...(gate ? { gate } : {}),
   };
 }
 
@@ -769,11 +785,9 @@ async function maybePushFindings(
       ? flags.pushWorkspace
       : undefined;
   // Only the findings the score counts: the pushed severity counts and
-  // findings must agree (test-file findings are listed locally, not scored).
-  const findings = scoredSurfaceDiagnostics(
-    report.diagnostics,
-    includeTestFiles,
-  );
+  // findings must agree (test-file and surfaces.score-excluded findings are
+  // not scored).
+  const findings = scoredFindings(report, includeTestFiles);
   const result = await pushFindings({
     project,
     workspace,
