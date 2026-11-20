@@ -1,6 +1,7 @@
 import { parseSync } from 'oxc-parser';
 import type { Diagnostic } from '../../../types.js';
 import { isNuxtPageFile } from '../../../nuxt/file-role.js';
+import { isNonIndexablePage } from '../../../nuxt/page-indexability.js';
 import type { SfcRuleContext, SfcRuleResult } from '../types.js';
 
 const RULE_ID = 'nuxt-doctor/seo/useSeoMeta-on-public-page';
@@ -59,6 +60,15 @@ export function check(ctx: SfcRuleContext): SfcRuleResult {
     lang,
   });
   if (hasTitleInCall(program)) return { diagnostics: [] };
+  if (
+    isNonIndexablePage({
+      program,
+      relativePath: ctx.relativePath,
+      rootDirectory: ctx.rootDirectory,
+      nuxtConfigPath: ctx.projectInfo?.nuxtConfigPath ?? null,
+    })
+  )
+    return { diagnostics: [] };
   const { line, column } = scriptSetup.loc.start;
   const diagnostics: Diagnostic[] = [
     {

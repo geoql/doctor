@@ -608,7 +608,7 @@ Notable rules from `@nuxt/eslint` we leverage:
 | **server-routes** | `server-routes/defineEventHandler-typed`           | warn     | doctor-owned    | medium      | type-check for `H3Event` generics                                                |
 |                   | `server-routes/validate-body-with-h3-v2`           | warn     | doctor-owned    | medium      | Nuxt 4 ships h3 v2 — `readValidatedBody` pattern                                 |
 |                   | `server-routes/createError-on-failure`             | warn     | doctor-owned    | medium      | unhandled throws leak stack traces                                               |
-| **seo**           | `seo/useSeoMeta-on-public-page`                    | warn     | doctor-owned    | medium      | pages/ files w/o useSeoMeta                                                      |
+| **seo**           | `seo/useSeoMeta-on-public-page`                    | warn     | doctor-owned    | medium      | pages/ files w/o useSeoMeta; skips noindex and auth-gated pages                  |
 |                   | `seo/og-image-defined`                             | warn     | doctor-owned    | low         | meta property check; skips noindex (page/layout/routeRules) and auth-gated pages |
 |                   | `seo/lang-on-html`                                 | warn     | doctor-owned    | low         | nuxt.config app head check                                                       |
 | **hydration**     | `hydration/clientOnly-for-browser-apis`            | error    | doctor-owned    | high        | `window`/`document` reference in non-client-only                                 |
