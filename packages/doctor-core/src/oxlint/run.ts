@@ -18,6 +18,8 @@ export interface ScriptPassOptions {
   fixExcludes?: string[];
   exclude?: string[];
   signal?: AbortSignal;
+  /** Detected project capabilities for capability-gated plugin rules. */
+  capabilities?: readonly string[];
 }
 
 export interface ScriptPassResult {
@@ -44,6 +46,7 @@ export async function runScriptPass(
     rootDir: opts.rootDir,
     framework: opts.framework,
     exclude: opts.exclude,
+    capabilities: opts.capabilities,
   });
   try {
     const raw = await runOxlint({

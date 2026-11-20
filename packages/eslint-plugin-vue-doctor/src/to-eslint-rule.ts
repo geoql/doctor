@@ -1,5 +1,8 @@
 import type { Rule } from 'eslint';
 import type { CoreRule, RuleContext, AstNode } from '@geoql/doctor-rule-core';
+import { deriveCapabilities } from '@geoql/doctor-rule-core';
+
+export { deriveCapabilities };
 
 type ESLintSeverity = 'error' | 'warn';
 
@@ -67,16 +70,4 @@ export function toESLintRule(core: CoreRule): ESLintRule {
       return eslintVisitors as unknown as ReturnType<typeof core.create>;
     },
   };
-}
-
-export function deriveCapabilities(
-  settings: Record<string, unknown> | undefined,
-  namespace: string = 'vue-doctor',
-): Set<string> {
-  if (!settings) return new Set();
-  const inner = settings[namespace] as Record<string, unknown> | undefined;
-  if (!inner) return new Set();
-  const value = inner['capabilities'];
-  if (!Array.isArray(value)) return new Set();
-  return new Set(value.filter((v): v is string => typeof v === 'string'));
 }

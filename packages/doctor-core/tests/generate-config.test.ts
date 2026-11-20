@@ -13,6 +13,51 @@ async function readConfig(path: string): Promise<WrittenConfig> {
   return JSON.parse(await readFile(path, 'utf8')) as WrittenConfig;
 }
 
+describe('generateOxlintConfig — capabilities for gated plugin rules', () => {
+  it('writes detected capabilities into settings["vue-doctor"]', async () => {
+    const { configPath, cleanup } = await generateOxlintConfig({
+      pluginPaths: ['/some/plugin.js'],
+      capabilities: ['vue:3', 'auto-imports:vue'],
+    });
+    const cfg = JSON.parse(await readFile(configPath, 'utf8')) as {
+      settings: Record<string, { capabilities: string[] }>;
+    };
+    expect(cfg.settings['vue-doctor']?.capabilities).toEqual([
+      'auto-imports:vue',
+      'vue:3',
+    ]);
+    await cleanup();
+  });
+
+  it('writes an empty capability list when none are passed', async () => {
+    const { configPath, cleanup } = await generateOxlintConfig({
+      pluginPaths: ['/some/plugin.js'],
+    });
+    const cfg = JSON.parse(await readFile(configPath, 'utf8')) as {
+      settings: Record<string, { capabilities: string[] }>;
+    };
+    expect(cfg.settings['vue-doctor']?.capabilities).toEqual([]);
+    await cleanup();
+  });
+
+  it('drops the Vue auto-import rule in Nuxt (the Nuxt rule covers it), even when the preset lists it', async () => {
+    const id = 'vue-doctor/no-imports-from-vue-when-auto-imported';
+    const nuxt = await generateOxlintConfig({
+      pluginPaths: ['/some/plugin.js'],
+      framework: 'nuxt',
+      ruleOverrides: { [id]: 'warn' },
+    });
+    expect((await readConfig(nuxt.configPath)).rules[id]).toBeUndefined();
+    await nuxt.cleanup();
+    const vue = await generateOxlintConfig({
+      pluginPaths: ['/some/plugin.js'],
+      framework: 'vue',
+    });
+    expect((await readConfig(vue.configPath)).rules[id]).toBe('warn');
+    await vue.cleanup();
+  });
+});
+
 describe('generateOxlintConfig', () => {
   it('writes exclude globs into ignorePatterns so the oxlint pass honors config.exclude', async () => {
     const { configPath, cleanup } = await generateOxlintConfig({

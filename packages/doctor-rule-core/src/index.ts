@@ -16,6 +16,11 @@ export {
 } from './types.js';
 export { defineRule } from './define-rule.js';
 export {
+  CAPABILITIES_SETTINGS_KEY,
+  capabilitiesOf,
+  deriveCapabilities,
+} from './capabilities.js';
+export {
   NUXT_AUTO_IMPORTED,
   VUE_AUTO_IMPORTED,
 } from './shared/auto-imported-symbols.js';
