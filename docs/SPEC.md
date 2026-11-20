@@ -265,7 +265,8 @@ SCOPING (how much of a change set to report)
   --full                   force full scan (overrides all scope flags)
   --project <name>         scan specific workspace project (comma-separated for multiple)
                            (an ancestor scan never descends into nested workspace packages;
-                           they are scanned only when selected via --project or a file path)
+                           they are scanned only when selected via --project or a file path;
+                           the aggregate scores the same findings each project gates)
 
 SUPPRESSIONS
   --respect-inline-disables    honor inline `// oxlint-disable*` / `// doctor-disable*` (default)
@@ -283,7 +284,8 @@ OUTPUT FORMAT
 
 CI BEHAVIOR
   --ci                     enable GH Actions annotations + non-interactive mode (auto-detect)
-  --annotations            emit GitHub Actions ::error::/::warning:: lines
+  --annotations            emit GitHub Actions ::error::/::warning:: lines (ungated
+                           test-file findings: ::notice:: "(test file, not gated)")
   --pr-comment             tune output for sticky PR comments (drops weak-signal families)
   --fail-on <level>        exit non-zero on: error (default) | warning | none
   --threshold <number>     fail if score < threshold (overrides --fail-on)

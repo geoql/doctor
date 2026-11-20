@@ -52,3 +52,22 @@ describe('encodeAnnotations', () => {
     expect(encodeAnnotations([])).toBe('');
   });
 });
+
+describe('test-file annotations (#342)', () => {
+  const testDiag = diag({ file: 'src/a.test.ts', surface: 'test' });
+
+  it('emits an unscored test-file finding as a notice that says it is not gated', () => {
+    expect(encodeAnnotation(testDiag)).toBe(
+      '::notice file=src/a.test.ts,line=3,col=5,title=vue-doctor/template/v-for-has-key (test file%2C not gated)::missing key',
+    );
+  });
+
+  it('keeps the severity level when test files are scored', () => {
+    expect(encodeAnnotation(testDiag, { includeTestFiles: true })).toBe(
+      '::error file=src/a.test.ts,line=3,col=5,title=vue-doctor/template/v-for-has-key::missing key',
+    );
+    expect(
+      encodeAnnotations([testDiag, diag()], { includeTestFiles: true }),
+    ).not.toContain('::notice');
+  });
+});

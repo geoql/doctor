@@ -1,4 +1,8 @@
-export { encodeAnnotation, encodeAnnotations } from './annotations.js';
+export {
+  encodeAnnotation,
+  encodeAnnotations,
+  type AnnotationOptions,
+} from './annotations.js';
 export { audit } from './audit.js';
 export { normalizeCliArgv } from './cli-argv.js';
 export { checkBuildQuality } from './check-build-quality.js';

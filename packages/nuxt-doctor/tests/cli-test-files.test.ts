@@ -6,6 +6,7 @@ import {
 } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import {
+  cpSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -53,6 +54,10 @@ writeFileSync(
   "import { it } from 'vitest';\nit('renders', () => {\n  const el = document.createElement('div');\n  el.innerHTML = '<details></details>';\n});\n",
 );
 
+afterAll(() => {
+  rmSync(root, { recursive: true, force: true });
+});
+
 const CI_ENV_KEYS = ['CI', 'GITHUB_ACTIONS', 'DOCTOR_API_KEY'] as const;
 
 interface JsonReport {
@@ -88,10 +93,6 @@ describe('nuxt-doctor test-file findings (#342, #343)', () => {
       if (savedEnv[k] === undefined) delete process.env[k];
       else process.env[k] = savedEnv[k];
     }
-  });
-
-  afterAll(() => {
-    rmSync(root, { recursive: true, force: true });
   });
 
   const audit = (...extra: string[]) =>
@@ -182,5 +183,91 @@ describe('nuxt-doctor test-file findings (#342, #343)', () => {
     expect(body.findings.map((f) => f.ruleId)).not.toContain(
       'vue-doctor/security/no-inner-html',
     );
+  });
+});
+
+describe('nuxt-doctor gate on test-file findings (#342)', () => {
+  let stdout: string[];
+  let originalExitCode: typeof process.exitCode;
+
+  beforeEach(() => {
+    stdout = [];
+    originalExitCode = process.exitCode;
+    vi.spyOn(process.stdout, 'write').mockImplementation((chunk: unknown) => {
+      stdout.push(String(chunk));
+      return true;
+    });
+    vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    process.exitCode = originalExitCode;
+  });
+
+  it('annotates the ungated test-file error as a notice', async () => {
+    const code = await run([
+      'node',
+      'nuxt-doctor',
+      appDir,
+      '--no-dead-code',
+      '--annotations',
+      '--fail-on',
+      'error',
+    ]);
+    expect(code).toBe(0);
+    const out = stdout.join('');
+    expect(out).toContain(
+      'title=vue-doctor/security/no-inner-html (test file%2C not gated)::',
+    );
+    expect(out).not.toMatch(/::error [^\n]*no-inner-html/);
+  });
+
+  it('--project scores and counts the same findings the gate sees', async () => {
+    const ws = mkdtempSync(join(tmpdir(), 'nuxt-doctor-ws-'));
+    try {
+      writeFileSync(join(ws, 'package.json'), '{"name":"ws","private":true}\n');
+      writeFileSync(
+        join(ws, 'pnpm-workspace.yaml'),
+        'packages:\n  - packages/*\n',
+      );
+      cpSync(appDir, join(ws, 'packages', 'app-under-test'), {
+        recursive: true,
+      });
+      const single = await run([
+        'node',
+        'nuxt-doctor',
+        appDir,
+        '--no-dead-code',
+        '--format',
+        'json',
+      ]);
+      const singleReport = JSON.parse(stdout.join('')) as JsonReport & {
+        score: { value: number };
+      };
+      stdout.length = 0;
+      const code = await run([
+        'node',
+        'nuxt-doctor',
+        ws,
+        '--project',
+        'app-under-test',
+        '--no-dead-code',
+        '--format',
+        'json',
+        '--fail-on',
+        'error',
+      ]);
+      const report = JSON.parse(stdout.join('')) as JsonReport & {
+        score: { value: number };
+      };
+      expect(code).toBe(single);
+      expect(code).toBe(0);
+      expect(report.score.bySeverity.error).toBe(0);
+      expect(report.score.value).toBe(singleReport.score.value);
+      expect(report.counts).toEqual(singleReport.counts);
+    } finally {
+      rmSync(ws, { recursive: true, force: true });
+    }
   });
 });
