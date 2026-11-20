@@ -625,6 +625,7 @@ interface SingleAuditResult {
 function aggregateReports(
   reports: AuditReport[],
   rootDirectory: string,
+  includeTestFiles: boolean,
 ): AuditReport {
   const first = reports[0];
   const diagnostics = reports.flatMap((r) => r.diagnostics);
@@ -640,9 +641,12 @@ function aggregateReports(
   for (const d of diagnostics) {
     ruleCounts[d.ruleId] = (ruleCounts[d.ruleId] ?? 0) + 1;
   }
-  const scoreResult = scoreDiagnostics(diagnostics, {
-    threshold: first.scoreResult.threshold,
-  });
+  // Score the same findings each project scored and gated: test/story-file
+  // findings stay listed but out of the score unless includeTestFiles.
+  const scoreResult = scoreDiagnostics(
+    scoredSurfaceDiagnostics(diagnostics, includeTestFiles),
+    { threshold: first.scoreResult.threshold },
+  );
   const skippedCheckReasons = reports.flatMap(
     (r) => r.skippedCheckReasons ?? [],
   );
@@ -732,7 +736,9 @@ function emitReport(
     !flags.quiet &&
     report.diagnostics.length > 0
   ) {
-    process.stdout.write(`${encodeAnnotations(report.diagnostics)}\n`);
+    process.stdout.write(
+      `${encodeAnnotations(report.diagnostics, { includeTestFiles })}\n`,
+    );
   }
 }
 
@@ -830,7 +836,7 @@ async function runProjectAudits(
   }
   const { root } = await findMonorepoRoot(rootDir);
   return {
-    report: aggregateReports(reports, root),
+    report: aggregateReports(reports, root, gate.includeTestFiles),
     source,
     gate,
     ...mergeScopeParts(singles),
