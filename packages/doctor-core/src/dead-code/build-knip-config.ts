@@ -2,6 +2,10 @@ import { readFile, stat } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { ProjectInfo } from '../types/project-info.js';
 import type { ResolvedDoctorConfig } from '../config/types.js';
+import {
+  hookScriptEntries,
+  moduleConventionEntries,
+} from './convention-entries.js';
 import { parseViteAutoResolve } from './parse-vite-auto-resolve.js';
 
 export interface KnipConfig {
@@ -119,20 +123,24 @@ function extractCatalogDependencies(
   return deps;
 }
 
-async function resolveCatalogDependencies(
+async function readPackageJson(
   rootDirectory: string,
-): Promise<string[]> {
-  const workspacePath = await findPnpmWorkspaceYaml(rootDirectory);
-  if (!workspacePath) return [];
-
-  let packageJson: PackageJson;
+): Promise<PackageJson | null> {
   try {
-    packageJson = JSON.parse(
+    return JSON.parse(
       await readFile(join(rootDirectory, 'package.json'), 'utf8'),
     );
   } catch {
-    return [];
+    return null;
   }
+}
+
+async function resolveCatalogDependencies(
+  rootDirectory: string,
+  packageJson: PackageJson | null,
+): Promise<string[]> {
+  const workspacePath = await findPnpmWorkspaceYaml(rootDirectory);
+  if (!workspacePath || !packageJson) return [];
 
   const catalogNames = collectCatalogNames(packageJson);
   if (catalogNames.size === 0) return [];
@@ -183,12 +191,18 @@ export async function buildKnipConfig(
       ]
     : [];
 
-  const entry = isNuxt
+  const packageJson = await readPackageJson(projectInfo.rootDirectory);
+
+  const frameworkEntry = isNuxt
     ? [
         'app/**/*.vue',
         'app/**/*.ts',
         'server/**/*.ts',
         'nuxt.config.{ts,js,mjs}',
+        ...moduleConventionEntries({
+          ...packageJson?.dependencies,
+          ...packageJson?.devDependencies,
+        }),
       ]
     : [
         'src/main.{ts,js}',
@@ -198,8 +212,14 @@ export async function buildKnipConfig(
         ...new Set([...conventionEntries, ...viteAutoResolve.entryDirs]),
       ];
 
+  const entry = [
+    ...frameworkEntry,
+    ...(await hookScriptEntries(projectInfo.rootDirectory)),
+  ];
+
   const catalogDependencies = await resolveCatalogDependencies(
     projectInfo.rootDirectory,
+    packageJson,
   );
 
   const config: KnipConfig = {

@@ -1,0 +1,19 @@
+{
+  "name": "nuxt-convention-files",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "nuxt typecheck",
+    "release:check": "node scripts/release-check.ts"
+  },
+  "dependencies": {
+    "@nuxt/content": "^3.0.0",
+    "nuxt": "^4.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0",
+    "typescript": "^6.0.0",
+    "vue-tsc": "^3.0.0"
+  }
+}
