@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.2.9](https://github.com/geoql/doctor/compare/eslint-plugin-nuxt-doctor-v1.2.8...eslint-plugin-nuxt-doctor-v1.2.9) (2026-11-20)
+
+
+### Bug Fixes
+
+* **rules:** flag useAsyncData keys that do not change inside a loop ([#338](https://github.com/geoql/doctor/issues/338)) ([fac1324](https://github.com/geoql/doctor/commit/fac1324646c37c69b56d13ab7e3324f5a95162de))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @typescript-eslint/parser from 8.72.1 to 8.72.2 ([#294](https://github.com/geoql/doctor/issues/294)) ([ecd3524](https://github.com/geoql/doctor/commit/ecd35241f874e8d4171a4566220e0e8f86720f10))
+* **deps-dev:** bump @typescript-eslint/parser from 8.72.2 to 8.73.0 ([#317](https://github.com/geoql/doctor/issues/317)) ([3b98b66](https://github.com/geoql/doctor/commit/3b98b665a99119581e02f1e9a3a5b90913ebb783))
+* **deps-dev:** bump eslint from 10.14.0 to 10.15.0 ([#311](https://github.com/geoql/doctor/issues/311)) ([2a22415](https://github.com/geoql/doctor/commit/2a22415865e6118338bdc4e1c30d6a0d24952564))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.5.1
+    * @geoql/eslint-plugin-vue-doctor bumped to 1.2.9
+  * devDependencies
+    * @geoql/doctor-core bumped to 1.10.0
+
 ## [1.2.8](https://github.com/geoql/doctor/compare/eslint-plugin-nuxt-doctor-v1.2.7...eslint-plugin-nuxt-doctor-v1.2.8) (2026-11-03)
 
 

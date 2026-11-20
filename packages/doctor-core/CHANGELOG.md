@@ -1,5 +1,47 @@
 # Changelog
 
+## [1.10.0](https://github.com/geoql/doctor/compare/doctor-core-v1.9.0...doctor-core-v1.10.0) (2026-11-20)
+
+
+### Features
+
+* **vue-cli,nuxt-cli:** read the push api key from DOCTOR_API_KEY ([#330](https://github.com/geoql/doctor/issues/330)) ([1913f62](https://github.com/geoql/doctor/commit/1913f62f0f5d7ddbc2c6e18b9d7709383a7ce010)), closes [#324](https://github.com/geoql/doctor/issues/324)
+
+
+### Bug Fixes
+
+* **core,vue-plugin:** pass project capabilities to oxlint plugin rules ([#335](https://github.com/geoql/doctor/issues/335)) ([3044828](https://github.com/geoql/doctor/commit/3044828519f5a9a7715528d35ba1361272d478a4))
+* **core:** skip auto-import findings in plain vitest test files ([#331](https://github.com/geoql/doctor/issues/331)) ([dc348f7](https://github.com/geoql/doctor/commit/dc348f72f0e6b5d6bf8ce67d4c24779547c18bd6)), closes [#325](https://github.com/geoql/doctor/issues/325)
+* **core:** skip og-image-defined on noindex and auth-gated pages ([#328](https://github.com/geoql/doctor/issues/328)) ([5e9d299](https://github.com/geoql/doctor/commit/5e9d299228ae18d4f15dfdc819f88e1b2be4080b)), closes [#321](https://github.com/geoql/doctor/issues/321)
+* **core:** skip useSeoMeta-on-public-page on noindex and auth-gated pages ([#334](https://github.com/geoql/doctor/issues/334)) ([e4007cb](https://github.com/geoql/doctor/commit/e4007cbef18305f21c49dbc22dfc72e9c6f5f103))
+* **core:** skip vue auto-import findings in tests vitest runs without autoimport ([#339](https://github.com/geoql/doctor/issues/339)) ([b3fc8d3](https://github.com/geoql/doctor/commit/b3fc8d3c716db21fe520afa0c292913a60f89fac))
+* **core:** stop dead-code reporting vue-tsc that vue-tsc-in-devDeps requires ([#332](https://github.com/geoql/doctor/issues/332)) ([e244f2d](https://github.com/geoql/doctor/commit/e244f2d4bfe8dadd2d83ced5e5fc29c07ca4624c)), closes [#323](https://github.com/geoql/doctor/issues/323)
+* **core:** treat convention files and git-hook scripts as dead-code entries ([#329](https://github.com/geoql/doctor/issues/329)) ([c77caa1](https://github.com/geoql/doctor/commit/c77caa16511c3554e25dcc4c94cf0b3cc506ef00)), closes [#322](https://github.com/geoql/doctor/issues/322)
+* **deps:** bump @vue/compiler-sfc from 3.5.44 to 3.5.45 ([#281](https://github.com/geoql/doctor/issues/281)) ([f4d6009](https://github.com/geoql/doctor/commit/f4d600907059dc6e800edd98aba470e9f56cef78))
+* **deps:** bump oxc-parser from 0.157.0 to 0.158.0 ([#300](https://github.com/geoql/doctor/issues/300)) ([0205368](https://github.com/geoql/doctor/commit/02053689866a35caf9e372bb4c22e8eec74082db))
+* **deps:** bump oxc-parser from 0.158.0 to 0.159.0 ([#318](https://github.com/geoql/doctor/issues/318)) ([871c16d](https://github.com/geoql/doctor/commit/871c16d4be772513c36c45dd99179d7d2e6a4395))
+* **deps:** bump oxlint from 1.90.0 to 1.91.0 ([#285](https://github.com/geoql/doctor/issues/285)) ([9c352ab](https://github.com/geoql/doctor/commit/9c352ab3e347456ce41d1c97ec252e5ffb9e0e29))
+* **deps:** bump oxlint from 1.91.0 to 1.92.0 ([#291](https://github.com/geoql/doctor/issues/291)) ([26b329d](https://github.com/geoql/doctor/commit/26b329de64cbd794dffb01febb541c56a0844d5c))
+* **deps:** bump oxlint from 1.92.0 to 1.93.0 ([#299](https://github.com/geoql/doctor/issues/299)) ([e842294](https://github.com/geoql/doctor/commit/e8422940a8e1001d81719be4d2d011ef978451c7))
+* **deps:** bump oxlint from 1.93.0 to 1.94.0 ([#319](https://github.com/geoql/doctor/issues/319)) ([ee8d640](https://github.com/geoql/doctor/commit/ee8d640a213efc5ddcdbc832c926e607b292e42d))
+* **deps:** bump semver from 7.8.5 to 7.8.6 ([#272](https://github.com/geoql/doctor/issues/272)) ([d50cde2](https://github.com/geoql/doctor/commit/d50cde243bb084672b8218246376c843a75b7c79))
+* **deps:** update all dependencies to latest ([#326](https://github.com/geoql/doctor/issues/326)) ([ceae56b](https://github.com/geoql/doctor/commit/ceae56b0299787206b98538e1933eb8edbc23f86))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @vue/compiler-core from 3.5.44 to 3.5.45 ([#277](https://github.com/geoql/doctor/issues/277)) ([927830c](https://github.com/geoql/doctor/commit/927830ca79a135611893629438a7341e371f432e))
+* **deps-dev:** bump knip from 6.44.1 to 6.44.2 ([#292](https://github.com/geoql/doctor/issues/292)) ([e496e70](https://github.com/geoql/doctor/commit/e496e7077e5371c99864dc3db3e37c647c6d9e66))
+* **deps-dev:** bump knip from 6.44.2 to 6.45.1 ([#302](https://github.com/geoql/doctor/issues/302)) ([b78a0f6](https://github.com/geoql/doctor/commit/b78a0f666f1a62c897bf5fca4d4ea44d31edce82))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 1.2.6
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.4.5
+
 ## [1.9.0](https://github.com/geoql/doctor/compare/doctor-core-v1.8.4...doctor-core-v1.9.0) (2026-11-03)
 
 

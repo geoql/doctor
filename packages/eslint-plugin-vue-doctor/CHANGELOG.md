@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.2.9](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.2.8...eslint-plugin-vue-doctor-v1.2.9) (2026-11-20)
+
+
+### Bug Fixes
+
+* **core,vue-plugin:** pass project capabilities to oxlint plugin rules ([#335](https://github.com/geoql/doctor/issues/335)) ([3044828](https://github.com/geoql/doctor/commit/3044828519f5a9a7715528d35ba1361272d478a4))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @typescript-eslint/parser from 8.72.1 to 8.72.2 ([#294](https://github.com/geoql/doctor/issues/294)) ([ecd3524](https://github.com/geoql/doctor/commit/ecd35241f874e8d4171a4566220e0e8f86720f10))
+* **deps-dev:** bump @typescript-eslint/parser from 8.72.2 to 8.73.0 ([#317](https://github.com/geoql/doctor/issues/317)) ([3b98b66](https://github.com/geoql/doctor/commit/3b98b665a99119581e02f1e9a3a5b90913ebb783))
+* **deps-dev:** bump eslint from 10.14.0 to 10.15.0 ([#311](https://github.com/geoql/doctor/issues/311)) ([2a22415](https://github.com/geoql/doctor/commit/2a22415865e6118338bdc4e1c30d6a0d24952564))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.5.1
+  * devDependencies
+    * @geoql/doctor-core bumped to 1.10.0
+
 ## [1.2.8](https://github.com/geoql/doctor/compare/eslint-plugin-vue-doctor-v1.2.7...eslint-plugin-vue-doctor-v1.2.8) (2026-11-03)
 
 

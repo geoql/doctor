@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.1](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.5.0...doctor-rule-core-v1.5.1) (2026-11-20)
+
+
+### Bug Fixes
+
+* **core,vue-plugin:** pass project capabilities to oxlint plugin rules ([#335](https://github.com/geoql/doctor/issues/335)) ([3044828](https://github.com/geoql/doctor/commit/3044828519f5a9a7715528d35ba1361272d478a4))
+* **deps:** bump oxc-parser from 0.157.0 to 0.158.0 ([#300](https://github.com/geoql/doctor/issues/300)) ([0205368](https://github.com/geoql/doctor/commit/02053689866a35caf9e372bb4c22e8eec74082db))
+* **deps:** bump oxc-parser from 0.158.0 to 0.159.0 ([#318](https://github.com/geoql/doctor/issues/318)) ([871c16d](https://github.com/geoql/doctor/commit/871c16d4be772513c36c45dd99179d7d2e6a4395))
+* **rules:** accept useAsyncData keys built from the loop variable ([#336](https://github.com/geoql/doctor/issues/336)) ([ebe7f11](https://github.com/geoql/doctor/commit/ebe7f11b6de07d12e61ab3804d89947f8312719e))
+* **rules:** flag useAsyncData keys that do not change inside a loop ([#338](https://github.com/geoql/doctor/issues/338)) ([fac1324](https://github.com/geoql/doctor/commit/fac1324646c37c69b56d13ab7e3324f5a95162de))
+* **rules:** flag useFetch calls that share one key inside a loop ([#341](https://github.com/geoql/doctor/issues/341)) ([b84dcf1](https://github.com/geoql/doctor/commit/b84dcf1e13f58aba32ac0d9cd5690aa8fd3590fa))
+
 ## [1.5.0](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.4.3...doctor-rule-core-v1.5.0) (2026-11-03)
 
 
