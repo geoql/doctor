@@ -2,6 +2,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { ProjectInfo } from '../types/project-info.js';
 import type { ResolvedDoctorConfig } from '../config/types.js';
+import { requiresVueTsc } from '../build-quality/check-vue-tsc.js';
 import {
   hookScriptEntries,
   moduleConventionEntries,
@@ -238,6 +239,7 @@ export async function buildKnipConfig(
         'vite-plus',
         '@geoql/vue-doctor',
         '@geoql/nuxt-doctor',
+        ...(requiresVueTsc(projectInfo) ? ['vue-tsc'] : []),
         ...catalogDependencies,
         // Packages consumed only through AutoImport `imports` presets.
         ...viteAutoResolve.packages,
