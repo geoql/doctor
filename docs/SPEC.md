@@ -596,7 +596,7 @@ Notable rules from `@nuxt/eslint` we leverage:
 | Category          | Rule id                                            | Severity | Coverage        | AI-priority | Source                                                                           |
 | ----------------- | -------------------------------------------------- | -------- | --------------- | ----------- | -------------------------------------------------------------------------------- |
 | **ai-slop**       | `ai-slop/no-process-client-server`                 | error    | doctor-augments | high        | Nuxt 4 → `import.meta.*` (covered by @nuxt/eslint but we bump severity to error) |
-|                   | `ai-slop/no-explicit-imports-of-auto-imported`     | warn     | doctor-owned    | high        | catches `import { ref } from 'vue'` when auto-imports enabled                    |
+|                   | `ai-slop/no-explicit-imports-of-auto-imported`     | warn     | doctor-owned    | high        | `import { ref } from 'vue'` when auto-imported; skips non-Nuxt-env vitest tests  |
 |                   | `ai-slop/no-useState-for-server-data`              | warn     | doctor-owned    | high        | AI pattern: using `useState` where `useFetch`/`useAsyncData` belongs             |
 |                   | `ai-slop/no-fetch-in-setup`                        | warn     | doctor-owned    | high        | raw `fetch()` instead of `useFetch` loses SSR + dedup                            |
 |                   | `ai-slop/no-mixed-app-and-root-layout`             | warn     | doctor-owned    | medium      | Nuxt 4 supports both `app/` and root layout; mixing them breaks resolution       |

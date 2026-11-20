@@ -15,6 +15,7 @@ import { runScriptPass } from './oxlint/run.js';
 import type { ProjectInfoLite } from './reporters/types.js';
 import { scoreDiagnostics } from './score.js';
 import { isTestSurfacePath } from './test-surface.js';
+import { dropAutoImportFindingsInPlainTests } from './nuxt/test-auto-imports.js';
 import { runSfcPass } from './sfc/run.js';
 import { clearSfcDescriptorCache } from './sfc/parse-sfc-descriptor.js';
 import { clearSfcCache } from './template/parse-sfc.js';
@@ -260,15 +261,18 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
     total: elapsedMs,
   };
 
-  const merged = mergeDiagnostics(
-    templateDiagnostics,
-    sfcDiagnostics,
-    scriptDiagnostics,
-    deadCodeDiagnostics,
-    buildQualityDiagnostics,
-    depsDiagnostics,
-    nuxtProjectDiagnostics,
-    crossFileDiagnostics,
+  const merged = await dropAutoImportFindingsInPlainTests(
+    mergeDiagnostics(
+      templateDiagnostics,
+      sfcDiagnostics,
+      scriptDiagnostics,
+      deadCodeDiagnostics,
+      buildQualityDiagnostics,
+      depsDiagnostics,
+      nuxtProjectDiagnostics,
+      crossFileDiagnostics,
+    ),
+    rootDir,
   );
   let afterDisables = applyInlineDisables(merged, {
     respect: config.respectInlineDisables !== false,
