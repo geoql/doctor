@@ -601,7 +601,7 @@ Notable rules from `@nuxt/eslint` we leverage:
 |                   | `server-routes/validate-body-with-h3-v2`           | warn     | doctor-owned    | medium      | Nuxt 4 ships h3 v2 — `readValidatedBody` pattern                                 |
 |                   | `server-routes/createError-on-failure`             | warn     | doctor-owned    | medium      | unhandled throws leak stack traces                                               |
 | **seo**           | `seo/useSeoMeta-on-public-page`                    | warn     | doctor-owned    | medium      | pages/ files w/o useSeoMeta                                                      |
-|                   | `seo/og-image-defined`                             | warn     | doctor-owned    | low         | meta property check                                                              |
+|                   | `seo/og-image-defined`                             | warn     | doctor-owned    | low         | meta property check; skips noindex (page/layout/routeRules) and auth-gated pages |
 |                   | `seo/lang-on-html`                                 | warn     | doctor-owned    | low         | nuxt.config app head check                                                       |
 | **hydration**     | `hydration/clientOnly-for-browser-apis`            | error    | doctor-owned    | high        | `window`/`document` reference in non-client-only                                 |
 |                   | `hydration/no-document-in-setup`                   | error    | doctor-owned    | high        | direct `document` access in setup                                                |
