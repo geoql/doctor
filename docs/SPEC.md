@@ -554,31 +554,31 @@ These are already covered by `eslint-plugin-vue@^10.9.1`. Doctor's `recommended`
 
 These rules don't exist anywhere or doctor adds materially more value than existing rules. **~20 rules at v0.1; ~35 by v1.0.**
 
-| Category          | Rule id                                             | Severity | Coverage        | AI-priority | Source                                               |
-| ----------------- | --------------------------------------------------- | -------- | --------------- | ----------- | ---------------------------------------------------- |
-| **ai-slop**       | `ai-slop/no-destructure-props-without-toRefs`       | error    | doctor-owned    | high        | Vue 3 reactivity guide                               |
-|                   | `ai-slop/no-destructure-reactive-without-toRefs`    | error    | doctor-owned    | high        | Vue 3 reactivity guide                               |
-|                   | `ai-slop/no-mixed-options-and-composition-api`      | warn     | doctor-owned    | high        | Style guide, observed AI mistake                     |
-|                   | `ai-slop/no-non-null-assertion-on-ref-value`        | error    | doctor-owned    | high        | TS misuse pattern                                    |
-|                   | `ai-slop/no-imports-from-vue-when-auto-imported`    | warn     | doctor-owned    | high        | needs `auto-imports:vue`; off in Nuxt (Nuxt rule)    |
-| **reactivity**    | `reactivity/watch-without-cleanup`                  | warn     | doctor-owned    | medium      | Vue 3 reactivity guide                               |
-|                   | `reactivity/prefer-shallowRef-for-large-data`       | info     | doctor-owned    | medium      | Vue 3 perf guide                                     |
-|                   | `reactivity/prefer-readonly-for-injected`           | info     | doctor-augments | low         | augments `provide`/`inject` typing                   |
-| **composition**   | `composition/prefer-script-setup-for-new-files`     | warn     | doctor-owned    | medium      | Style guide (priority B)                             |
-|                   | `composition/defineProps-typed`                     | warn     | doctor-augments | medium      | augments `vue/valid-define-props` with TS-only check |
-| **performance**   | `performance/v-memo-on-large-list`                  | warn     | doctor-owned    | low         | heuristic: `v-for` >100 items, no `v-memo`           |
-|                   | `performance/prefer-defineAsyncComponent-on-route`  | info     | doctor-owned    | low         | heuristic: top-level page import                     |
-|                   | `performance/no-inline-object-prop-in-list`         | warn     | doctor-owned    | medium      | recreates object every render                        |
-| **template-perf** | `template-perf/no-computed-getter-in-template-loop` | warn     | doctor-owned    | medium      | accesses to .value in `v-for`                        |
-|                   | `template-perf/avoid-deep-v-bind-spread-in-list`    | info     | doctor-owned    | low         | re-runs reactivity collection                        |
-| **build-quality** | `build-quality/tsconfig-strict-required`            | warn     | doctor-owned    | low         | config check (not AST)                               |
-|                   | `build-quality/vue-tsc-in-devDeps`                  | warn     | doctor-owned    | low         | config check                                         |
-|                   | `build-quality/no-vue-cli`                          | warn     | doctor-owned    | low         | deps check (deprecated)                              |
-|                   | `build-quality/eslint-plugin-vue-installed`         | info     | doctor-owned    | low         | deps check                                           |
-| **deps**          | `deps/duplicate-vue-versions`                       | error    | doctor-owned    | medium      | cross-package, hard to catch in eslint               |
-|                   | `deps/vue-major-current`                            | info     | doctor-owned    | low         | npm registry call                                    |
-|                   | `deps/knip-unused-exports`                          | warn     | doctor-owned    | medium      | knip integration                                     |
-|                   | `deps/knip-unused-deps`                             | warn     | doctor-owned    | medium      | knip integration                                     |
+| Category          | Rule id                                             | Severity | Coverage        | AI-priority | Source                                                                            |
+| ----------------- | --------------------------------------------------- | -------- | --------------- | ----------- | --------------------------------------------------------------------------------- |
+| **ai-slop**       | `ai-slop/no-destructure-props-without-toRefs`       | error    | doctor-owned    | high        | Vue 3 reactivity guide                                                            |
+|                   | `ai-slop/no-destructure-reactive-without-toRefs`    | error    | doctor-owned    | high        | Vue 3 reactivity guide                                                            |
+|                   | `ai-slop/no-mixed-options-and-composition-api`      | warn     | doctor-owned    | high        | Style guide, observed AI mistake                                                  |
+|                   | `ai-slop/no-non-null-assertion-on-ref-value`        | error    | doctor-owned    | high        | TS misuse pattern                                                                 |
+|                   | `ai-slop/no-imports-from-vue-when-auto-imported`    | warn     | doctor-owned    | high        | needs `auto-imports:vue`; off in Nuxt; skips tests unless vitest loads AutoImport |
+| **reactivity**    | `reactivity/watch-without-cleanup`                  | warn     | doctor-owned    | medium      | Vue 3 reactivity guide                                                            |
+|                   | `reactivity/prefer-shallowRef-for-large-data`       | info     | doctor-owned    | medium      | Vue 3 perf guide                                                                  |
+|                   | `reactivity/prefer-readonly-for-injected`           | info     | doctor-augments | low         | augments `provide`/`inject` typing                                                |
+| **composition**   | `composition/prefer-script-setup-for-new-files`     | warn     | doctor-owned    | medium      | Style guide (priority B)                                                          |
+|                   | `composition/defineProps-typed`                     | warn     | doctor-augments | medium      | augments `vue/valid-define-props` with TS-only check                              |
+| **performance**   | `performance/v-memo-on-large-list`                  | warn     | doctor-owned    | low         | heuristic: `v-for` >100 items, no `v-memo`                                        |
+|                   | `performance/prefer-defineAsyncComponent-on-route`  | info     | doctor-owned    | low         | heuristic: top-level page import                                                  |
+|                   | `performance/no-inline-object-prop-in-list`         | warn     | doctor-owned    | medium      | recreates object every render                                                     |
+| **template-perf** | `template-perf/no-computed-getter-in-template-loop` | warn     | doctor-owned    | medium      | accesses to .value in `v-for`                                                     |
+|                   | `template-perf/avoid-deep-v-bind-spread-in-list`    | info     | doctor-owned    | low         | re-runs reactivity collection                                                     |
+| **build-quality** | `build-quality/tsconfig-strict-required`            | warn     | doctor-owned    | low         | config check (not AST)                                                            |
+|                   | `build-quality/vue-tsc-in-devDeps`                  | warn     | doctor-owned    | low         | config check                                                                      |
+|                   | `build-quality/no-vue-cli`                          | warn     | doctor-owned    | low         | deps check (deprecated)                                                           |
+|                   | `build-quality/eslint-plugin-vue-installed`         | info     | doctor-owned    | low         | deps check                                                                        |
+| **deps**          | `deps/duplicate-vue-versions`                       | error    | doctor-owned    | medium      | cross-package, hard to catch in eslint                                            |
+|                   | `deps/vue-major-current`                            | info     | doctor-owned    | low         | npm registry call                                                                 |
+|                   | `deps/knip-unused-exports`                          | warn     | doctor-owned    | medium      | knip integration                                                                  |
+|                   | `deps/knip-unused-deps`                             | warn     | doctor-owned    | medium      | knip integration                                                                  |
 
 ### 9.3 nuxt-doctor — what we LEVERAGE (no reimplementation)
 

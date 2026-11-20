@@ -5,8 +5,9 @@ import { describe, expect, it } from 'vite-plus/test';
 import {
   dropAutoImportFindingsInPlainTests,
   usesNuxtVitestEnvironment,
-} from '../../src/nuxt/test-auto-imports.js';
-import type { Diagnostic } from '../../src/types.js';
+  vitestLoadsAutoImport,
+} from '../src/test-auto-imports.js';
+import type { Diagnostic } from '../src/types.js';
 
 const RULE = 'nuxt-doctor/ai-slop/no-explicit-imports-of-auto-imported';
 // Split so vitest does not read the pragma as this file's own environment.
@@ -89,5 +90,76 @@ describe('dropAutoImportFindingsInPlainTests', () => {
     expect(
       await dropAutoImportFindingsInPlainTests(findings, await project({})),
     ).toBe(findings);
+  });
+});
+
+describe('vitestLoadsAutoImport', () => {
+  const AI =
+    "import AutoImport from 'unplugin-auto-import/vite'; export default { plugins: [AutoImport()] };";
+
+  it.each([
+    [
+      'no vitest config, vite.config loads AutoImport',
+      { 'vite.config.ts': AI },
+      true,
+    ],
+    [
+      'no vitest config, vite.config without AutoImport',
+      { 'vite.config.mjs': 'export default {};' },
+      false,
+    ],
+    ['no config at all', {}, false],
+    ['vitest.config loads AutoImport itself', { 'vitest.config.ts': AI }, true],
+    [
+      'vitest.config merges ./vite.config that loads AutoImport',
+      {
+        'vite.config.ts': AI,
+        'vitest.config.mts':
+          "import viteConfig from './vite.config.ts'; export default mergeConfig(viteConfig, {});",
+      },
+      true,
+    ],
+    [
+      'vitest.config merges ./vite.config without AutoImport',
+      {
+        'vite.config.ts': 'export default {};',
+        'vitest.config.ts':
+          "import viteConfig from './vite.config'; export default mergeConfig(viteConfig, {});",
+      },
+      false,
+    ],
+    [
+      'standalone vitest.config next to an AutoImport vite.config',
+      { 'vite.config.ts': AI, 'vitest.config.ts': 'export default {};' },
+      false,
+    ],
+  ])('%s → %s', async (_label, files, expected) => {
+    expect(await vitestLoadsAutoImport(await project(files))).toBe(expected);
+  });
+});
+
+describe('dropAutoImportFindingsInPlainTests — Vue rule', () => {
+  const VUE_RULE = 'vue-doctor/no-imports-from-vue-when-auto-imported';
+
+  it('drops Vue findings in test files when vitest does not load AutoImport', async () => {
+    const root = await project({
+      'vitest.config.ts': 'export default {};',
+      'tests/a.test.ts': "import { ref } from 'vue';",
+    });
+    const test = diag('tests/a.test.ts', VUE_RULE);
+    const app = diag('src/a.ts', VUE_RULE);
+    expect(await dropAutoImportFindingsInPlainTests([test, app], root)).toEqual(
+      [app],
+    );
+  });
+
+  it('keeps Vue findings in test files when vitest loads AutoImport', async () => {
+    const root = await project({
+      'vite.config.ts': "import AutoImport from 'unplugin-auto-import/vite';",
+    });
+    const findings = [diag('tests/a.test.ts', VUE_RULE)];
+    expect(await dropAutoImportFindingsInPlainTests(findings, root)).toBe(
+      findings,
+    );
   });
 });
