@@ -70,10 +70,26 @@ describe('data-fetching/useAsyncData-key-required-in-loop', () => {
     expect(reports).toEqual([]);
   });
 
-  it('does NOT fire on useAsyncData with computed key inside loop', () => {
+  it('does NOT fire on useAsyncData with a key built from the loop variable', () => {
     const reports = runRule(
       rule,
       `for (const id of ids) { useAsyncData('user-' + id, () => $fetch(id)); }`,
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('does NOT fire on useAsyncData with a template-literal key inside .map()', () => {
+    const reports = runRule(
+      rule,
+      'ids.map((id) => useAsyncData(`user-${id}`, function () { return $fetch(id); }));',
+    );
+    expect(reports).toEqual([]);
+  });
+
+  it('fires on keyless useAsyncData with an options object inside a loop', () => {
+    const reports = runRule(
+      rule,
+      `for (const id of ids) { useAsyncData(() => $fetch(id), { lazy: true }); }`,
     );
     expect(reports).toHaveLength(1);
   });

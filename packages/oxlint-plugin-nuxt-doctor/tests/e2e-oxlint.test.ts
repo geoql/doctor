@@ -32,7 +32,7 @@ describe('e2e: real oxlint integration', () => {
   it('useAsyncData-key-required-in-loop fires on useAsyncData in loop without key', () => {
     const result = runOxlint(
       'data-fetching/useAsyncData-key-required-in-loop',
-      `for (const id of ids) { useAsyncData(id, () => $fetch(id)); }`,
+      `for (const id of ids) { useAsyncData(() => $fetch(id)); }`,
     );
     expect(hasStackOverflow(result)).toBe(false);
     expect(firedRuleIds(result)).toContain(
@@ -44,6 +44,17 @@ describe('e2e: real oxlint integration', () => {
     const result = runOxlint(
       'data-fetching/useAsyncData-key-required-in-loop',
       `for (const id of ids) { useAsyncData('user-key', () => $fetch(id)); }`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).not.toContain(
+      'nuxt-doctor(data-fetching/useAsyncData-key-required-in-loop)',
+    );
+  });
+
+  it('useAsyncData-key-required-in-loop does NOT fire with a key built from the loop variable', () => {
+    const result = runOxlint(
+      'data-fetching/useAsyncData-key-required-in-loop',
+      `for (const id of ids) { useAsyncData('user-' + id, () => $fetch(id)); }`,
     );
     expect(hasStackOverflow(result)).toBe(false);
     expect(firedRuleIds(result)).not.toContain(
