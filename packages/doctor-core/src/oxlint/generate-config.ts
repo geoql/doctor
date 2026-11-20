@@ -4,12 +4,25 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { Severity } from '../types.js';
 
+// Must match doctor-rule-core's CAPABILITIES_SETTINGS_KEY (doctor-core does
+// not depend on doctor-rule-core). vue-doctor's cli-auto-import-capability
+// test fails if they drift: the gated rule stops firing through oxlint.
+const CAPABILITIES_SETTINGS_KEY = 'vue-doctor';
+
+const VUE_AUTO_IMPORT_RULE =
+  'vue-doctor/no-imports-from-vue-when-auto-imported';
+
 export interface GenerateConfigInput {
   pluginPaths: string[];
   ruleOverrides?: Record<string, Severity | 'off'>;
   rootDir?: string;
   framework?: 'vue' | 'nuxt';
   exclude?: string[];
+  /**
+   * Detected project capabilities. Written to `settings['vue-doctor']` so
+   * capability-gated JS-plugin rules can read them through `context.settings`.
+   */
+  capabilities?: readonly string[];
 }
 
 export interface GeneratedConfig {
@@ -180,6 +193,11 @@ export async function generateOxlintConfig(
       else merged[id] = sev;
     }
   }
+  if (framework === 'nuxt') {
+    // nuxt-doctor/ai-slop/no-explicit-imports-of-auto-imported covers the same
+    // imports (and more sources) in Nuxt; running both double-reports them.
+    delete merged[VUE_AUTO_IMPORT_RULE];
+  }
   const rules: Record<string, 'error' | 'warn'> = {};
   for (const [id, sev] of Object.entries(merged)) {
     rules[id] = toOxlintSeverity(sev);
@@ -194,6 +212,11 @@ export async function generateOxlintConfig(
     ...(input.exclude && input.exclude.length > 0
       ? { ignorePatterns: input.exclude }
       : {}),
+    settings: {
+      [CAPABILITIES_SETTINGS_KEY]: {
+        capabilities: [...(input.capabilities ?? [])].sort(),
+      },
+    },
     rules,
   };
   const configPath = join(dir, '.oxlintrc.json');

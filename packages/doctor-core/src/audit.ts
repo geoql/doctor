@@ -132,6 +132,7 @@ export async function audit(config: AuditConfig = {}): Promise<AuditReport> {
           fixExcludes: config.fixExcludes,
           exclude,
           signal: deadlineController.signal,
+          capabilities: [...project.capabilities],
         });
         scriptDiagnostics = result.diagnostics;
         oxlintStderr = result.stderr;

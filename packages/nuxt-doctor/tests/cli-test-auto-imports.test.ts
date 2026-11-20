@@ -77,6 +77,22 @@ describe('nuxt-doctor no-explicit-imports-of-auto-imported in test files (#325)'
     expect(await flaggedFiles()).toEqual([]);
   });
 
+  it('reports a Vue import in Nuxt once, under the Nuxt rule only', async () => {
+    write(
+      'app/composables/useX.ts',
+      "import { ref } from 'vue';\nexport const useX = () => ref(1);\n",
+    );
+    stdout = [];
+    await run(['node', 'nuxt-doctor', dir, '--json', '--no-dead-code']);
+    const report = JSON.parse(stdout.join('')) as {
+      diagnostics: { ruleId: string; file: string }[];
+    };
+    const vueRule = report.diagnostics.filter(
+      (d) => d.ruleId === 'vue-doctor/no-imports-from-vue-when-auto-imported',
+    );
+    expect(vueRule).toEqual([]);
+  });
+
   it('still flags app source in the same project', async () => {
     write(
       'app/composables/useX.ts',
