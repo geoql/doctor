@@ -57,6 +57,21 @@ export type PushResult =
 
 const PUSH_TIMEOUT_MS = 5000;
 
+/** Environment variable the CLIs read the SaaS API key from. */
+export const API_KEY_ENV = 'DOCTOR_API_KEY';
+
+/**
+ * The SaaS API key: the `--api-key` flag when set, else `DOCTOR_API_KEY`.
+ * The env var keeps the key off argv, where `ps` and `npx` can show it.
+ */
+export function resolveApiKey(
+  flag: string | undefined,
+  env: NodeJS.ProcessEnv = process.env,
+): string | undefined {
+  if (flag) return flag;
+  return env[API_KEY_ENV] || undefined;
+}
+
 const categoryByRuleId: ReadonlyMap<string, string> = new Map(
   RULE_REGISTRY.map((r) => [r.id, r.category]),
 );

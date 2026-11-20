@@ -6,7 +6,13 @@ import {
   it,
   vi,
 } from 'vite-plus/test';
-import { pushFindings, buildPushPayload, stripFindings } from '../src/push.js';
+import {
+  API_KEY_ENV,
+  pushFindings,
+  buildPushPayload,
+  resolveApiKey,
+  stripFindings,
+} from '../src/push.js';
 import { RULE_REGISTRY } from '../src/rule-registry.js';
 import type { Diagnostic } from '../src/types.js';
 
@@ -505,5 +511,40 @@ describe('pushFindings', () => {
     expect(result.ok).toBe(true);
     expect(result.status).toBe(201);
     expect(result.error).toBeUndefined();
+  });
+});
+
+describe('resolveApiKey (#324)', () => {
+  it('reads DOCTOR_API_KEY', () => {
+    expect(API_KEY_ENV).toBe('DOCTOR_API_KEY');
+  });
+
+  it('returns the flag when set, even if the env var is set', () => {
+    expect(resolveApiKey('flag-key', { DOCTOR_API_KEY: 'env-key' })).toBe(
+      'flag-key',
+    );
+  });
+
+  it('falls back to DOCTOR_API_KEY when the flag is absent or empty', () => {
+    expect(resolveApiKey(undefined, { DOCTOR_API_KEY: 'env-key' })).toBe(
+      'env-key',
+    );
+    expect(resolveApiKey('', { DOCTOR_API_KEY: 'env-key' })).toBe('env-key');
+  });
+
+  it('returns undefined when neither is set or the env var is empty', () => {
+    expect(resolveApiKey(undefined, {})).toBeUndefined();
+    expect(resolveApiKey(undefined, { DOCTOR_API_KEY: '' })).toBeUndefined();
+  });
+
+  it('defaults to process.env', () => {
+    const saved = process.env.DOCTOR_API_KEY;
+    process.env.DOCTOR_API_KEY = 'process-key';
+    try {
+      expect(resolveApiKey(undefined)).toBe('process-key');
+    } finally {
+      if (saved === undefined) delete process.env.DOCTOR_API_KEY;
+      else process.env.DOCTOR_API_KEY = saved;
+    }
   });
 });

@@ -292,6 +292,14 @@ CI BEHAVIOR
   --baseline <report.json> report + gate only findings new vs a saved --json report (§7.2)
   -y, --yes                skip prompts (non-interactive)
 
+DASHBOARD PUSH
+  --push                   after the audit, POST privacy-stripped findings to the SaaS
+  --api-key <key>          SaaS API key (x-api-key header); default: DOCTOR_API_KEY env var.
+                           The flag wins when both are set. Neither set → push skipped (warn).
+  --push-project <slug>    dashboard project slug (default: audited dir name)
+  --push-workspace <path>  monorepo sub-app label
+  --push-url <url>         findings endpoint
+
 DIAGNOSIS HELPERS
   --explain <file:line>    diagnose why a rule fired (or why a suppression didn't apply)
   --why <file:line>        alias for --explain
