@@ -40,22 +40,22 @@ export function docPathFromFile(file: string): string {
 }
 
 function frontmatterField(frontmatter: string, field: string): string {
-  const match = new RegExp(`^${field}:\\s*(.*)$`, 'm').exec(frontmatter);
-  return match ? match[1].trim().replace(/^(['"])(.*)\1$/, '$2') : '';
+  const value = new RegExp(`^${field}:\\s*(.*)$`, 'm').exec(frontmatter)?.[1];
+  return value ? value.trim().replace(/^(['"])(.*)\1$/, '$2') : '';
 }
 
 export function parseDocSource(source: DocSource): DocPage {
   const match = /^---\n([\s\S]*?)\n---\n?/.exec(source.raw);
-  const frontmatter = match ? match[1] : '';
+  const frontmatter = match?.[1] ?? '';
   const body = (match ? source.raw.slice(match[0].length) : source.raw).trim();
   const path = docPathFromFile(source.file);
-  const firstHeading = /^#\s+(.+)$/m.exec(body);
+  const firstHeading = /^#\s+(.+)$/m.exec(body)?.[1];
   const section = path.split('/')[1] ?? '';
   return {
     path,
     title:
       frontmatterField(frontmatter, 'title') ||
-      (firstHeading ? firstHeading[1].trim() : path),
+      (firstHeading ? firstHeading.trim() : path),
     description: frontmatterField(frontmatter, 'description'),
     body,
     section,
