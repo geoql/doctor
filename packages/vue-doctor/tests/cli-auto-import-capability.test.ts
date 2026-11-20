@@ -75,6 +75,57 @@ describe('vue-doctor capability-gated oxlint rules (real oxlint subprocess)', ()
     expect(await flagged()).toEqual(['src/use-n.ts']);
   });
 
+  describe('test files', () => {
+    const TEST_FILE = 'tests/unit/n.test.ts';
+    const AUTO_IMPORT_VITE =
+      "import AutoImport from 'unplugin-auto-import/vite';\nexport default { plugins: [AutoImport({ imports: ['vue'] })] };\n";
+
+    beforeEach(() => {
+      write(
+        'package.json',
+        JSON.stringify({
+          name: 'v',
+          dependencies: { vue: '^3.5.0' },
+          devDependencies: {
+            'unplugin-auto-import': '^20.0.0',
+            vitest: '^4.0.0',
+          },
+        }),
+      );
+      write('vite.config.ts', AUTO_IMPORT_VITE);
+      write(
+        TEST_FILE,
+        "import { ref } from 'vue';\nimport { expect, test } from 'vitest';\ntest('n', () => expect(ref(1).value).toBe(1));\n",
+      );
+    });
+
+    it('skips test files when a standalone vitest config does not load AutoImport', async () => {
+      write(
+        'vitest.config.ts',
+        "import { defineConfig } from 'vitest/config';\nexport default defineConfig({ test: { environment: 'node' } });\n",
+      );
+      expect(await flagged()).toEqual(['src/use-n.ts']);
+    });
+
+    it('flags test files when vitest falls back to the AutoImport vite.config', async () => {
+      expect((await flagged()).sort()).toEqual(['src/use-n.ts', TEST_FILE]);
+    });
+
+    it('flags test files when vitest.config merges the AutoImport vite.config', async () => {
+      write(
+        'vitest.config.ts',
+        "import { defineConfig, mergeConfig } from 'vitest/config';\nimport viteConfig from './vite.config';\nexport default mergeConfig(viteConfig, defineConfig({ test: {} }));\n",
+      );
+      expect((await flagged()).sort()).toEqual(['src/use-n.ts', TEST_FILE]);
+    });
+
+    it('flags test files when vitest.config loads AutoImport itself', async () => {
+      write('vite.config.ts', 'export default {};\n');
+      write('vitest.config.ts', AUTO_IMPORT_VITE);
+      expect((await flagged()).sort()).toEqual(['src/use-n.ts', TEST_FILE]);
+    });
+  });
+
   it('does not fire when Vue is not auto-imported', async () => {
     write(
       'package.json',

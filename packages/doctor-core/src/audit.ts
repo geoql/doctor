@@ -15,7 +15,7 @@ import { runScriptPass } from './oxlint/run.js';
 import type { ProjectInfoLite } from './reporters/types.js';
 import { scoreDiagnostics } from './score.js';
 import { isTestSurfacePath } from './test-surface.js';
-import { dropAutoImportFindingsInPlainTests } from './nuxt/test-auto-imports.js';
+import { dropAutoImportFindingsInPlainTests } from './test-auto-imports.js';
 import { runSfcPass } from './sfc/run.js';
 import { clearSfcDescriptorCache } from './sfc/parse-sfc-descriptor.js';
 import { clearSfcCache } from './template/parse-sfc.js';
