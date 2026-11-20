@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.10.1](https://github.com/geoql/doctor/compare/vue-doctor-v1.10.0...vue-doctor-v1.10.1) (2026-11-20)
+
+
+### Bug Fixes
+
+* **core:** gate --project aggregates and annotate test files consistently ([#346](https://github.com/geoql/doctor/issues/346)) ([ca5e967](https://github.com/geoql/doctor/commit/ca5e96702e3a77a65eec01c5624d12edb900c219)), closes [#342](https://github.com/geoql/doctor/issues/342)
+* **core:** report listed, scored and unscored test-file counts ([#344](https://github.com/geoql/doctor/issues/344)) ([b99640b](https://github.com/geoql/doctor/commit/b99640bf13e567d57c86ae2bdd42ba4d1fedf071)), closes [#343](https://github.com/geoql/doctor/issues/343)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.10.1
+
 ## [1.10.0](https://github.com/geoql/doctor/compare/vue-doctor-v1.9.0...vue-doctor-v1.10.0) (2026-11-20)
 
 
