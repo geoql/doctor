@@ -666,3 +666,60 @@ describe('renderVerboseTrace', () => {
     expect(out).not.toContain('CONFIG');
   });
 });
+
+describe('test-file findings in the summary (#343)', () => {
+  const prod = diag({ ruleId: 'w', severity: 'warn' });
+  const test = diag({
+    file: '/proj/src/render.test.ts',
+    ruleId: 'vue-doctor/security/no-inner-html',
+    severity: 'error',
+    surface: 'test',
+  });
+  const scoredInput = (includeTestFiles?: boolean): ReporterInput => ({
+    ...makeInput({
+      diagnostics: [prod, test],
+      score: scoreDiagnostics(includeTestFiles ? [prod, test] : [prod]),
+    }),
+    ...(includeTestFiles !== undefined ? { includeTestFiles } : {}),
+  });
+
+  it('states the listed total and the unscored test-file findings', () => {
+    expect(agentReport(scoredInput())).toContain(
+      'FINDINGS: 2 listed · 1 scored (0 error, 1 warn, 0 info) · 1 in test files, not scored or gated (use --include-test-files)\n',
+    );
+  });
+
+  it('keeps the plain line when test findings are scored', () => {
+    expect(agentReport(scoredInput(true))).toContain(
+      'FINDINGS: 2 (1 error, 1 warn, 0 info)\n',
+    );
+  });
+
+  it('shows listed vs scored when other config narrows the score', () => {
+    const out = agentReport(
+      makeInput({ diagnostics: [prod], score: scoreDiagnostics([]) }),
+    );
+    expect(out).toContain(
+      'FINDINGS: 1 listed · 0 scored (0 error, 0 warn, 0 info)\n',
+    );
+  });
+
+  it('pretty output carries the same counts', () => {
+    expect(prettyReport(scoredInput(), { color: false })).toContain(
+      'FINDINGS: 2 listed · 1 scored',
+    );
+  });
+
+  it('json and json-compact expose listed, scored and unscored test counts', () => {
+    const expected = { listed: 2, scored: 1, unscoredTestFiles: 1 };
+    expect(buildDoctorReport(scoredInput()).counts).toEqual(expected);
+    expect(JSON.parse(jsonCompactReport(scoredInput())).counts).toEqual(
+      expected,
+    );
+    expect(buildDoctorReport(scoredInput(true)).counts).toEqual({
+      listed: 2,
+      scored: 2,
+      unscoredTestFiles: 0,
+    });
+  });
+});

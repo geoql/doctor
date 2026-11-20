@@ -50,3 +50,16 @@ export function isTestSurfacePath(path: string): boolean {
   }
   return false;
 }
+
+/**
+ * The findings that count toward the score and the gate: every finding when
+ * `includeTestFiles` is set, else only production-surface ones.
+ */
+export function scoredSurfaceDiagnostics<T extends { surface?: 'test' }>(
+  diagnostics: readonly T[],
+  includeTestFiles: boolean,
+): T[] {
+  return includeTestFiles
+    ? [...diagnostics]
+    : diagnostics.filter((d) => d.surface !== 'test');
+}

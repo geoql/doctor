@@ -37,6 +37,7 @@ import {
   scaffoldCiWorkflow,
   renderVerboseTrace,
   scoreDiagnostics,
+  scoredSurfaceDiagnostics,
   applyConfigFilters,
   defaultRuleLevel,
   filterReportByRules,
@@ -666,7 +667,10 @@ function aggregateReports(
   };
 }
 
-function toReporterInput(report: AuditReport): ReporterInput {
+function toReporterInput(
+  report: AuditReport,
+  includeTestFiles: boolean,
+): ReporterInput {
   return {
     toolName: '@geoql/vue-doctor',
     toolVersion: readVersion(),
@@ -684,19 +688,28 @@ function toReporterInput(report: AuditReport): ReporterInput {
     configHash: report.configHash,
     ...(report.baseline ? { baseline: report.baseline } : {}),
     ...(report.scope ? { scope: report.scope } : {}),
+    includeTestFiles,
   };
 }
 
-function writeSarifReport(report: AuditReport, file: string): void {
-  writeFileSync(resolve(file), format(toReporterInput(report), 'sarif'));
+function writeSarifReport(
+  report: AuditReport,
+  file: string,
+  includeTestFiles: boolean,
+): void {
+  writeFileSync(
+    resolve(file),
+    format(toReporterInput(report, includeTestFiles), 'sarif'),
+  );
 }
 
 function emitReport(
   report: AuditReport,
   reporter: ReporterFormat,
   flags: CliFlags,
+  includeTestFiles: boolean,
 ): void {
-  const input = toReporterInput(report);
+  const input = toReporterInput(report, includeTestFiles);
   const out = format(input, reporter, {
     color: flags.color,
     quiet: flags.quiet,
@@ -727,6 +740,7 @@ async function maybePushFindings(
   report: AuditReport,
   flags: CliFlags,
   rootDir: string,
+  includeTestFiles: boolean,
 ): Promise<void> {
   if (flags.push !== true) return;
   const apiKey = resolveApiKey(flags.apiKey);
@@ -748,6 +762,12 @@ async function maybePushFindings(
     flags.pushWorkspace && flags.pushWorkspace.length > 0
       ? flags.pushWorkspace
       : undefined;
+  // Only the findings the score counts: the pushed severity counts and
+  // findings must agree (test-file findings are listed locally, not scored).
+  const findings = scoredSurfaceDiagnostics(
+    report.diagnostics,
+    includeTestFiles,
+  );
   const result = await pushFindings({
     project,
     workspace,
@@ -755,14 +775,14 @@ async function maybePushFindings(
     errorCount: report.errorCount,
     warnCount: report.warnCount,
     infoCount: report.infoCount,
-    diagnostics: report.diagnostics,
+    diagnostics: findings,
     rootDir,
     url,
     apiKey,
   });
   if (result.ok) {
     process.stderr.write(
-      `vue-doctor: pushed ${report.diagnostics.length} finding${report.diagnostics.length === 1 ? '' : 's'} to ${url} (HTTP ${result.status}).\n`,
+      `vue-doctor: pushed ${findings.length} finding${findings.length === 1 ? '' : 's'} to ${url} (HTTP ${result.status}).\n`,
     );
   } else {
     const detail =
@@ -1379,10 +1399,16 @@ export async function run(argv: string[] = process.argv): Promise<number> {
         if (flags.score) {
           process.stdout.write(`${report.score}\n`);
         } else {
-          emitReport(report, reporter, flags);
+          emitReport(report, reporter, flags, gate.includeTestFiles);
         }
-        if (flags.sarifOutput) writeSarifReport(report, flags.sarifOutput);
-        await maybePushFindings(pushReport, flags, rootDir);
+        if (flags.sarifOutput)
+          writeSarifReport(report, flags.sarifOutput, gate.includeTestFiles);
+        await maybePushFindings(
+          pushReport,
+          flags,
+          rootDir,
+          gate.includeTestFiles,
+        );
         process.exitCode = flags.score
           ? report.exitCode
           : resolveExitCode(report, {

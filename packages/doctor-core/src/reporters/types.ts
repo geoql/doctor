@@ -31,6 +31,11 @@ export interface ReporterInput {
   readonly configHash?: string;
   readonly baseline?: BaselineSummary;
   readonly scope?: ReportScope;
+  /**
+   * Whether test/story-file findings count toward the score and the gate.
+   * Default `false`, matching `audit()`.
+   */
+  readonly includeTestFiles?: boolean;
 }
 
 export interface ReporterOptions {

@@ -5,6 +5,7 @@ import type {
   Severity,
   SkippedCheckReason,
 } from '../types.js';
+import { findingCounts, type FindingCounts } from './counts.js';
 import type { ReporterInput } from './types.js';
 
 export const DOCTOR_REPORT_SCHEMA_VERSION = '1';
@@ -59,6 +60,11 @@ export interface DoctorReport {
       }
     >;
   };
+  /**
+   * Listed vs scored totals. `unscoredTestFiles` listed test/story-file
+   * findings are left out of the score and the `--fail-on` gate.
+   */
+  counts: FindingCounts;
   diagnostics: DoctorReportDiagnostic[];
   timing: { elapsedMs: number; analyzedFileCount: number };
   incomplete?: boolean;
@@ -109,6 +115,7 @@ export function buildDoctorReport(input: ReporterInput): DoctorReport {
         ]),
       ),
     },
+    counts: findingCounts(input),
     diagnostics: input.diagnostics.map((d) => ({
       file: relative(input.rootDirectory, d.file).replaceAll('\\', '/'),
       line: d.line,

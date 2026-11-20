@@ -1,6 +1,7 @@
 import { relative } from 'node:path';
-import type { ScoreBreakdownEntry, ScoreResult } from '../score.js';
+import type { ScoreBreakdownEntry } from '../score.js';
 import type { Diagnostic, Severity } from '../types.js';
+import { findingCounts, TEST_FILES_HINT } from './counts.js';
 import { docsUrl } from './docs-url.js';
 import type { ReporterInput, ReporterOptions } from './types.js';
 
@@ -93,9 +94,24 @@ function diagnosticBlock(
   ].join('\n');
 }
 
-function findingsLine(score: ScoreResult): string {
-  if (score.totalFindings === 0) return 'FINDINGS: 0 (clean)';
-  return `FINDINGS: ${score.totalFindings} (${score.errorCount} error, ${score.warnCount} warn, ${score.infoCount} info)`;
+function findingsLine(input: ReporterInput): string {
+  const { score } = input;
+  const counts = findingCounts(input);
+  const severities = `(${score.errorCount} error, ${score.warnCount} warn, ${score.infoCount} info)`;
+  if (counts.listed === counts.scored && counts.unscoredTestFiles === 0) {
+    if (counts.listed === 0) return 'FINDINGS: 0 (clean)';
+    return `FINDINGS: ${counts.listed} ${severities}`;
+  }
+  const parts = [
+    `FINDINGS: ${counts.listed} listed`,
+    `${counts.scored} scored ${severities}`,
+  ];
+  if (counts.unscoredTestFiles > 0) {
+    parts.push(
+      `${counts.unscoredTestFiles} in test files, not scored or gated (${TEST_FILES_HINT})`,
+    );
+  }
+  return parts.join(' · ');
 }
 
 function nextSteps(breakdown: readonly ScoreBreakdownEntry[]): string {
@@ -126,7 +142,7 @@ export function render(
     '',
     `SCORE: ${theme.scoreValue(input.score.score)}/100 (threshold: ${input.score.threshold})`,
     '',
-    findingsLine(input.score),
+    findingsLine(input),
   ];
   if (input.scope) {
     segments.push(

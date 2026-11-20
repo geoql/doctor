@@ -1,3 +1,4 @@
+import { findingCounts } from './counts.js';
 import { docsUrl } from './docs-url.js';
 import type { ReporterInput } from './types.js';
 import type { Diagnostic, Severity } from '../types.js';
@@ -82,6 +83,11 @@ export function htmlReport(input: ReporterInput): string {
       ? `<p class="empty">No findings. Clean run.</p>`
       : rows;
   const findingsLabel = `${input.diagnostics.length} finding${input.diagnostics.length === 1 ? '' : 's'}`;
+  const { unscoredTestFiles } = findingCounts(input);
+  const testNote =
+    unscoredTestFiles > 0
+      ? ` · ${unscoredTestFiles} in test files not scored or gated`
+      : '';
   const meta = `${input.toolName} v${input.toolVersion} · ${input.analyzedFileCount} file${input.analyzedFileCount === 1 ? '' : 's'} · ${input.elapsedMs.toFixed(0)}ms`;
   return `<!DOCTYPE html>
 <html lang="en">
@@ -97,7 +103,7 @@ export function htmlReport(input: ReporterInput): string {
   <div class="meta">${escapeHtml(meta)} · ${escapeHtml(input.rootDirectory)}</div>
   <div class="score-row">
     <div class="score ${pass ? 'pass' : 'fail'}">${score}<span style="font-size:1.5rem;color:#888">/100</span></div>
-    <div class="breakdown">${findingsLabel} · ${input.score.errorCount} error · ${input.score.warnCount} warn · ${input.score.infoCount} info</div>
+    <div class="breakdown">${findingsLabel} · ${input.score.errorCount} error · ${input.score.warnCount} warn · ${input.score.infoCount} info${testNote}</div>
   </div>
 </header>
 <main>
