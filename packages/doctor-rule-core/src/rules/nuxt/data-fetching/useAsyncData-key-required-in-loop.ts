@@ -21,6 +21,13 @@ function isMapCall(node: AstNode): boolean {
   return false;
 }
 
+function isFunction(node: AstNode | undefined): boolean {
+  return (
+    node?.type === 'ArrowFunctionExpression' ||
+    node?.type === 'FunctionExpression'
+  );
+}
+
 export const useAsyncDataKeyRequiredInLoop = defineRule({
   create(context: RuleContext) {
     let loopDepth = 0;
@@ -64,6 +71,9 @@ export const useAsyncDataKeyRequiredInLoop = defineRule({
         const firstArg = args[0];
         if (firstArg.type === 'Literal' && typeof firstArg.value === 'string')
           return;
+        // useAsyncData(key, handler): any key expression in front of the
+        // handler is explicit, e.g. one built from the loop variable.
+        if (callee.name === 'useAsyncData' && isFunction(args[1])) return;
         context.report({ node, message: MESSAGE });
       },
       'CallExpression:exit'(node: AstNode) {
