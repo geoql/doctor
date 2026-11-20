@@ -4,6 +4,8 @@ import {
   isDiagnosticOnSurface,
 } from '../../src/config/apply-config-filters.js';
 import { resolveExitCode } from '../../src/exit-code.js';
+import { narrowReport } from '../../src/narrow-report.js';
+import { gatedFindings, scoredFindings } from '../../src/scored-findings.js';
 import { scoreDiagnostics } from '../../src/score.js';
 import type { AuditReport, Diagnostic } from '../../src/types.js';
 
@@ -213,5 +215,51 @@ describe('isDiagnosticOnSurface', () => {
         excludeCategories: ['design'],
       }),
     ).toBe(true);
+  });
+});
+
+describe('scored and gated findings', () => {
+  const filtered = () =>
+    applyConfigFilters(sample(), {
+      surfaces: {
+        cli: { excludeRules: [HEX] },
+        score: { excludeRules: [VHTML] },
+        ciGate: { excludeRules: [KEY] },
+      },
+      failOn: 'error',
+    });
+
+  it('keeps what the score and the gate saw, not only what is listed', () => {
+    const r = filtered();
+    const ids = (ds: readonly Diagnostic[]) => ds.map((d) => d.ruleId);
+    expect(ids(r.diagnostics)).toEqual([VHTML, KEY, KEY, 'oxlint/unknown']);
+    expect(ids(scoredFindings(r, false))).toEqual([HEX, KEY, 'oxlint/unknown']);
+    expect(ids(gatedFindings(r, false))).toEqual([
+      HEX,
+      VHTML,
+      'oxlint/unknown',
+    ]);
+  });
+
+  it('falls back to the listed production findings without config filters', () => {
+    const r = sample();
+    expect(scoredFindings(r, false)).toHaveLength(4);
+    expect(gatedFindings(r, true)).toHaveLength(5);
+  });
+
+  it('narrowReport counts and gates the kept findings under the same surfaces', () => {
+    const r = filtered();
+    const vhtml = r.diagnostics.find((d) => d.ruleId === VHTML)!;
+    const key = r.diagnostics.find(
+      (d) => d.ruleId === KEY && d.surface !== 'test',
+    )!;
+    const onlyVhtml = narrowReport(r, [vhtml], { failOn: 'error' });
+    expect(onlyVhtml.errorCount).toBe(0);
+    expect(onlyVhtml.exitCode).toBe(1);
+    expect(onlyVhtml.gate).toEqual({ errorCount: 1, warnCount: 0 });
+    const onlyKey = narrowReport(r, [key], { failOn: 'error' });
+    expect(onlyKey.errorCount).toBe(1);
+    expect(onlyKey.exitCode).toBe(0);
+    expect(onlyKey.gate).toEqual({ errorCount: 0, warnCount: 0 });
   });
 });

@@ -266,7 +266,8 @@ SCOPING (how much of a change set to report)
   --project <name>         scan specific workspace project (comma-separated for multiple)
                            (an ancestor scan never descends into nested workspace packages;
                            they are scanned only when selected via --project or a file path;
-                           the aggregate scores the same findings each project gates)
+                           the aggregate lists, scores and gates what each project
+                           lists, scores and gates under its own config)
 
 SUPPRESSIONS
   --respect-inline-disables    honor inline `// oxlint-disable*` / `// doctor-disable*` (default)
@@ -509,7 +510,9 @@ Loaded via `c12` so it can:
   `ignore.overrides: [{ files, rules? }]` (per-glob drops; no `rules` = every rule).
 - `surfaces.{cli,score,prComment,ciGate}` each take `include|exclude` × `Rules|Tags|Categories`;
   includes win. `cli` = listed findings, `score` = scored findings + severity counts,
-  `prComment` = `--pr-comment` body, `ciGate` = `--fail-on` gate. No built-in exclusions
+  `prComment` = `--pr-comment` body, `ciGate` = `--fail-on` gate. The report keeps the
+  scored and gated sets (`scoredDiagnostics` / `gatedDiagnostics`), so `--baseline` /
+  `--scope` narrowing, the `--project` roll-up and `--push` honour them. No built-in exclusions
   (unlike react.doctor's default `design` exclusion), so the score formula and default
   results are unchanged.
 - Every registered rule carries `tags` (`vue`, `nuxt`, `design`, `ai-slop`, `security-scan`,

@@ -101,7 +101,9 @@ function onSurface(
  * - `surfaces.cli` (or `prComment` for the PR-comment body) decides which
  *   findings the report lists; `surfaces.score` which ones count toward the
  *   score and the severity counts; `surfaces.ciGate` which ones the
- *   `--fail-on` gate sees (exposed as `report.gate`).
+ *   `--fail-on` gate sees (exposed as `report.gate`). The scored and gated
+ *   findings are kept as `scoredDiagnostics` / `gatedDiagnostics` so a
+ *   `--project` roll-up and `--push` can use them.
  *
  * Test/story findings stay out of the score and gate unless
  * `includeTestFiles` is set, matching `audit()`. A crashed-pass exit 2 is
@@ -156,5 +158,7 @@ export function applyConfigFilters(
     ruleCounts,
     exitCode,
     gate: { errorCount: gateErrors, warnCount: gateWarns },
+    scoredDiagnostics: scored,
+    gatedDiagnostics: gated,
   };
 }
