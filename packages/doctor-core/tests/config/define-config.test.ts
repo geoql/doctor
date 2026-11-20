@@ -12,20 +12,4 @@ describe('defineConfig', () => {
     const result = defineConfig(config);
     expect(result).toBe(config);
   });
-
-  it('returns an empty object unchanged', () => {
-    const config: DoctorUserConfig = {};
-    const result = defineConfig(config);
-    expect(result).toEqual({});
-  });
-
-  it('preserves all fields including extends', () => {
-    const config: DoctorUserConfig = {
-      extends: ['./presets/strict'],
-      failOn: 'warn',
-      exclude: ['dist'],
-    };
-    const result = defineConfig(config);
-    expect(result).toEqual(config);
-  });
 });

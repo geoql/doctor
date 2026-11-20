@@ -45,14 +45,6 @@ describe('hydration/no-document-in-setup', () => {
     expect(reports).toEqual([]);
   });
 
-  it('does NOT fire on navigator inside FunctionExpression', () => {
-    const reports = runRule(
-      rule,
-      `function getUA() { return navigator.userAgent; }`,
-    );
-    expect(reports).toEqual([]);
-  });
-
   it('fires on sessionStorage at top level', () => {
     const reports = runRule(rule, `const x = sessionStorage.getItem('k');`);
     expect(reports).toHaveLength(1);

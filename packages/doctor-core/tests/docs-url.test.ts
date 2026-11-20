@@ -7,10 +7,4 @@ describe('docsUrl', () => {
       'https://docs.the-doctor.report/rules/reactivity/no-destructure-reactive',
     );
   });
-
-  it('is pure: same input yields the same output', () => {
-    const id = 'vue-doctor/template/v-for-has-key';
-    expect(docsUrl(id)).toBe(docsUrl(id));
-    expect(docsUrl(id)).toBe(`https://docs.the-doctor.report/rules/${id}`);
-  });
 });

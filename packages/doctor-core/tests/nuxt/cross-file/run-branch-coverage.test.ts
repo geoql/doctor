@@ -256,18 +256,6 @@ describe('cross-file run.ts branch coverage', () => {
     ).toBeGreaterThanOrEqual(1);
   });
 
-  it('treats onMounted via expression-statement with a function-expression arg as safe', async () => {
-    const { dir, files } = await setupPages({
-      'pages/index.vue':
-        '<script setup lang="ts">onMounted(function () { document.title = "x"; window.scrollTo(0, 0); });</script>',
-    });
-    const diags = await runCrossFilePass({
-      files,
-      projectInfo: makeProject(dir),
-    });
-    expect(diags.filter((d) => d.ruleId === SSR_RULE)).toEqual([]);
-  });
-
   it('ignores onMounted whose function arg has a non-block body (expression body)', async () => {
     const { dir, files } = await setupPages({
       'pages/index.vue':

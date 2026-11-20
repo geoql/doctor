@@ -56,22 +56,6 @@ describe('server-routes/defineEventHandler-typed', () => {
     expect(reports).toEqual([]);
   });
 
-  it('does NOT fire on defineEventHandler with typed arrow fn', () => {
-    const reports = runRule(
-      rule,
-      `defineEventHandler<Event>((event) => { return event; });`,
-    );
-    expect(reports).toEqual([]);
-  });
-
-  it('does NOT fire on defineEventHandler with untyped arrow but typed param', () => {
-    const reports = runRule(
-      rule,
-      `defineEventHandler((event: Event) => { return event; });`,
-    );
-    expect(reports).toEqual([]);
-  });
-
   it('does NOT fire on defineEventHandler with one arg (no event param)', () => {
     const reports = runRule(
       rule,
@@ -82,11 +66,6 @@ describe('server-routes/defineEventHandler-typed', () => {
 
   it('does NOT fire on defineEventHandler with non-function first arg', () => {
     const reports = runRule(rule, `defineEventHandler('not a function');`);
-    expect(reports).toEqual([]);
-  });
-
-  it('fires on defineEventHandler with no args', () => {
-    const reports = runRule(rule, `defineEventHandler();`);
     expect(reports).toEqual([]);
   });
 

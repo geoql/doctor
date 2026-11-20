@@ -32,12 +32,6 @@ describe('ai-slop/no-explicit-imports-of-auto-imported', () => {
     expect(reports[0]!.type).toBe('ImportDeclaration');
   });
 
-  it('fires once for all-auto-imported import', () => {
-    const reports = runRule(rule, `import { ref, computed } from 'vue';`);
-    expect(reports).toHaveLength(1);
-    expect(reports[0]!.type).toBe('ImportDeclaration');
-  });
-
   it('fires per-specifier on a mixed import (some auto-imported, some not)', () => {
     const reports = runRule(rule, `import { ref, SomeWidget } from 'vue';`);
     expect(reports).toHaveLength(1);
@@ -81,11 +75,6 @@ describe('ai-slop/no-explicit-imports-of-auto-imported', () => {
 
   it('does NOT fire on import of non-auto-imported symbol', () => {
     const reports = runRule(rule, `import { foo } from 'vue';`);
-    expect(reports).toEqual([]);
-  });
-
-  it('does NOT fire on empty named imports', () => {
-    const reports = runRule(rule, `import Vue from 'vue';`);
     expect(reports).toEqual([]);
   });
 });

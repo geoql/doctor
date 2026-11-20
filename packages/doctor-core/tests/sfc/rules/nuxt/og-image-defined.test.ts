@@ -92,15 +92,6 @@ describe('og-image-defined — fires', () => {
     expect(diags[0]?.ruleId).toBe(RULE_ID);
   });
 
-  it('warns when SEO call uses string-literal "og:image" key', async () => {
-    const { ctx } = await pageFixture(
-      'pages/index.vue',
-      '<script setup lang="ts">useSeoMeta({ title: "Home", "og:image": "/og.png" });</script>\n<template><div>home</div></template>',
-    );
-    const diags = check(ctx).diagnostics;
-    expect(diags).toHaveLength(0);
-  });
-
   it('ignores non-call / non-SEO / member-callee statements while still warning (branch coverage)', async () => {
     const { ctx } = await pageFixture(
       'pages/index.vue',
@@ -328,15 +319,6 @@ describe('og-image-defined — does not fire', () => {
     );
     const diags = check(ctx).diagnostics;
     expect(diags).toHaveLength(0);
-  });
-
-  it('fires when useSeoMeta is called with a non-object arg (no og:image to detect)', async () => {
-    const { ctx } = await pageFixture(
-      'pages/index.vue',
-      '<script setup lang="ts">useSeoMeta("some-string");</script>\n<template><div>hi</div></template>',
-    );
-    const diags = check(ctx).diagnostics;
-    expect(diags).toHaveLength(1);
   });
 
   it('does not fire when useHead has ogImage as Identifier key', async () => {

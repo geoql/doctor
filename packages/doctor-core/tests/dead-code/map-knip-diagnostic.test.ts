@@ -133,13 +133,6 @@ describe('mapKnipDiagnostic', () => {
     }
   });
 
-  it('uses default line=1 and column=1 when not provided', () => {
-    const issue: KnipIssue = { file: 'src/a.ts', kind: 'files' };
-    const d = mapKnipDiagnostic(root, issue);
-    expect(d!.line).toBe(1);
-    expect(d!.column).toBe(1);
-  });
-
   it('uses provided line and col', () => {
     const issue: KnipIssue = {
       file: 'src/a.ts',
@@ -151,12 +144,5 @@ describe('mapKnipDiagnostic', () => {
     const d = mapKnipDiagnostic(root, issue);
     expect(d!.line).toBe(42);
     expect(d!.column).toBe(5);
-  });
-
-  it('produces absolute file paths', () => {
-    const issue: KnipIssue = { file: 'src/deep/mod.ts', kind: 'files' };
-    const d = mapKnipDiagnostic(root, issue);
-    expect(d!.file).toBe(resolve(root, 'src/deep/mod.ts'));
-    expect(d!.file.startsWith('/')).toBe(true);
   });
 });

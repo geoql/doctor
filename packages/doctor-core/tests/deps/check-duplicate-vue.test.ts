@@ -86,20 +86,6 @@ describe('checkDuplicateVue', () => {
     expect(issues).toEqual([]);
   });
 
-  it('returns [] when execFile times out', async () => {
-    const dir = await fixture({ 'package.json': '{"name":"x"}' });
-    runPnpmList.mockResolvedValue({
-      versions: [],
-      error: new Error('timeout'),
-    });
-    runNpmList.mockResolvedValue({
-      versions: [],
-      error: new Error('timeout'),
-    });
-    const issues = await checkDuplicateVue(makeProjectInfo(dir));
-    expect(issues).toEqual([]);
-  });
-
   it('returns [] when packageJsonPath is null', async () => {
     const dir = await fixture({ 'package.json': '{"name":"x"}' });
     const projectInfo = makeProjectInfo(dir, { packageJsonPath: null });

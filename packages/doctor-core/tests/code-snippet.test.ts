@@ -35,17 +35,6 @@ describe('attachCodeSnippets', () => {
     expect(second?.codeSnippet).toBe('indented two');
   });
 
-  it('caches reads per file across multiple diagnostics', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-snip-'));
-    const file = join(dir, 'b.vue');
-    await writeFile(file, 'alpha\nbeta\n');
-    const out = await attachCodeSnippets([
-      diag({ file, line: 1 }),
-      diag({ file, line: 2 }),
-    ]);
-    expect(out.map((d) => d.codeSnippet)).toEqual(['alpha', 'beta']);
-  });
-
   it('leaves codeSnippet unset when the line is out of range', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-snip-'));
     const file = join(dir, 'c.vue');

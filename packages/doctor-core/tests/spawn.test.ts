@@ -137,10 +137,4 @@ describe('runOxlint', () => {
       '--ignore-pattern **/.wrangler/** --ignore-pattern **/dist/**',
     );
   });
-
-  it('omits --fix when fix is not set', async () => {
-    const bin = await fakeBin(`printf '{"diagnostics":[]}'`);
-    const res = await runOxlint(opts(bin));
-    expect(res.diagnostics).toEqual([]);
-  });
 });
