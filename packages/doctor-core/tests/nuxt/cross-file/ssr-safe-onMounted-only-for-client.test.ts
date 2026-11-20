@@ -84,6 +84,36 @@ describe('ssr-safe-onMounted-only-for-client — fires', () => {
     const relevant = diags.filter((d) => d.ruleId === RULE_ID);
     expect(relevant.length).toBeGreaterThanOrEqual(1);
   });
+
+  it('warns when window is an ExpressionStatement (not assigned)', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-ssr-es-'));
+    await mkdir(join(dir, 'pages'), { recursive: true });
+    await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));
+    await writeFile(
+      join(dir, 'pages/index.vue'),
+      '<script setup lang="ts">window.addEventListener("resize", () => {});</script>\n<template><div>hi</div></template>',
+    );
+    const files = [join(dir, 'pages/index.vue')];
+    const projectInfo = makeProject(dir);
+    const diags = await runCrossFilePass({ files, projectInfo });
+    const relevant = diags.filter((d) => d.ruleId === RULE_ID);
+    expect(relevant.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('warns when document is accessed as MemberExpression in ExpressionStatement', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-ssr-doc-es-'));
+    await mkdir(join(dir, 'pages'), { recursive: true });
+    await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));
+    await writeFile(
+      join(dir, 'pages/index.vue'),
+      '<script setup lang="ts">document.getElementById("x");</script>\n<template><div>hi</div></template>',
+    );
+    const files = [join(dir, 'pages/index.vue')];
+    const projectInfo = makeProject(dir);
+    const diags = await runCrossFilePass({ files, projectInfo });
+    const relevant = diags.filter((d) => d.ruleId === RULE_ID);
+    expect(relevant.length).toBeGreaterThanOrEqual(1);
+  });
 });
 
 describe('ssr-safe-onMounted-only-for-client — does not fire', () => {
@@ -160,21 +190,6 @@ describe('ssr-safe-onMounted-only-for-client — does not fire', () => {
     expect(diags).toHaveLength(0);
   });
 
-  it('warns when window is an ExpressionStatement (not assigned)', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-ssr-es-'));
-    await mkdir(join(dir, 'pages'), { recursive: true });
-    await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));
-    await writeFile(
-      join(dir, 'pages/index.vue'),
-      '<script setup lang="ts">window.addEventListener("resize", () => {});</script>\n<template><div>hi</div></template>',
-    );
-    const files = [join(dir, 'pages/index.vue')];
-    const projectInfo = makeProject(dir);
-    const diags = await runCrossFilePass({ files, projectInfo });
-    const relevant = diags.filter((d) => d.ruleId === RULE_ID);
-    expect(relevant.length).toBeGreaterThanOrEqual(1);
-  });
-
   it('does not fire when window is inside onMounted as ExpressionStatement', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-ssr-om-es-'));
     await mkdir(join(dir, 'pages'), { recursive: true });
@@ -218,20 +233,5 @@ describe('ssr-safe-onMounted-only-for-client — does not fire', () => {
     const diags = await runCrossFilePass({ files, projectInfo });
     const relevant = diags.filter((d) => d.ruleId === RULE_ID);
     expect(relevant).toHaveLength(0);
-  });
-
-  it('warns when document is accessed as MemberExpression in ExpressionStatement', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-ssr-doc-es-'));
-    await mkdir(join(dir, 'pages'), { recursive: true });
-    await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));
-    await writeFile(
-      join(dir, 'pages/index.vue'),
-      '<script setup lang="ts">document.getElementById("x");</script>\n<template><div>hi</div></template>',
-    );
-    const files = [join(dir, 'pages/index.vue')];
-    const projectInfo = makeProject(dir);
-    const diags = await runCrossFilePass({ files, projectInfo });
-    const relevant = diags.filter((d) => d.ruleId === RULE_ID);
-    expect(relevant.length).toBeGreaterThanOrEqual(1);
   });
 });

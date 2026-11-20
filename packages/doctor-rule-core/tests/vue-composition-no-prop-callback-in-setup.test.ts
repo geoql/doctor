@@ -128,7 +128,7 @@ describe('composition/no-prop-callback-in-setup', () => {
     expect(reports).toHaveLength(0);
   });
 
-  it('fires inside watchEffect only for computed-like render paths, not effect callbacks', () => {
+  it('does not fire inside a watchEffect callback', () => {
     const reports = runRule(
       rule,
       `const props = defineProps<{ onTick: () => void }>();
