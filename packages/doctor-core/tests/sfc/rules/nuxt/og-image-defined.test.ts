@@ -129,6 +129,55 @@ describe('og-image-defined — fires', () => {
     expect(diags).toHaveLength(1);
     expect(diags[0]?.ruleId).toBe(RULE_ID);
   });
+
+  it('fires when package.json is malformed and useSeoMeta has no og:image', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-og-malformed-'));
+    await mkdir(join(dir, 'pages'), { recursive: true });
+    await writeFile(join(dir, 'package.json'), '{ invalid json }');
+    const path = join(dir, 'pages/index.vue');
+    await writeFile(
+      path,
+      '<script setup lang="ts">useSeoMeta({ title: "Home" });</script>\n<template><div>home</div></template>',
+    );
+    const { parseSfcDescriptor: parse } =
+      await import('../../../../src/sfc/parse-sfc-descriptor.js');
+    const descriptor = await parse(path);
+    if (!descriptor) throw new Error('parse failed');
+    const { relative } = await import('node:path');
+    const relativePath = relative(dir, path).replace(/\\/g, '/');
+    const projectInfo: ProjectInfo = {
+      framework: 'nuxt',
+      frameworkDetected: true,
+      rootDirectory: dir,
+      packageJsonPath: join(dir, 'package.json'),
+      vueVersion: '3.5.0',
+      nuxtVersion: '4.4.0',
+      typescriptVersion: '6.0.3',
+      hasAutoImports: true,
+      hasComponentsAutoImport: true,
+      hasPinia: false,
+      hasVueRouter: true,
+      nitroPreset: null,
+      nuxtCompatibilityVersion: 4,
+      monorepoKind: null,
+      nuxtConfigPath: join(dir, 'nuxt.config.ts'),
+      hasAppDir: true,
+      appDirPath: join(dir, 'app'),
+      hasServerDir: false,
+      hasPagesDir: true,
+      hasWranglerConfig: false,
+      capabilities: new Set(['nuxt4', 'pages-dir']),
+    };
+    const ctx = {
+      file: path,
+      descriptor,
+      rootDirectory: dir,
+      relativePath,
+      projectInfo,
+    };
+    const diags = check(ctx).diagnostics;
+    expect(diags).toHaveLength(1);
+  });
 });
 
 describe('og-image-defined — does not fire', () => {
@@ -252,55 +301,6 @@ describe('og-image-defined — does not fire', () => {
       projectInfo,
     };
     expect(check(ctx).diagnostics).toHaveLength(0);
-  });
-
-  it('fires when package.json is malformed and useSeoMeta has no og:image', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-og-malformed-'));
-    await mkdir(join(dir, 'pages'), { recursive: true });
-    await writeFile(join(dir, 'package.json'), '{ invalid json }');
-    const path = join(dir, 'pages/index.vue');
-    await writeFile(
-      path,
-      '<script setup lang="ts">useSeoMeta({ title: "Home" });</script>\n<template><div>home</div></template>',
-    );
-    const { parseSfcDescriptor: parse } =
-      await import('../../../../src/sfc/parse-sfc-descriptor.js');
-    const descriptor = await parse(path);
-    if (!descriptor) throw new Error('parse failed');
-    const { relative } = await import('node:path');
-    const relativePath = relative(dir, path).replace(/\\/g, '/');
-    const projectInfo: ProjectInfo = {
-      framework: 'nuxt',
-      frameworkDetected: true,
-      rootDirectory: dir,
-      packageJsonPath: join(dir, 'package.json'),
-      vueVersion: '3.5.0',
-      nuxtVersion: '4.4.0',
-      typescriptVersion: '6.0.3',
-      hasAutoImports: true,
-      hasComponentsAutoImport: true,
-      hasPinia: false,
-      hasVueRouter: true,
-      nitroPreset: null,
-      nuxtCompatibilityVersion: 4,
-      monorepoKind: null,
-      nuxtConfigPath: join(dir, 'nuxt.config.ts'),
-      hasAppDir: true,
-      appDirPath: join(dir, 'app'),
-      hasServerDir: false,
-      hasPagesDir: true,
-      hasWranglerConfig: false,
-      capabilities: new Set(['nuxt4', 'pages-dir']),
-    };
-    const ctx = {
-      file: path,
-      descriptor,
-      rootDirectory: dir,
-      relativePath,
-      projectInfo,
-    };
-    const diags = check(ctx).diagnostics;
-    expect(diags).toHaveLength(1);
   });
 
   it('does not fire on a non-page component', async () => {

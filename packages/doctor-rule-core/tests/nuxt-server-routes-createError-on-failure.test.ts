@@ -68,7 +68,7 @@ describe('server-routes/createError-on-failure', () => {
     expect(reports).toEqual([]);
   });
 
-  it('does NOT fire on throw new Error() inside arrow function inside defineEventHandler', () => {
+  it('fires on throw new Error() inside a nested arrow function in defineEventHandler', () => {
     const reports = runRule(
       rule,
       `defineEventHandler(() => { const fn = () => { throw new Error('x'); }; return fn(); });`,
@@ -76,7 +76,7 @@ describe('server-routes/createError-on-failure', () => {
     expect(reports).toHaveLength(1);
   });
 
-  it('does NOT fire on throw new Error() inside FunctionExpression inside defineEventHandler', () => {
+  it('fires on throw new Error() inside a nested function expression in defineEventHandler', () => {
     const reports = runRule(
       rule,
       `defineEventHandler(() => { const fn = function() { throw new Error('x'); }; return fn(); });`,

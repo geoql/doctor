@@ -66,6 +66,25 @@ describe('no-shared-key-across-pages — fires', () => {
     const relevant = diags.filter((d) => d.ruleId === RULE_ID);
     expect(relevant.length).toBeGreaterThanOrEqual(2);
   });
+
+  it('detects shared key via template literal in useAsyncData', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-cross-tmpl-'));
+    await mkdir(join(dir, 'pages'), { recursive: true });
+    await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));
+    await writeFile(
+      join(dir, 'pages/a.vue'),
+      '<script setup lang="ts">useAsyncData(`hero-data`, () => $fetch("/api/hero"));</script>\n<template><div>a</div></template>',
+    );
+    await writeFile(
+      join(dir, 'pages/b.vue'),
+      '<script setup lang="ts">useAsyncData(`hero-data`, () => $fetch("/api/hero"));</script>\n<template><div>b</div></template>',
+    );
+    const files = [join(dir, 'pages/a.vue'), join(dir, 'pages/b.vue')];
+    const projectInfo = makeProject(dir);
+    const diags = await runCrossFilePass({ files, projectInfo });
+    const relevant = diags.filter((d) => d.ruleId === RULE_ID);
+    expect(relevant.length).toBeGreaterThanOrEqual(2);
+  });
 });
 
 describe('no-shared-key-across-pages — does not fire', () => {
@@ -86,25 +105,6 @@ describe('no-shared-key-across-pages — does not fire', () => {
     const diags = await runCrossFilePass({ files, projectInfo });
     const relevant = diags.filter((d) => d.ruleId === RULE_ID);
     expect(relevant).toHaveLength(0);
-  });
-
-  it('detects shared key via template literal in useAsyncData', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-cross-tmpl-'));
-    await mkdir(join(dir, 'pages'), { recursive: true });
-    await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));
-    await writeFile(
-      join(dir, 'pages/a.vue'),
-      '<script setup lang="ts">useAsyncData(`hero-data`, () => $fetch("/api/hero"));</script>\n<template><div>a</div></template>',
-    );
-    await writeFile(
-      join(dir, 'pages/b.vue'),
-      '<script setup lang="ts">useAsyncData(`hero-data`, () => $fetch("/api/hero"));</script>\n<template><div>b</div></template>',
-    );
-    const files = [join(dir, 'pages/a.vue'), join(dir, 'pages/b.vue')];
-    const projectInfo = makeProject(dir);
-    const diags = await runCrossFilePass({ files, projectInfo });
-    const relevant = diags.filter((d) => d.ruleId === RULE_ID);
-    expect(relevant.length).toBeGreaterThanOrEqual(2);
   });
 
   it('does not fire when the same key is used in2 components (not pages)', async () => {
@@ -147,7 +147,7 @@ describe('no-shared-key-across-pages — does not fire', () => {
     expect(diags).toHaveLength(0);
   });
 
-  it('warns when key is a non-literal expression (computed key)', async () => {
+  it('does not warn when the key is an identifier it cannot resolve statically', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-cross-nonlit-'));
     await mkdir(join(dir, 'pages'), { recursive: true });
     await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));

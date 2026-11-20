@@ -46,7 +46,7 @@ describe('server-routes/validate-body-with-h3-v2', () => {
     expect(reports).toHaveLength(0);
   });
 
-  it('does NOT fire on readBody with no arguments', () => {
+  it('fires on readBody even with no arguments', () => {
     const reports = runRule(rule, `const body = readBody();`);
     expect(reports).toHaveLength(1);
   });

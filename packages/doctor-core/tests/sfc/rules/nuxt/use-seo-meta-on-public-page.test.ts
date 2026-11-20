@@ -111,6 +111,51 @@ describe('useSeoMeta-on-public-page — fires', () => {
     expect(diags).toHaveLength(1);
     expect(diags[0]?.ruleId).toBe(RULE_ID);
   });
+
+  it('fires when useSeoMeta is called with no arguments', async () => {
+    const { ctx } = await pageFixture(
+      'pages/index.vue',
+      '<script setup lang="ts">useSeoMeta();</script>\n<template><div>home</div></template>',
+    );
+    const diags = check(ctx).diagnostics;
+    expect(diags).toHaveLength(1);
+  });
+
+  it('fires when useSeoMeta is called with a string argument', async () => {
+    const { ctx } = await pageFixture(
+      'pages/index.vue',
+      '<script setup lang="ts">useSeoMeta("not an object");</script>\n<template><div>home</div></template>',
+    );
+    const diags = check(ctx).diagnostics;
+    expect(diags).toHaveLength(1);
+  });
+
+  it('fires when the page only calls a non-SEO function', async () => {
+    const { ctx } = await pageFixture(
+      'pages/index.vue',
+      '<script setup lang="ts">const seo = { title: "Home" }; seoFn(seo);</script>\n<template><div>home</div></template>',
+    );
+    const diags = check(ctx).diagnostics;
+    expect(diags).toHaveLength(1);
+  });
+
+  it('fires when the page only calls a non-SEO composable', async () => {
+    const { ctx } = await pageFixture(
+      'pages/index.vue',
+      '<script setup lang="ts">useAnalytics({ title: "Home" });</script>\n<template><div>home</div></template>',
+    );
+    const diags = check(ctx).diagnostics;
+    expect(diags).toHaveLength(1);
+  });
+
+  it('still fires on a page calling a non-SEO wrapper composable', async () => {
+    const { ctx } = await pageFixture(
+      'pages/index.vue',
+      '<script setup lang="ts">useFetchData({ title: "Home" });</script>\n<template><div>home</div></template>',
+    );
+    const diags = check(ctx).diagnostics;
+    expect(diags).toHaveLength(1);
+  });
 });
 
 describe('useSeoMeta-on-public-page — does not fire', () => {
@@ -177,42 +222,6 @@ describe('useSeoMeta-on-public-page — does not fire', () => {
     expect(diags).toHaveLength(0);
   });
 
-  it('fires when useSeoMeta is called with no arguments', async () => {
-    const { ctx } = await pageFixture(
-      'pages/index.vue',
-      '<script setup lang="ts">useSeoMeta();</script>\n<template><div>home</div></template>',
-    );
-    const diags = check(ctx).diagnostics;
-    expect(diags).toHaveLength(1);
-  });
-
-  it('fires when useSeoMeta is called with a string argument', async () => {
-    const { ctx } = await pageFixture(
-      'pages/index.vue',
-      '<script setup lang="ts">useSeoMeta("not an object");</script>\n<template><div>home</div></template>',
-    );
-    const diags = check(ctx).diagnostics;
-    expect(diags).toHaveLength(1);
-  });
-
-  it('does not fire when SEO call uses a MemberExpression callee', async () => {
-    const { ctx } = await pageFixture(
-      'pages/index.vue',
-      '<script setup lang="ts">const seo = { title: "Home" }; seoFn(seo);</script>\n<template><div>home</div></template>',
-    );
-    const diags = check(ctx).diagnostics;
-    expect(diags).toHaveLength(1);
-  });
-
-  it('does not fire when SEO call is a non-SeoMeta function', async () => {
-    const { ctx } = await pageFixture(
-      'pages/index.vue',
-      '<script setup lang="ts">useAnalytics({ title: "Home" });</script>\n<template><div>home</div></template>',
-    );
-    const diags = check(ctx).diagnostics;
-    expect(diags).toHaveLength(1);
-  });
-
   it('does not fire when useSeoMeta has a spread prop', async () => {
     const { ctx } = await pageFixture(
       'pages/index.vue',
@@ -229,15 +238,6 @@ describe('useSeoMeta-on-public-page — does not fire', () => {
     );
     const diags = check(ctx).diagnostics;
     expect(diags).toHaveLength(0);
-  });
-
-  it('still fires on a page calling a non-SEO wrapper composable', async () => {
-    const { ctx } = await pageFixture(
-      'pages/index.vue',
-      '<script setup lang="ts">useFetchData({ title: "Home" });</script>\n<template><div>home</div></template>',
-    );
-    const diags = check(ctx).diagnostics;
-    expect(diags).toHaveLength(1);
   });
 });
 
