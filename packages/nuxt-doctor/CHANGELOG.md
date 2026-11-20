@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.11.2](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.11.1...nuxt-doctor-v1.11.2) (2026-11-20)
+
+
+### Bug Fixes
+
+* **core:** roll up --project score and gate from each workspace's surfaces ([#347](https://github.com/geoql/doctor/issues/347)) ([f3b6936](https://github.com/geoql/doctor/commit/f3b69360d5bac42be327627b44d6d989bdb458c4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.10.2
+
 ## [1.11.1](https://github.com/geoql/doctor/compare/nuxt-doctor-v1.11.0...nuxt-doctor-v1.11.1) (2026-11-20)
 
 
