@@ -26,6 +26,7 @@ const CI_ENV_KEYS = [
   'GITHUB_SHA',
   'GITHUB_REF_NAME',
   'GITHUB_PR_NUMBER',
+  'DOCTOR_API_KEY',
 ] as const;
 
 interface CapturedRequest {
@@ -249,6 +250,50 @@ describe('nuxt-doctor --push (real CLI + local HTTP server)', () => {
         violationDir,
       ]);
       expect(captured).toHaveLength(0);
+    } finally {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
+  });
+
+  it('reads the API key from DOCTOR_API_KEY when --api-key is absent (#324)', async () => {
+    const { server, port, captured } = await startCaptureServer();
+    process.env.DOCTOR_API_KEY = 'sk-from-env';
+    try {
+      const url = `http://127.0.0.1:${port}/api/v1/findings`;
+      await run([
+        'node',
+        'nuxt-doctor',
+        '--no-dead-code',
+        '--push',
+        '--push-url',
+        url,
+        violationDir,
+      ]);
+      expect(captured).toHaveLength(1);
+      expect(captured[0]!.headers['x-api-key']).toBe('sk-from-env');
+    } finally {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
+  });
+
+  it('prefers --api-key over DOCTOR_API_KEY (#324)', async () => {
+    const { server, port, captured } = await startCaptureServer();
+    process.env.DOCTOR_API_KEY = 'sk-from-env';
+    try {
+      const url = `http://127.0.0.1:${port}/api/v1/findings`;
+      await run([
+        'node',
+        'nuxt-doctor',
+        '--no-dead-code',
+        '--push',
+        '--api-key',
+        'sk-from-flag',
+        '--push-url',
+        url,
+        violationDir,
+      ]);
+      expect(captured).toHaveLength(1);
+      expect(captured[0]!.headers['x-api-key']).toBe('sk-from-flag');
     } finally {
       await new Promise<void>((resolve) => server.close(() => resolve()));
     }

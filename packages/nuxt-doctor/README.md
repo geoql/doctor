@@ -40,36 +40,36 @@ nuxt-doctor --score
 
 ### Options
 
-| Flag                           | Description                                                                                                            |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| `--format <kind>`              | Output format: `agent` (default), `pretty`, `json`, `json-compact`, `sarif`, `html`.                                   |
-| `--json`                       | Shorthand for `--format json`.                                                                                         |
-| `--json-compact`               | Single-line JSON.                                                                                                      |
-| `--config <path>`              | Path to `doctor.config.ts`.                                                                                            |
-| `--preset <name>`              | Base preset: `minimal`, `recommended`, `strict`, `all`.                                                                |
-| `--fail-on <level>`            | Exit non-zero at this severity or worse: `error` (default), `warn`, `none`.                                            |
-| `--quiet`                      | Only show the summary.                                                                                                 |
-| `--verbose`                    | Emit per-pass timing and rule diagnostics to stderr.                                                                   |
-| `--no-color`                   | Disable colored output.                                                                                                |
-| `--rule <id:level>`            | Override one rule, repeatable. Levels: `error`, `warn`, `info`, `off`. e.g. `--rule nuxt-doctor/seo/lang-on-html:off`. |
-| `--include <glob>`             | Glob of files to include, repeatable.                                                                                  |
-| `--exclude <glob>`             | Glob of files to exclude, repeatable.                                                                                  |
-| `--no-dead-code`               | Skip the dead-code (knip) analysis pass.                                                                               |
-| `--no-lint`                    | Skip the lint passes (template / SFC / oxlint).                                                                        |
-| `--no-respect-inline-disables` | Surface findings even inside `doctor-disable` comments.                                                                |
-| `--threshold <n>`              | Minimum passing score, integer `0`–`100`.                                                                              |
-| `--score`                      | Print only the numeric score, for piping.                                                                              |
-| `--push`                       | After the audit, POST privacy-stripped findings to the SaaS. Requires `--api-key`. Negatable with `--no-push`.         |
-| `--no-push`                    | Skip the SaaS push (default).                                                                                          |
-| `--push-url <url>`             | SaaS endpoint for `--push` (default: `https://app.the-doctor.report/api/v1/findings`).                                 |
-| `--api-key <key>`              | API key for the SaaS, sent as the `x-api-key` header.                                                                  |
-| `--annotations`                | Emit GitHub Actions `::error::` / `::warning::` lines.                                                                 |
-| `--ci`                         | Auto-enable CI behavior (annotations on GitHub Actions).                                                               |
-| `--no-ci`                      | Disable CI auto-detection even when a CI env is set.                                                                   |
-| `--diff`                       | Only report findings in files changed vs HEAD.                                                                         |
-| `--staged`                     | Only report findings in staged files.                                                                                  |
-| `--full`                       | Force a complete scan, overriding `--diff` / `--staged`.                                                               |
-| `--output <file>`              | Write the report to a file instead of stdout.                                                                          |
+| Flag                           | Description                                                                                                                        |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `--format <kind>`              | Output format: `agent` (default), `pretty`, `json`, `json-compact`, `sarif`, `html`.                                               |
+| `--json`                       | Shorthand for `--format json`.                                                                                                     |
+| `--json-compact`               | Single-line JSON.                                                                                                                  |
+| `--config <path>`              | Path to `doctor.config.ts`.                                                                                                        |
+| `--preset <name>`              | Base preset: `minimal`, `recommended`, `strict`, `all`.                                                                            |
+| `--fail-on <level>`            | Exit non-zero at this severity or worse: `error` (default), `warn`, `none`.                                                        |
+| `--quiet`                      | Only show the summary.                                                                                                             |
+| `--verbose`                    | Emit per-pass timing and rule diagnostics to stderr.                                                                               |
+| `--no-color`                   | Disable colored output.                                                                                                            |
+| `--rule <id:level>`            | Override one rule, repeatable. Levels: `error`, `warn`, `info`, `off`. e.g. `--rule nuxt-doctor/seo/lang-on-html:off`.             |
+| `--include <glob>`             | Glob of files to include, repeatable.                                                                                              |
+| `--exclude <glob>`             | Glob of files to exclude, repeatable.                                                                                              |
+| `--no-dead-code`               | Skip the dead-code (knip) analysis pass.                                                                                           |
+| `--no-lint`                    | Skip the lint passes (template / SFC / oxlint).                                                                                    |
+| `--no-respect-inline-disables` | Surface findings even inside `doctor-disable` comments.                                                                            |
+| `--threshold <n>`              | Minimum passing score, integer `0`–`100`.                                                                                          |
+| `--score`                      | Print only the numeric score, for piping.                                                                                          |
+| `--push`                       | After the audit, POST privacy-stripped findings to the SaaS. Requires `--api-key` or `DOCTOR_API_KEY`. Negatable with `--no-push`. |
+| `--no-push`                    | Skip the SaaS push (default).                                                                                                      |
+| `--push-url <url>`             | SaaS endpoint for `--push` (default: `https://app.the-doctor.report/api/v1/findings`).                                             |
+| `--api-key <key>`              | API key for the SaaS (`x-api-key` header). Defaults to `DOCTOR_API_KEY`.                                                           |
+| `--annotations`                | Emit GitHub Actions `::error::` / `::warning::` lines.                                                                             |
+| `--ci`                         | Auto-enable CI behavior (annotations on GitHub Actions).                                                                           |
+| `--no-ci`                      | Disable CI auto-detection even when a CI env is set.                                                                               |
+| `--diff`                       | Only report findings in files changed vs HEAD.                                                                                     |
+| `--staged`                     | Only report findings in staged files.                                                                                              |
+| `--full`                       | Force a complete scan, overriding `--diff` / `--staged`.                                                                           |
+| `--output <file>`              | Write the report to a file instead of stdout.                                                                                      |
 
 Severity is `error | warn | info` everywhere. `--diff`/`--staged`, `--verbose`/`--quiet`, and `--score`/`--json` are mutually exclusive.
 

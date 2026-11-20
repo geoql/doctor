@@ -30,6 +30,7 @@ import {
   normalizeInitAnswers,
   planInit,
   pushFindings,
+  resolveApiKey,
   readSourceRevision,
   resolveScopePlan,
   scopeRequestFromFlags,
@@ -736,9 +737,10 @@ async function maybePushFindings(
   rootDir: string,
 ): Promise<void> {
   if (flags.push !== true) return;
-  if (!flags.apiKey) {
+  const apiKey = resolveApiKey(flags.apiKey);
+  if (!apiKey) {
     process.stderr.write(
-      'nuxt-doctor: --push enabled but --api-key is not set; skipping push (no findings were sent).\n',
+      'nuxt-doctor: --push enabled but neither --api-key nor DOCTOR_API_KEY is set; skipping push (no findings were sent).\n',
     );
     return;
   }
@@ -764,7 +766,7 @@ async function maybePushFindings(
     diagnostics: report.diagnostics,
     rootDir,
     url,
-    apiKey: flags.apiKey,
+    apiKey,
   });
   if (result.ok) {
     process.stderr.write(
@@ -1231,7 +1233,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     )
     .option(
       '--push',
-      'After the audit, POST privacy-stripped findings to the SaaS. Requires --api-key. Negatable with --no-push.',
+      'After the audit, POST privacy-stripped findings to the SaaS. Requires --api-key or DOCTOR_API_KEY. Negatable with --no-push.',
     )
     .option(
       '--push-url <url>',
@@ -1242,7 +1244,7 @@ export async function run(argv: string[] = process.argv): Promise<number> {
     )
     .option(
       '--api-key <key>',
-      'API key for the SaaS (sent as the x-api-key header for both --score-mode and --push).',
+      'API key for the SaaS, sent as the x-api-key header by --push. Defaults to the DOCTOR_API_KEY env var (preferred: keeps the key off argv).',
     )
     .option(
       '--push-project <slug>',

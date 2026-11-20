@@ -184,8 +184,10 @@ export {
   resolveCategoryScope,
 } from './config/category-filter.js';
 export {
+  API_KEY_ENV,
   buildPushPayload,
   pushFindings,
+  resolveApiKey,
   stripFindings,
   type PushOptions,
   type PushPayload,

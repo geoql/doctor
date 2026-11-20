@@ -101,9 +101,9 @@ Both `vue-doctor` and `nuxt-doctor` share the same surface. Key flags:
 | `--score`                                | Print only the integer score                                                                   |
 | `--output <file>`                        | Write the report to a file                                                                     |
 | `--pr-comment`                           | Emit a Markdown PR-comment body                                                                |
-| `--push`                                 | POST privacy-stripped findings to the SaaS (needs `--api-key`)                                 |
+| `--push`                                 | POST privacy-stripped findings to the SaaS (needs `DOCTOR_API_KEY` or `--api-key`)             |
 | `--push-url <url>`                       | Findings endpoint (default `https://app.the-doctor.report/api/v1/findings`)                    |
-| `--api-key <key>`                        | the-doctor.report API key (`doc_…`), sent as the `x-api-key` header                            |
+| `--api-key <key>`                        | the-doctor.report API key (`doc_…`), or set `DOCTOR_API_KEY`                                   |
 | `--push-project <slug>`                  | Dashboard project slug, e.g. `owner/repo` (defaults to the audited dir name)                   |
 
 Subcommands: `list-rules`, `explain <ruleId>`, `inspect [dir]`, `init [dir]`, `ci install [dir]` (scaffold a CI workflow that runs `geoql/doctor-action@v2`), `design [dir]` (focused design-quality scan via [shadscan-vue](https://github.com/vinayakkulkarni/shadscan-vue) — separate 0-100 design score). Run `vue-doctor --help` for the complete list. The JSON report's `projectInfo.frameworkDetected` boolean tells a real Vue/Nuxt audit apart from a scan that found no project.
