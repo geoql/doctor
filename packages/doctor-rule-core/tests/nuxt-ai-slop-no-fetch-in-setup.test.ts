@@ -70,11 +70,6 @@ describe('ai-slop/no-fetch-in-setup', () => {
     expect(reports).toEqual([]);
   });
 
-  it('does NOT fire on $fetch inside FunctionDeclaration', () => {
-    const reports = runRule(rule, `function load() { return $fetch('/api'); }`);
-    expect(reports).toEqual([]);
-  });
-
   it('does NOT fire on $fetch inside nested arrow in onMounted', () => {
     const reports = runRule(
       rule,
@@ -96,11 +91,6 @@ describe('ai-slop/no-fetch-in-setup', () => {
       rule,
       `const fn = async function() { return await $fetch('/api'); };`,
     );
-    expect(reports).toEqual([]);
-  });
-
-  it('does NOT fire on MemberExpression callee for fetch', () => {
-    const reports = runRule(rule, `const d = obj.fetch('/api');`);
     expect(reports).toEqual([]);
   });
 

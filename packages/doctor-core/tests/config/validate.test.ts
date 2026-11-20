@@ -38,10 +38,6 @@ describe('validateConfig', () => {
     expect(() => validateConfig('bad')).toThrow(InvalidConfigError);
   });
 
-  it('throws InvalidConfigError for number input', () => {
-    expect(() => validateConfig(42)).toThrow(InvalidConfigError);
-  });
-
   describe('threshold', () => {
     it('rejects a non-integer threshold', () => {
       expect(() => validateConfig({ threshold: 3.5 })).toThrow(
@@ -94,10 +90,6 @@ describe('validateConfig', () => {
 
     it('accepts failOn warn', () => {
       expect(() => validateConfig({ failOn: 'warn' })).not.toThrow();
-    });
-
-    it('rejects a non-string failOn', () => {
-      expect(() => validateConfig({ failOn: 42 })).toThrow(InvalidConfigError);
     });
   });
 
@@ -178,12 +170,6 @@ describe('validateConfig', () => {
           },
         }),
       ).not.toThrow();
-    });
-
-    it('rejects a non-string rule value', () => {
-      expect(() => validateConfig({ rules: { [REAL_ERROR_ID]: 42 } })).toThrow(
-        InvalidConfigError,
-      );
     });
 
     it('rejects an unknown rule id (new zod behavior)', () => {

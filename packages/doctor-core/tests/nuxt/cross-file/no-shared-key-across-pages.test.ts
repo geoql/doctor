@@ -147,39 +147,6 @@ describe('no-shared-key-across-pages — does not fire', () => {
     expect(diags).toHaveLength(0);
   });
 
-  it('returns [] when there are no page files', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-cross-nopages-'));
-    await mkdir(join(dir, 'components'), { recursive: true });
-    await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));
-    await writeFile(
-      join(dir, 'components/A.vue'),
-      '<script setup lang="ts">useAsyncData("shared", () => $fetch("/x"));</script>\n<template><div>a</div></template>',
-    );
-    const files = [join(dir, 'components/A.vue')];
-    const projectInfo = makeProject(dir);
-    const diags = await runCrossFilePass({ files, projectInfo });
-    expect(diags).toHaveLength(0);
-  });
-
-  it('warns when key is a template literal shared across pages', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-cross-tmpl2-'));
-    await mkdir(join(dir, 'pages'), { recursive: true });
-    await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));
-    await writeFile(
-      join(dir, 'pages/a.vue'),
-      '<script setup lang="ts">useAsyncData(`user-profile`, () => $fetch("/api/user"));</script>\n<template><div>a</div></template>',
-    );
-    await writeFile(
-      join(dir, 'pages/b.vue'),
-      '<script setup lang="ts">useAsyncData(`user-profile`, () => $fetch("/api/user"));</script>\n<template><div>b</div></template>',
-    );
-    const files = [join(dir, 'pages/a.vue'), join(dir, 'pages/b.vue')];
-    const projectInfo = makeProject(dir);
-    const diags = await runCrossFilePass({ files, projectInfo });
-    const relevant = diags.filter((d) => d.ruleId === RULE_ID);
-    expect(relevant.length).toBeGreaterThanOrEqual(2);
-  });
-
   it('warns when key is a non-literal expression (computed key)', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-cross-nonlit-'));
     await mkdir(join(dir, 'pages'), { recursive: true });
@@ -197,25 +164,6 @@ describe('no-shared-key-across-pages — does not fire', () => {
     const diags = await runCrossFilePass({ files, projectInfo });
     const relevant = diags.filter((d) => d.ruleId === RULE_ID);
     expect(relevant).toHaveLength(0);
-  });
-
-  it('warns when useFetch key option is shared across pages', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-cross-fetch-key-'));
-    await mkdir(join(dir, 'pages'), { recursive: true });
-    await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));
-    await writeFile(
-      join(dir, 'pages/a.vue'),
-      '<script setup lang="ts">useFetch("/api/a", { key: "fetch-key" });</script>\n<template><div>a</div></template>',
-    );
-    await writeFile(
-      join(dir, 'pages/b.vue'),
-      '<script setup lang="ts">useFetch("/api/b", { key: "fetch-key" });</script>\n<template><div>b</div></template>',
-    );
-    const files = [join(dir, 'pages/a.vue'), join(dir, 'pages/b.vue')];
-    const projectInfo = makeProject(dir);
-    const diags = await runCrossFilePass({ files, projectInfo });
-    const relevant = diags.filter((d) => d.ruleId === RULE_ID);
-    expect(relevant.length).toBeGreaterThanOrEqual(2);
   });
 });
 

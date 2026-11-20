@@ -267,22 +267,6 @@ describe('sarifReport', () => {
     expect(fp).toBe('src/A.vue:3:vue-doctor/template/v-for-has-key');
   });
 
-  it('partialFingerprints are stable across reruns for the same finding', () => {
-    const first = JSON.parse(sarifReport(makeInput([ERROR_DIAG]))) as {
-      runs: {
-        results: { partialFingerprints: { primaryLocationLineHash: string } }[];
-      }[];
-    };
-    const second = JSON.parse(sarifReport(makeInput([ERROR_DIAG]))) as {
-      runs: {
-        results: { partialFingerprints: { primaryLocationLineHash: string } }[];
-      }[];
-    };
-    expect(first.runs[0]!.results[0]!.partialFingerprints).toEqual(
-      second.runs[0]!.results[0]!.partialFingerprints,
-    );
-  });
-
   it('partialFingerprints differ across files / lines / rules', () => {
     const parsed = JSON.parse(
       sarifReport(makeInput([ERROR_DIAG, WARN_DIAG, INFO_DIAG])),

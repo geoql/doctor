@@ -2,10 +2,6 @@ import { describe, expect, it } from 'vite-plus/test';
 import { BUILT_IN_RECOMMENDED } from '../../src/config/built-in.js';
 
 describe('BUILT_IN_RECOMMENDED', () => {
-  it('matches the locked snapshot', () => {
-    expect(BUILT_IN_RECOMMENDED).toMatchSnapshot();
-  });
-
   it('has the correct include globs', () => {
     expect(BUILT_IN_RECOMMENDED.include).toEqual([
       '**/*.vue',

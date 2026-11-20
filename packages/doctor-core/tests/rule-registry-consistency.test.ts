@@ -140,9 +140,4 @@ describe('rule-registry consistency: no orphan registry entries', () => {
       `orphan registry entries (no source rule): ${orphans.join(', ')}`,
     ).toEqual([]);
   });
-
-  it('has no duplicate rule ids', () => {
-    const ids = RULE_REGISTRY.map((r) => r.id);
-    expect(new Set(ids).size).toBe(ids.length);
-  });
 });

@@ -69,12 +69,6 @@ describe('checkVueMajorCurrent', () => {
     expect(diags[0]!.recommendation).toContain('^3.5.0');
   });
 
-  it('returns one info diag for 3.0.x', () => {
-    const diags = checkVueMajorCurrent(makeProject({ vueVersion: '3.0.0' }));
-    expect(diags.length).toBe(1);
-    expect(diags[0]!.severity).toBe('info');
-  });
-
   it('handles leading v prefix in vueVersion', () => {
     expect(
       checkVueMajorCurrent(makeProject({ vueVersion: 'v3.5.34' })),

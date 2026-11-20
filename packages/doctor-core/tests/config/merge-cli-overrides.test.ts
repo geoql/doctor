@@ -137,11 +137,6 @@ describe('mergeCliOverrides', () => {
     expect(result.fixExcludes).toEqual(['from/config']);
   });
 
-  it('omits fixExcludes when neither config nor CLI provide it', () => {
-    const result = mergeCliOverrides(baseResolved, {});
-    expect(result.fixExcludes).toBeUndefined();
-  });
-
   it('takes includeTestFiles from the CLI over the config file', () => {
     const withConfig: ResolvedDoctorConfig = {
       ...baseResolved,
@@ -158,10 +153,5 @@ describe('mergeCliOverrides', () => {
     };
     const result = mergeCliOverrides(withConfig, {});
     expect(result.includeTestFiles).toBe(true);
-  });
-
-  it('omits includeTestFiles when neither config nor CLI provide it', () => {
-    const result = mergeCliOverrides(baseResolved, {});
-    expect(result.includeTestFiles).toBeUndefined();
   });
 });

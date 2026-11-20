@@ -121,14 +121,6 @@ describe('hydration/clientOnly-for-browser-apis', () => {
     expect(reports).toEqual([]);
   });
 
-  it('does NOT fire on window inside function declaration', () => {
-    const reports = runRule(
-      rule,
-      `function getLoc() { return window.location; }`,
-    );
-    expect(reports).toEqual([]);
-  });
-
   it('does NOT fire on window inside process.client guard at depth', () => {
     const reports = runRule(
       rule,

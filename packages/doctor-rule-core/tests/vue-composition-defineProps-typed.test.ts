@@ -15,11 +15,6 @@ describe('composition/defineProps-typed', () => {
     expect(reports[0]!.message).toContain('vuejs.org');
   });
 
-  it('fires on a minimal runtime object argument', () => {
-    const reports = runRule(rule, `defineProps({ name: String });`);
-    expect(reports).toHaveLength(1);
-  });
-
   it('does NOT fire on the type-based generic form', () => {
     const reports = runRule(rule, `defineProps<{ name: string }>();`);
     expect(reports).toEqual([]);

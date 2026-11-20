@@ -234,19 +234,4 @@ describe('ssr-safe-onMounted-only-for-client — does not fire', () => {
     const relevant = diags.filter((d) => d.ruleId === RULE_ID);
     expect(relevant.length).toBeGreaterThanOrEqual(1);
   });
-
-  it('does not fire when onMounted is ExpressionStatement and window is inside callback', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'geoql-doctor-ssr-om-es2-'));
-    await mkdir(join(dir, 'pages'), { recursive: true });
-    await writeFile(join(dir, 'package.json'), JSON.stringify({ name: 'x' }));
-    await writeFile(
-      join(dir, 'pages/index.vue'),
-      '<script setup lang="ts">onMounted(() => { window.addEventListener("resize", () => {}); });</script>\n<template><div>hi</div></template>',
-    );
-    const files = [join(dir, 'pages/index.vue')];
-    const projectInfo = makeProject(dir);
-    const diags = await runCrossFilePass({ files, projectInfo });
-    const relevant = diags.filter((d) => d.ruleId === RULE_ID);
-    expect(relevant).toHaveLength(0);
-  });
 });

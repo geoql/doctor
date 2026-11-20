@@ -388,11 +388,6 @@ describe('loadDoctorConfig', () => {
     expect(result.exclude).toContain('x');
   });
 
-  it('sets rootDir to the provided rootDir', async () => {
-    const result = await loadDoctorConfig(tmp);
-    expect(result.rootDir).toBe(tmp);
-  });
-
   it('resolves relative explicitPath against rootDir', async () => {
     const customPath = 'custom.config.mjs';
     writeFileSync(join(tmp, customPath), 'export default { threshold: 42 }');

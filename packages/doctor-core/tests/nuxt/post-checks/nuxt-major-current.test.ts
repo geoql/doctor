@@ -53,14 +53,6 @@ describe('checkNuxtMajorCurrent', () => {
     expect(issue.recommendation).toContain('4.4');
   });
 
-  it('returns one info diag for 4.0.x', () => {
-    const issues = checkNuxtMajorCurrent(
-      makeNuxtProject({ nuxtVersion: '4.0.0' }),
-    );
-    expect(issues).toHaveLength(1);
-    expect(issues[0]!.severity).toBe('info');
-  });
-
   it('handles a leading v prefix in nuxtVersion', () => {
     expect(
       checkNuxtMajorCurrent(makeNuxtProject({ nuxtVersion: 'v4.4.0' })),

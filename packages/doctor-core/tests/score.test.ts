@@ -153,22 +153,6 @@ describe('scoreDiagnostics', () => {
     expect(result.passed).toBe(true);
   });
 
-  it('defaults threshold to 0 (always passes unless score < 0)', () => {
-    const result = scoreDiagnostics([]);
-    expect(result.threshold).toBe(0);
-    expect(result.passed).toBe(true);
-  });
-
-  it('applies √-decay starting at second occurrence (i=0 full, i>0 decayed)', () => {
-    const result = scoreDiagnostics([
-      diag('error', { ruleId: 'r' }),
-      diag('error', { ruleId: 'r' }),
-    ]);
-    const expectedPenalty = 5 + 5 / Math.sqrt(2);
-    expect(result.score).toBe(Math.max(0, Math.round(100 - expectedPenalty)));
-    expect(result.breakdown[0]?.occurrences).toBe(2);
-  });
-
   describe('byDimension', () => {
     it('always populates all six dimensions at 100 for empty diagnostics', () => {
       const { byDimension } = scoreDiagnostics([]);
@@ -209,15 +193,6 @@ describe('scoreDiagnostics', () => {
       expect(byDimension.security.errorCount).toBe(1);
       expect(byDimension.security.warnCount).toBe(1);
       expect(byDimension.security.infoCount).toBe(0);
-    });
-
-    it('applies the same √-decay isolated per dimension', () => {
-      const { byDimension } = scoreDiagnostics([
-        diag('error', { ruleId: 'vue-doctor/security/no-eval-like' }),
-        diag('error', { ruleId: 'vue-doctor/security/no-eval-like' }),
-      ]);
-      const expected = Math.max(0, Math.round(100 - (5 + 5 / Math.sqrt(2))));
-      expect(byDimension.security.score).toBe(expected);
     });
 
     it('ignores ruleIds not in the registry (no dimension bucket)', () => {

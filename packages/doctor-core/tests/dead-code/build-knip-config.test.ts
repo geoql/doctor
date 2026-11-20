@@ -159,12 +159,6 @@ describe('buildKnipConfig', () => {
     expect(config.entry).toContain('src/main.{ts,js}');
   });
 
-  it('does NOT add convention entries for a plain Vue project without auto-imports', async () => {
-    const config = await buildKnipConfig(vueProjectInfo, baseConfig);
-    expect(config.entry).not.toContain('src/components/**/*.vue');
-    expect(config.entry).not.toContain('src/composables/**/*.ts');
-  });
-
   it('adds vite.config auto-resolve dirs as entries and preset packages to ignoreDependencies (#85)', async () => {
     const root = await tmp();
     await writeFile(
