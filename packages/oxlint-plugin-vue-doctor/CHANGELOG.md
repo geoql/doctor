@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.5](https://github.com/geoql/doctor/compare/oxlint-plugin-vue-doctor-v1.4.4...oxlint-plugin-vue-doctor-v1.4.5) (2026-11-20)
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.157.0 to 0.158.0 ([#300](https://github.com/geoql/doctor/issues/300)) ([0205368](https://github.com/geoql/doctor/commit/02053689866a35caf9e372bb4c22e8eec74082db))
+* **deps:** bump oxc-parser from 0.158.0 to 0.159.0 ([#318](https://github.com/geoql/doctor/issues/318)) ([871c16d](https://github.com/geoql/doctor/commit/871c16d4be772513c36c45dd99179d7d2e6a4395))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.5.1
+
 ## [1.4.4](https://github.com/geoql/doctor/compare/oxlint-plugin-vue-doctor-v1.4.3...oxlint-plugin-vue-doctor-v1.4.4) (2026-11-03)
 
 
