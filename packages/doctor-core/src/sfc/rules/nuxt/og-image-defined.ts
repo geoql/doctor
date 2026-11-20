@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { parseSync } from 'oxc-parser';
 import type { Diagnostic } from '../../../types.js';
 import { isNuxtPageFile } from '../../../nuxt/file-role.js';
+import { isNonIndexablePage } from '../../../nuxt/page-indexability.js';
 import type { SfcRuleContext, SfcRuleResult } from '../types.js';
 
 const RULE_ID = 'nuxt-doctor/seo/og-image-defined';
@@ -68,6 +69,15 @@ export function check(ctx: SfcRuleContext): SfcRuleResult {
   if (hasOgImageInCall(program)) return { diagnostics: [] };
   if (ctx.projectInfo.packageJsonPath === null) return { diagnostics: [] };
   if (hasOgImageDep(ctx.projectInfo.packageJsonPath))
+    return { diagnostics: [] };
+  if (
+    isNonIndexablePage({
+      program,
+      relativePath: ctx.relativePath,
+      rootDirectory: ctx.rootDirectory,
+      nuxtConfigPath: ctx.projectInfo.nuxtConfigPath,
+    })
+  )
     return { diagnostics: [] };
   const { line, column } = scriptSetup.loc.start;
   const diagnostics: Diagnostic[] = [
