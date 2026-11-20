@@ -240,3 +240,61 @@ describe('useSeoMeta-on-public-page — does not fire', () => {
     expect(diags).toHaveLength(1);
   });
 });
+
+describe('useSeoMeta-on-public-page — skips pages that are not public', () => {
+  async function writeRootFile(
+    root: string,
+    rel: string,
+    content: string,
+  ): Promise<void> {
+    const parts = rel.split('/').slice(0, -1);
+    if (parts.length > 0) {
+      await mkdir(join(root, parts.join('/')), { recursive: true });
+    }
+    await writeFile(join(root, rel), content);
+  }
+
+  it('does not fire on an auth-gated page with a noindex layout', async () => {
+    const { ctx } = await pageFixture(
+      'app/pages/dashboard/index.vue',
+      "<script setup lang=\"ts\">\ndefinePageMeta({ layout: 'dashboard', middleware: 'auth' });\n</script>\n<template><div>x</div></template>",
+    );
+    await writeRootFile(
+      ctx.rootDirectory,
+      'app/layouts/dashboard.vue',
+      '<script setup lang="ts">useSeoMeta({ robots: \'noindex\' });</script>\n<template><slot /></template>',
+    );
+    expect(check(ctx).diagnostics).toHaveLength(0);
+  });
+
+  it('does not fire on a page behind an auth middleware alone', async () => {
+    const { ctx } = await pageFixture(
+      'app/pages/settings.vue',
+      '<script setup lang="ts">definePageMeta({ middleware: [\'auth\'] });</script>\n<template><div>x</div></template>',
+    );
+    expect(check(ctx).diagnostics).toHaveLength(0);
+  });
+
+  it('does not fire when routeRules mark the route robots: false', async () => {
+    const { ctx } = await pageFixture(
+      'app/pages/admin/users.vue',
+      '<script setup lang="ts">const users = [];</script>\n<template><div>x</div></template>',
+    );
+    await writeRootFile(
+      ctx.rootDirectory,
+      'nuxt.config.ts',
+      "export default defineNuxtConfig({ routeRules: { '/admin/**': { robots: false } } });",
+    );
+    expect(check(ctx).diagnostics).toHaveLength(0);
+  });
+
+  it('still fires on a public page without a title when projectInfo is absent', async () => {
+    const { ctx } = await pageFixture(
+      'app/pages/pricing.vue',
+      '<script setup lang="ts">const plans = [];</script>\n<template><div>x</div></template>',
+    );
+    expect(check({ ...ctx, projectInfo: undefined }).diagnostics).toHaveLength(
+      1,
+    );
+  });
+});
