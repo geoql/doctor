@@ -14,13 +14,12 @@ describe('data-fetching/useAsyncData-key-required-in-loop', () => {
     expect(reports[0]!.message).toContain('useAsyncData');
   });
 
-  it('fires on useFetch without key inside a for loop', () => {
+  it('does NOT fire on useFetch whose URL uses the loop variable (for loop)', () => {
     const reports = runRule(
       rule,
       `for (let i = 0; i < ids.length; i++) { useFetch('/api/' + ids[i]); }`,
     );
-    expect(reports).toHaveLength(1);
-    expect(reports[0]!.message).toContain('useFetch');
+    expect(reports).toEqual([]);
   });
 
   it('fires on useAsyncData without key inside a while loop', () => {
@@ -39,9 +38,9 @@ describe('data-fetching/useAsyncData-key-required-in-loop', () => {
     expect(reports).toHaveLength(1);
   });
 
-  it('fires on useFetch without key inside a .map() callback', () => {
+  it('does NOT fire on useFetch whose URL uses the .map() param', () => {
     const reports = runRule(rule, `ids.map((id) => useFetch('/api/' + id));`);
-    expect(reports).toHaveLength(1);
+    expect(reports).toEqual([]);
   });
 
   it('fires on useAsyncData without key inside a .map() callback', () => {
@@ -147,11 +146,93 @@ describe('data-fetching/useAsyncData-key-required-in-loop', () => {
     expect(runRule(rule, code)).toEqual([]);
   });
 
-  it('keeps accepting useFetch with a string URL inside a loop (useFetch is unchanged)', () => {
-    expect(
-      runRule(rule, `for (const id of ids) { useFetch('/api/items'); }`),
-    ).toEqual([]);
+  it('fires on useFetch with a constant URL inside a loop', () => {
+    const reports = runRule(
+      rule,
+      `for (const id of ids) { useFetch('/api/items'); }`,
+    );
+    expect(reports).toHaveLength(1);
+    expect(reports[0]!.message).toContain('useFetch');
+    expect(reports[0]!.message).toContain('call site');
   });
+
+  it.each([
+    [
+      'constant URL and constant options',
+      `ids.map((id) => useFetch('/api/items', { method: 'POST' }));`,
+    ],
+    [
+      'a constant explicit key that overrides a per-iteration URL',
+      `ids.map((id) => useFetch('/api/' + id, { key: 'items' }));`,
+    ],
+    [
+      'only headers changing (headers are not part of the key)',
+      `ids.map((id) => useFetch('/api/items', { headers: { 'x-id': id } }));`,
+    ],
+    [
+      'an options object declared outside the loop',
+      `const opts = { query: { a: 1 } }; for (const id of ids) { useFetch('/api/items', opts); }`,
+    ],
+    [
+      'a constant URL inside a while loop',
+      `while (more) { useFetch('/api/next'); }`,
+    ],
+    [
+      'a template URL with no expressions',
+      'ids.map((id) => useFetch(`/api/items`));',
+    ],
+  ])('fires on useFetch with %s', (_label, code) => {
+    expect(runRule(rule, code)).toHaveLength(1);
+  });
+
+  it.each([
+    [
+      'the URL (with constant options)',
+      `ids.map((id) => useFetch('/api/' + id, { method: 'GET' }));`,
+    ],
+    [
+      'the query',
+      `ids.map((id) => useFetch('/api/items', { query: { id } }));`,
+    ],
+    [
+      'the body',
+      `ids.map((id) => useFetch('/api/items', { method: 'POST', body: { id } }));`,
+    ],
+    [
+      'the params',
+      `ids.map((id) => useFetch('/api/items', { params: { id } }));`,
+    ],
+    [
+      'the baseURL',
+      `ids.map((id) => useFetch('/items', { baseURL: hostFor(id) }));`,
+    ],
+    [
+      'a query option with a string-literal name',
+      `ids.map((id) => useFetch('/api/items', { 'query': { id } }));`,
+    ],
+    [
+      'an explicit key',
+      'ids.map((id) => useFetch(`/api/items`, { key: `item-${id}` }));',
+    ],
+    [
+      'a computed option',
+      `ids.map((id) => useFetch('/api/items', { [field]: id }));`,
+    ],
+    [
+      'a spread of options',
+      `ids.map((id) => useFetch('/api/items', { ...optionsFor(id) }));`,
+    ],
+    [
+      'an options object built inside the loop body',
+      `for (const id of ids) { const o = { query: { id } }; useFetch('/api/items', o); }`,
+    ],
+    ['a URL getter', 'ids.map((id) => useFetch(() => `/api/${id}`));'],
+  ])(
+    'does NOT fire on useFetch when %s changes per iteration',
+    (_label, code) => {
+      expect(runRule(rule, code)).toEqual([]);
+    },
+  );
 
   it('does NOT fire on .map() with a named callback', () => {
     expect(runRule(rule, `ids.map(loadOne);`)).toEqual([]);
