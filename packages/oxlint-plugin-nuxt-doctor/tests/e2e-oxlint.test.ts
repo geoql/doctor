@@ -62,6 +62,28 @@ describe('e2e: real oxlint integration', () => {
     );
   });
 
+  it('useAsyncData-key-required-in-loop fires on useFetch with a constant URL in a loop', () => {
+    const result = runOxlint(
+      'data-fetching/useAsyncData-key-required-in-loop',
+      `for (const id of ids) { useFetch('/api/items'); }`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).toContain(
+      'nuxt-doctor(data-fetching/useAsyncData-key-required-in-loop)',
+    );
+  });
+
+  it('useAsyncData-key-required-in-loop does NOT fire on useFetch whose URL uses the loop variable', () => {
+    const result = runOxlint(
+      'data-fetching/useAsyncData-key-required-in-loop',
+      `for (const id of ids) { useFetch('/api/' + id); }`,
+    );
+    expect(hasStackOverflow(result)).toBe(false);
+    expect(firedRuleIds(result)).not.toContain(
+      'nuxt-doctor(data-fetching/useAsyncData-key-required-in-loop)',
+    );
+  });
+
   it('no-document-in-setup fires on document at top level', () => {
     const result = runOxlint(
       'hydration/no-document-in-setup',
