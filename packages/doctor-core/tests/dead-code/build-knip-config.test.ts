@@ -111,7 +111,18 @@ describe('buildKnipConfig', () => {
       'vite-plus',
       '@geoql/vue-doctor',
       '@geoql/nuxt-doctor',
+      'vue-tsc',
     ]);
+  });
+
+  it('never reports vue-tsc unused for Vue/Nuxt, since vue-tsc-in-devDeps requires it (#323)', async () => {
+    const nuxt = await buildKnipConfig(nuxtProjectInfo, baseConfig);
+    expect(nuxt.ignoreDependencies).toContain('vue-tsc');
+    const unknown = await buildKnipConfig(
+      { ...vueProjectInfo, framework: 'unknown' },
+      baseConfig,
+    );
+    expect(unknown.ignoreDependencies).not.toContain('vue-tsc');
   });
 
   it('ignores the example demo workspace for a Vue library', async () => {
@@ -291,6 +302,7 @@ describe('buildKnipConfig', () => {
       'vite-plus',
       '@geoql/vue-doctor',
       '@geoql/nuxt-doctor',
+      'vue-tsc',
     ]);
   });
 
@@ -493,6 +505,7 @@ describe('buildKnipConfig', () => {
       'vite-plus',
       '@geoql/vue-doctor',
       '@geoql/nuxt-doctor',
+      'vue-tsc',
     ]);
   });
 });
