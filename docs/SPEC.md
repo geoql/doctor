@@ -377,6 +377,14 @@ NEXT STEPS:
   • Run `@geoql/vue-doctor explain reactivity/no-destructure-reactive` for full context.
 ```
 
+The `FINDINGS` count is the number of listed findings. When some listed findings do not count toward the score (test/story files without `includeTestFiles`, or a config `surfaces.score` that differs from `surfaces.cli`), the line names both totals and the excluded test findings:
+
+```
+FINDINGS: 5 listed · 3 scored (1 error, 2 warn, 0 info) · 2 in test files, not scored or gated (use --include-test-files)
+```
+
+The JSON report carries the same totals as `counts: { listed, scored, unscoredTestFiles }` (additive, schema version stays `1`); SARIF carries them in `runs[0].properties.counts` and tags test-file results with `properties: { surface: 'test', scored }`. `--push` sends only the scored findings, so the pushed severity counts equal the pushed findings.
+
 **Why agent-first by default**: each finding is a structured block (`file:`, `code:`, `fix:`, `why:`, `docs:`). An LLM reading this can immediately produce the right edit. A human can read it too, just with less color. `--pretty` gives the colored emoji version for humans who prefer.
 
 ---
@@ -446,7 +454,7 @@ Because the dimensions partition the categories, each ruleId belongs to exactly 
 
 - Every JSON diagnostic carries `fingerprint` = sha256(ruleId · project-relative POSIX path · whitespace-collapsed source evidence). Evidence is the diagnostic's exact span when an end position is known, else its whole line, else the message. **Line numbers are never part of the fingerprint.**
 - Matching is count-based: group by `(file, ruleId)`, following git renames since the baseline's `sourceRevision` (an untracked recreation of a deleted tracked file counts as a rename). A group whose head count ≤ base count reports nothing new. A grown group reports exactly `head − base` new findings, chosen by fingerprint+message, fingerprint, message (closest git-mapped line), then message similarity / line distance.
-- **The score is unchanged**: it is computed over all current findings with the §7 formula. The `--fail-on` gate, severity counts, and listed diagnostics cover new findings only. `--push` sends the full current findings.
+- **The score is unchanged**: it is computed over all current findings with the §7 formula. The `--fail-on` gate, severity counts, and listed diagnostics cover new findings only. `--push` sends the full current scored findings.
 - The JSON report gains additive optional fields (schema version stays `1`): `diagnostics[].fingerprint`, `sourceRevision` (`git rev-parse HEAD`), `configHash` (hash of rules, include/exclude, inline-disable handling, enabled passes), and `baseline: { file, matchedCount, newCount, fixedCount }`.
 - Non-full `--scope` runs (§5) score all findings of the changed files with the §7 formula; `changed` / `lines` narrow only the gate, counts, and listed diagnostics. JSON gains additive `scope: { mode, base? }`; `changed` fills `baseline` with `file: "git:<base>"`. With `--baseline`, the saved report replaces the git base and its findings outside the scanned files are ignored.
 - `contextual` ownership: rules declare a `diffScope` (`RULE_DIFF_SCOPES`). `template-element` = innermost template element minus child elements; `function` = innermost enclosing function minus nested functions; `component` = the SFC, or the `defineComponent(...)` / `export default` in a script file; `file` = whole file. A diagnostic may carry internal `contextRanges` (react.doctor `contextNodes`) that override the rule scope. An unresolvable owner falls back to line matching. Ownership data is never serialized (JSON, SARIF, push).

@@ -1,6 +1,7 @@
 import { loadRuleDoc } from '../rule-docs.js';
 import { RULE_REGISTRY } from '../rule-registry.js';
 import type { Diagnostic, Severity } from '../types.js';
+import { findingCounts, type FindingCounts } from './counts.js';
 import { docsUrl } from './docs-url.js';
 import type { ReporterInput } from './types.js';
 
@@ -38,6 +39,7 @@ interface SarifResult {
   message: { text: string };
   locations: SarifLocation[];
   partialFingerprints: { primaryLocationLineHash: string };
+  properties?: { surface: 'test'; scored: boolean };
 }
 
 interface SarifLog {
@@ -54,6 +56,7 @@ interface SarifLog {
         };
       };
       results: SarifResult[];
+      properties: { counts: FindingCounts };
     },
   ];
 }
@@ -74,7 +77,11 @@ function toRelativeUri(filePath: string, rootDirectory: string): string {
   return filePath;
 }
 
-function toSarifResult(diag: Diagnostic, rootDirectory: string): SarifResult {
+function toSarifResult(
+  diag: Diagnostic,
+  rootDirectory: string,
+  includeTestFiles: boolean,
+): SarifResult {
   const region: SarifLocation['physicalLocation']['region'] = {
     startLine: diag.line,
     startColumn: diag.column,
@@ -97,6 +104,9 @@ function toSarifResult(diag: Diagnostic, rootDirectory: string): SarifResult {
     partialFingerprints: {
       primaryLocationLineHash: `${uri}:${diag.line}:${diag.ruleId}`,
     },
+    ...(diag.surface
+      ? { properties: { surface: diag.surface, scored: includeTestFiles } }
+      : {}),
   };
 }
 
@@ -130,7 +140,7 @@ export function sarifReport(input: ReporterInput): string {
   const ids = collectRuleIds(input.diagnostics);
   const rules = [...ids].sort().map(toRuleDescriptor);
   const results = input.diagnostics.map((d) =>
-    toSarifResult(d, input.rootDirectory),
+    toSarifResult(d, input.rootDirectory, input.includeTestFiles === true),
   );
   const log: SarifLog = {
     $schema: SARIF_SCHEMA,
@@ -146,6 +156,7 @@ export function sarifReport(input: ReporterInput): string {
           },
         },
         results,
+        properties: { counts: findingCounts(input) },
       },
     ],
   };

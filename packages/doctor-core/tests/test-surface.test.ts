@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { isTestSurfacePath } from '../src/test-surface.js';
+import {
+  isTestSurfacePath,
+  scoredSurfaceDiagnostics,
+} from '../src/test-surface.js';
 
 describe('isTestSurfacePath', () => {
   it.each([
@@ -46,5 +49,18 @@ describe('isTestSurfacePath', () => {
   it('treats an empty path as prod surface', () => {
     expect(isTestSurfacePath('')).toBe(false);
     expect(isTestSurfacePath('/')).toBe(false);
+  });
+});
+
+describe('scoredSurfaceDiagnostics', () => {
+  const prod = { id: 'p' };
+  const test = { id: 't', surface: 'test' as const };
+
+  it('drops test-surface findings by default', () => {
+    expect(scoredSurfaceDiagnostics([prod, test], false)).toEqual([prod]);
+  });
+
+  it('keeps every finding with includeTestFiles', () => {
+    expect(scoredSurfaceDiagnostics([prod, test], true)).toEqual([prod, test]);
   });
 });

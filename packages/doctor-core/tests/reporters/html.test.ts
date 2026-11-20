@@ -161,3 +161,21 @@ describe('htmlReport', () => {
     expect(html).toContain('/other/abs/path/A.vue:3:5');
   });
 });
+
+describe('htmlReport test-file findings (#343)', () => {
+  it('notes test-file findings that are not scored', () => {
+    const testDiag: Diagnostic = {
+      ...ERROR_DIAG,
+      file: '/x/src/a.test.ts',
+      surface: 'test',
+    };
+    const base = makeInput([WARN_DIAG, testDiag]);
+    const out = htmlReport({
+      ...base,
+      score: { ...base.score, totalFindings: 1, errorCount: 0 },
+    });
+    expect(out).toContain(
+      '2 findings · 0 error · 1 warn · 0 info · 1 in test files not scored or gated',
+    );
+  });
+});

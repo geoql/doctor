@@ -123,6 +123,8 @@ export {
 export { runCrossFilePass } from './nuxt/cross-file/run.js';
 export { OxlintOutputTooLarge, OxlintSpawnFailed } from './oxlint/errors.js';
 export { agentReport } from './reporters/agent.js';
+export { findingCounts, type FindingCounts } from './reporters/counts.js';
+export { isTestSurfacePath, scoredSurfaceDiagnostics } from './test-surface.js';
 export { docsUrl } from './reporters/docs-url.js';
 export { sarifReport } from './reporters/sarif.js';
 export {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vite-plus/test';
 import { sarifReport } from '../../src/reporters/sarif.js';
+import { scoreDiagnostics } from '../../src/score.js';
 import type { ReporterInput } from '../../src/reporters/types.js';
 import type { Diagnostic } from '../../src/types.js';
 
@@ -319,5 +320,41 @@ describe('sarifReport', () => {
     expect(parsed.runs[0]!.tool.driver.rules[0]!.fullDescription.text).toBe(
       'unknown/rule',
     );
+  });
+});
+
+describe('sarifReport test-file findings (#343)', () => {
+  const testDiag: Diagnostic = {
+    ...ERROR_DIAG,
+    file: '/repo/src/A.test.ts',
+    surface: 'test',
+  };
+  const input = (includeTestFiles?: boolean): ReporterInput => ({
+    ...makeInput([ERROR_DIAG, testDiag]),
+    score: scoreDiagnostics(
+      includeTestFiles ? [ERROR_DIAG, testDiag] : [ERROR_DIAG],
+    ),
+    ...(includeTestFiles !== undefined ? { includeTestFiles } : {}),
+  });
+
+  it('marks unscored test-file results and adds run-level counts', () => {
+    const run = JSON.parse(sarifReport(input())).runs[0];
+    expect(run.properties).toEqual({
+      counts: { listed: 2, scored: 1, unscoredTestFiles: 1 },
+    });
+    expect(run.results[0].properties).toBeUndefined();
+    expect(run.results[1].properties).toEqual({
+      surface: 'test',
+      scored: false,
+    });
+  });
+
+  it('marks test-file results as scored with includeTestFiles', () => {
+    const run = JSON.parse(sarifReport(input(true))).runs[0];
+    expect(run.properties.counts.unscoredTestFiles).toBe(0);
+    expect(run.results[1].properties).toEqual({
+      surface: 'test',
+      scored: true,
+    });
   });
 });

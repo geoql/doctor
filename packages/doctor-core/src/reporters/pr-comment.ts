@@ -1,5 +1,6 @@
 import { relative } from 'node:path';
 import type { Diagnostic } from '../types.js';
+import { findingCounts } from './counts.js';
 import { compareStrings } from './render.js';
 import type { ReporterInput } from './types.js';
 
@@ -71,10 +72,15 @@ export function prCommentReport(input: ReporterInput): string {
   }
 
   const topRule = (errors[0] ?? warnings[0]).ruleId;
+  const { unscoredTestFiles } = findingCounts(input);
+  const testNote =
+    unscoredTestFiles > 0
+      ? ` · ${unscoredTestFiles} in test files, not scored or gated (use \`--include-test-files\`)`
+      : '';
   const lines: string[] = [
     header,
     '',
-    `**${actionable} findings** (${errors.length} errors, ${warnings.length} warnings)`,
+    `**${actionable} findings** (${errors.length} errors, ${warnings.length} warnings)${testNote}`,
     ...section('Errors', errors, input.rootDirectory),
     ...section('Warnings', warnings, input.rootDirectory),
     '',

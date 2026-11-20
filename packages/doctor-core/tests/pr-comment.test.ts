@@ -201,3 +201,17 @@ describe('prCommentReport', () => {
     expect(idxB).toBeLessThan(idxA);
   });
 });
+
+describe('prCommentReport test-file findings (#343)', () => {
+  it('notes test-file findings that are not scored or gated', () => {
+    const out = prCommentReport(
+      makeInput([
+        diag({}),
+        diag({ file: '/proj/src/a.test.ts', surface: 'test' }),
+      ]),
+    );
+    expect(out).toContain(
+      '**2 findings** (2 errors, 0 warnings) · 1 in test files, not scored or gated (use `--include-test-files`)',
+    );
+  });
+});
