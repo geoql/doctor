@@ -52,12 +52,109 @@ describe('data-fetching/useAsyncData-key-required-in-loop', () => {
     expect(reports).toHaveLength(1);
   });
 
-  it('does NOT fire on useAsyncData with plain string literal key inside a loop', () => {
+  it('fires on useAsyncData with a constant string key inside a loop', () => {
     const reports = runRule(
       rule,
       `for (const id of ids) { useAsyncData('user-key', () => $fetch(id)); }`,
     );
-    expect(reports).toEqual([]);
+    expect(reports).toHaveLength(1);
+    expect(reports[0]!.message).toContain('loop variable');
+  });
+
+  it.each([
+    [
+      'a template literal with no expressions',
+      'ids.map((id) => useAsyncData(`users`, () => $fetch(id)));',
+    ],
+    [
+      'a const declared outside the loop',
+      `const KEY = 'k'; for (const id of ids) { useAsyncData(KEY, () => $fetch(id)); }`,
+    ],
+    [
+      'a non-computed member of an outer object',
+      `for (const id of ids) { useAsyncData(KEYS.main, () => $fetch(id)); }`,
+    ],
+    [
+      'a constant declared inside the loop body',
+      `for (const id of ids) { const k = 'x'; useAsyncData(k, () => $fetch(id)); }`,
+    ],
+    [
+      'a key that only uses the outer loop variable of a nested loop',
+      'for (const user of users) { ids.map((id) => useAsyncData(`u-${user.id}`, () => $fetch(id))); }',
+    ],
+    [
+      'a constant key inside a while loop',
+      `while (more) { useAsyncData('page', () => next()); }`,
+    ],
+  ])('fires on useAsyncData whose key is %s', (_label, code) => {
+    expect(runRule(rule, code)).toHaveLength(1);
+  });
+
+  it.each([
+    [
+      'a call that takes the loop variable',
+      `for (const id of ids) { useAsyncData(keyFor(id), () => $fetch(id)); }`,
+    ],
+    [
+      'a member of the loop variable',
+      `for (const user of users) { useAsyncData(user.id, () => $fetch(user.id)); }`,
+    ],
+    [
+      'a computed member indexed by the loop variable',
+      `for (const id of ids) { useAsyncData(KEYS[id], () => $fetch(id)); }`,
+    ],
+    [
+      'a destructured callback param',
+      'rows.map(({ id }) => useAsyncData(`u-${id}`, () => $fetch(id)));',
+    ],
+    [
+      'an array-destructured callback param with a hole',
+      'rows.map(([, id]) => useAsyncData(`u-${id}`, () => $fetch(id)));',
+    ],
+    [
+      'a defaulted callback param',
+      'ids.map((id = 0) => useAsyncData(`u-${id}`, () => $fetch(id)));',
+    ],
+    [
+      'a rest callback param',
+      'ids.map((...args) => useAsyncData(`u-${args[0]}`, () => $fetch(args)));',
+    ],
+    [
+      'an object-rest callback param',
+      'rows.map(({ ...row }) => useAsyncData(`u-${row.id}`, () => $fetch(row)));',
+    ],
+    [
+      'a loop variable assigned without a declaration',
+      'for (id of ids) { useAsyncData(`u-${id}`, () => $fetch(id)); }',
+    ],
+    [
+      'a const derived from the loop variable inside the body',
+      'for (const id of ids) { const k = `u-${id}`; useAsyncData(k, () => $fetch(id)); }',
+    ],
+    [
+      'an outer counter inside a while loop',
+      'while (page < last) { const k = `p-${page}`; useAsyncData(k, () => next()); page++; }',
+    ],
+    [
+      'a member-expression loop target',
+      'for (state.id of ids) { useAsyncData(`u-${state.id}`, () => $fetch(state.id)); }',
+    ],
+    [
+      'an expression shape the rule does not inspect',
+      `for (const id of ids) { useAsyncData(ok ? id : 'x', () => $fetch(id)); }`,
+    ],
+  ])('does NOT fire when the key is %s', (_label, code) => {
+    expect(runRule(rule, code)).toEqual([]);
+  });
+
+  it('keeps accepting useFetch with a string URL inside a loop (useFetch is unchanged)', () => {
+    expect(
+      runRule(rule, `for (const id of ids) { useFetch('/api/items'); }`),
+    ).toEqual([]);
+  });
+
+  it('does NOT fire on .map() with a named callback', () => {
+    expect(runRule(rule, `ids.map(loadOne);`)).toEqual([]);
   });
 
   it('does NOT fire on useAsyncData without key outside a loop', () => {

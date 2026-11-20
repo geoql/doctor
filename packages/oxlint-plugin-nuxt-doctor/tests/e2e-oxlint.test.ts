@@ -40,13 +40,13 @@ describe('e2e: real oxlint integration', () => {
     );
   });
 
-  it('useAsyncData-key-required-in-loop does NOT fire with plain string literal key', () => {
+  it('useAsyncData-key-required-in-loop fires with a constant string key', () => {
     const result = runOxlint(
       'data-fetching/useAsyncData-key-required-in-loop',
       `for (const id of ids) { useAsyncData('user-key', () => $fetch(id)); }`,
     );
     expect(hasStackOverflow(result)).toBe(false);
-    expect(firedRuleIds(result)).not.toContain(
+    expect(firedRuleIds(result)).toContain(
       'nuxt-doctor(data-fetching/useAsyncData-key-required-in-loop)',
     );
   });

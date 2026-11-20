@@ -56,12 +56,16 @@ const NUXT_FIXTURES: Readonly<Record<string, Fixture>> = {
   'data-fetching/useAsyncData-key-required-in-loop': {
     valid: [
       {
-        code: `for (const id of ids) { useAsyncData('user-key', () => $fetch(id)); }`,
+        code: 'for (const id of ids) { useAsyncData(`user-${id}`, () => $fetch(id)); }',
       },
     ],
     invalid: [
       {
         code: `for (const id of ids) { useAsyncData(() => $fetch(id)); }`,
+        errors: 1,
+      },
+      {
+        code: `for (const id of ids) { useAsyncData('user-key', () => $fetch(id)); }`,
         errors: 1,
       },
     ],
