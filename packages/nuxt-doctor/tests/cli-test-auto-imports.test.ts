@@ -91,6 +91,8 @@ describe('nuxt-doctor no-explicit-imports-of-auto-imported in test files (#325)'
       (d) => d.ruleId === 'vue-doctor/no-imports-from-vue-when-auto-imported',
     );
     expect(vueRule).toEqual([]);
+    const nuxtRule = report.diagnostics.filter((d) => d.ruleId === RULE);
+    expect(nuxtRule.map((d) => d.file)).toEqual(['app/composables/useX.ts']);
   });
 
   it('still flags app source in the same project', async () => {
