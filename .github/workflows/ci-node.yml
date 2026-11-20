@@ -39,3 +39,9 @@ jobs:
 
       - name: Build
         run: pnpm run build
+
+      - name: Typecheck packages
+        run: pnpm run typecheck
+
+      - name: Typecheck docs
+        run: pnpm --filter @geoql/doctor-docs typecheck
