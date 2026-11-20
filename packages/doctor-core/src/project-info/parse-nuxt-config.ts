@@ -115,6 +115,56 @@ function readHtmlLang(value: AstNode): string | undefined {
   return lang ? stringLiteral(lang) : undefined;
 }
 
+function isNoindexDirective(value: string): boolean {
+  return /\b(?:noindex|none)\b/i.test(value);
+}
+
+function headersSetNoindex(headers: AstNode): boolean {
+  if (headers.type !== 'ObjectExpression') return false;
+  for (const prop of headers.properties as AstNode[]) {
+    if (prop.type !== 'Property') continue;
+    const key = prop.key as AstNode;
+    const name =
+      key.type === 'Identifier' ? (key.name as string) : stringLiteral(key);
+    if (name?.toLowerCase() !== 'x-robots-tag') continue;
+    const value = stringLiteral(prop.value as AstNode);
+    if (value !== undefined && isNoindexDirective(value)) return true;
+  }
+  return false;
+}
+
+function ruleIsNoindex(rule: AstNode): boolean {
+  if (rule.type !== 'ObjectExpression') return false;
+  const robots = findEntry(rule, 'robots');
+  if (robots?.type === 'Literal') {
+    if (robots.value === false) return true;
+    if (typeof robots.value === 'string' && isNoindexDirective(robots.value))
+      return true;
+  }
+  const headers = findEntry(rule, 'headers');
+  return headers !== undefined && headersSetNoindex(headers);
+}
+
+/**
+ * Route patterns whose `routeRules` entry keeps the route out of search
+ * indexes: `robots: false`, a `noindex` robots string, or an `X-Robots-Tag`
+ * header carrying `noindex`. Synchronous so per-file SFC rules can call it.
+ */
+export function parseNoindexRoutePatterns(source: string): string[] {
+  const config = extractConfigObject(source);
+  if (!config) return [];
+  const routeRules = findEntry(config, 'routeRules');
+  if (routeRules?.type !== 'ObjectExpression') return [];
+  const patterns: string[] = [];
+  for (const prop of routeRules.properties as AstNode[]) {
+    if (prop.type !== 'Property') continue;
+    const pattern = stringLiteral(prop.key as AstNode);
+    if (pattern === undefined) continue;
+    if (ruleIsNoindex(prop.value as AstNode)) patterns.push(pattern);
+  }
+  return patterns;
+}
+
 export async function parseNuxtConfig(
   dir: string,
 ): Promise<NuxtConfigInfo | null> {

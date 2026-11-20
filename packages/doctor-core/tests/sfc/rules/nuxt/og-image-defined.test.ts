@@ -367,3 +367,85 @@ describe('og-image-defined — does not fire', () => {
     expect(diags).toHaveLength(0);
   });
 });
+
+describe('og-image-defined — skips pages that are not indexable (#321)', () => {
+  async function writeRootFile(
+    root: string,
+    rel: string,
+    content: string,
+  ): Promise<void> {
+    const parts = rel.split('/').slice(0, -1);
+    if (parts.length > 0) {
+      await mkdir(join(root, parts.join('/')), { recursive: true });
+    }
+    await writeFile(join(root, rel), content);
+  }
+
+  it('does not fire on an auth-gated page whose layout sets robots noindex (issue repro)', async () => {
+    const { ctx } = await pageFixture(
+      'app/pages/dashboard/index.vue',
+      "<script setup lang=\"ts\">\ndefinePageMeta({ layout: 'dashboard', middleware: 'auth', title: 'Overview' });\n</script>\n<template><div>x</div></template>",
+    );
+    await writeRootFile(
+      ctx.rootDirectory,
+      'app/layouts/dashboard.vue',
+      '<script setup lang="ts">\nuseSeoMeta({ robots: \'noindex, nofollow\' });\n</script>\n<template><slot /></template>',
+    );
+    expect(check(ctx).diagnostics).toHaveLength(0);
+  });
+
+  it('does not fire when the page itself sets robots noindex via useSeoMeta', async () => {
+    const { ctx } = await pageFixture(
+      'app/pages/embed.vue',
+      "<script setup lang=\"ts\">useSeoMeta({ title: 'Embed', robots: 'noindex' });</script>\n<template><div>x</div></template>",
+    );
+    expect(check(ctx).diagnostics).toHaveLength(0);
+  });
+
+  it('does not fire when the page sets a robots meta via useHead', async () => {
+    const { ctx } = await pageFixture(
+      'app/pages/embed.vue',
+      "<script setup lang=\"ts\">useHead({ meta: [{ name: 'robots', content: 'noindex' }] });</script>\n<template><div>x</div></template>",
+    );
+    expect(check(ctx).diagnostics).toHaveLength(0);
+  });
+
+  it('does not fire on a page behind an auth middleware alone', async () => {
+    const { ctx } = await pageFixture(
+      'app/pages/settings.vue',
+      '<script setup lang="ts">definePageMeta({ middleware: [\'auth\'] });</script>\n<template><div>x</div></template>',
+    );
+    expect(check(ctx).diagnostics).toHaveLength(0);
+  });
+
+  it('does not fire when routeRules mark the route robots: false', async () => {
+    const { ctx } = await pageFixture(
+      'app/pages/admin/users.vue',
+      '<script setup lang="ts">useSeoMeta({ title: \'Users\' });</script>\n<template><div>x</div></template>',
+    );
+    await writeRootFile(
+      ctx.rootDirectory,
+      'nuxt.config.ts',
+      "export default defineNuxtConfig({ routeRules: { '/admin/**': { robots: false } } });",
+    );
+    expect(check(ctx).diagnostics).toHaveLength(0);
+  });
+
+  it('still fires on a public page with a public layout and no matching routeRule', async () => {
+    const { ctx } = await pageFixture(
+      'app/pages/pricing.vue',
+      "<script setup lang=\"ts\">definePageMeta({ layout: 'marketing' });\nuseSeoMeta({ title: 'Pricing' });</script>\n<template><div>x</div></template>",
+    );
+    await writeRootFile(
+      ctx.rootDirectory,
+      'app/layouts/marketing.vue',
+      '<script setup lang="ts">useSeoMeta({ ogSiteName: \'X\' });</script>\n<template><slot /></template>',
+    );
+    await writeRootFile(
+      ctx.rootDirectory,
+      'nuxt.config.ts',
+      "export default defineNuxtConfig({ routeRules: { '/admin/**': { robots: false } } });",
+    );
+    expect(check(ctx).diagnostics).toHaveLength(1);
+  });
+});
