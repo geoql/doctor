@@ -509,8 +509,8 @@ importers:
         specifier: workspace:*
         version: link:../oxlint-plugin-vue-doctor
       cac:
-        specifier: ^7.1.0
-        version: 7.1.0
+        specifier: ^7.1.1
+        version: 7.1.1
       kolorist:
         specifier: ^1.8.0
         version: 1.8.0
@@ -627,8 +627,8 @@ importers:
         specifier: workspace:*
         version: link:../oxlint-plugin-vue-doctor
       cac:
-        specifier: ^7.1.0
-        version: 7.1.0
+        specifier: ^7.1.1
+        version: 7.1.1
       kolorist:
         specifier: ^1.8.0
         version: 1.8.0
@@ -4607,8 +4607,8 @@ packages:
       magicast:
         optional: true
 
-  cac@7.1.0:
-    resolution: {integrity: sha512-LMDU/U2yA4IPIY8KT0NsNPWEYZvAMkbgyspxJ6btJaYV+WMDOHAZCmB0lsTObiHaRS1V/ztKAl7+TSkTqXyeoA==}
+  cac@7.1.1:
+    resolution: {integrity: sha512-8zc+h51HxpodKsA7L4PpBNd+9qlrfuUcyUDE5a793BJfN4NZgwk7v9NmrY3ptZ+Sk0+ToigxSzkb47AsEgyizw==}
     engines: {node: '>=20.19.0'}
 
   cacheable@2.5.0:
@@ -8610,7 +8610,7 @@ snapshots:
     dependencies:
       '@modelcontextprotocol/client': 2.3.1
       '@modelcontextprotocol/server': 2.3.1
-      devframe: 1.2.6(@devframes/agentic@1.2.6)(cac@7.1.0)(srvx@1.0.6)
+      devframe: 1.2.6(@devframes/agentic@1.2.6)(cac@7.1.1)(srvx@1.0.6)
       h3: 2.0.7(crossws@0.4.15(srvx@1.0.6))
       pathe: 2.0.3
     transitivePeerDependencies:
@@ -8809,9 +8809,9 @@ snapshots:
     dependencies:
       '@devframes/agentic': 1.2.6(crossws@0.4.15(srvx@1.0.6))(devframe@1.2.6)
       ansis: 4.4.0
-      cac: 7.1.0
+      cac: 7.1.1
       chokidar: 5.0.0
-      devframe: 1.2.6(@devframes/agentic@1.2.6)(cac@7.1.0)(srvx@1.0.6)
+      devframe: 1.2.6(@devframes/agentic@1.2.6)(cac@7.1.1)(srvx@1.0.6)
       eslint: 10.15.0(jiti@2.7.0)(supports-color@10.2.2)
       jiti: 2.7.0
       tinyglobby: 0.2.17
@@ -12077,7 +12077,7 @@ snapshots:
       jiti: 2.7.0
       magicast: 0.5.5
 
-  cac@7.1.0: {}
+  cac@7.1.1: {}
 
   cacheable@2.5.0:
     dependencies:
@@ -12371,7 +12371,7 @@ snapshots:
 
   devalue@6.0.3: {}
 
-  devframe@1.2.6(@devframes/agentic@1.2.6)(cac@7.1.0)(srvx@1.0.6):
+  devframe@1.2.6(@devframes/agentic@1.2.6)(cac@7.1.1)(srvx@1.0.6):
     dependencies:
       crossws: 0.4.15(srvx@1.0.6)
       h3: 2.0.7(crossws@0.4.15(srvx@1.0.6))
@@ -12379,7 +12379,7 @@ snapshots:
       pathe: 2.0.3
     optionalDependencies:
       '@devframes/agentic': 1.2.6(crossws@0.4.15(srvx@1.0.6))(devframe@1.2.6)
-      cac: 7.1.0
+      cac: 7.1.1
     transitivePeerDependencies:
       - ocache
       - srvx
@@ -12822,7 +12822,7 @@ snapshots:
 
   fast-npm-meta@2.2.0:
     dependencies:
-      cac: 7.1.0
+      cac: 7.1.1
 
   fast-string-truncated-width@3.0.3: {}
 
@@ -15417,7 +15417,7 @@ snapshots:
     dependencies:
       '@vue/compiler-dom': 3.5.45
       '@vue/compiler-sfc': 3.5.45
-      cac: 7.1.0
+      cac: 7.1.1
       cross-spawn: 7.0.6
       jsonc-parser: 3.3.1
       picocolors: 1.1.1
@@ -16128,7 +16128,7 @@ snapshots:
 
   vite-node@6.0.0(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.3.13)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@6.0.3)(vue-tsc@3.3.14(typescript@6.0.3))(yaml@2.9.1):
     dependencies:
-      cac: 7.1.0
+      cac: 7.1.1
       es-module-lexer: 2.3.2
       obug: 2.2.1
       pathe: 2.0.3
