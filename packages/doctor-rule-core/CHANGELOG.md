@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.5.1...doctor-rule-core-v1.5.2) (2026-11-27)
+
+
+### Bug Fixes
+
+* **deps:** bump oxc-parser from 0.159.0 to 0.160.0 ([#367](https://github.com/geoql/doctor/issues/367)) ([41d7a09](https://github.com/geoql/doctor/commit/41d7a098b3a431a5547299c3332acd5498c7cb02))
+
 ## [1.5.1](https://github.com/geoql/doctor/compare/doctor-rule-core-v1.5.0...doctor-rule-core-v1.5.1) (2026-11-20)
 
 

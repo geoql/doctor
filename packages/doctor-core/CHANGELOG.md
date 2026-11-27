@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.10.3](https://github.com/geoql/doctor/compare/doctor-core-v1.10.2...doctor-core-v1.10.3) (2026-11-27)
+
+
+### Bug Fixes
+
+* **deps:** bump @vue/compiler-sfc from 3.5.45 to 3.5.46 ([#356](https://github.com/geoql/doctor/issues/356)) ([842988d](https://github.com/geoql/doctor/commit/842988d7553f8198a862d65774295eb831ce7920))
+* **deps:** bump oxc-parser from 0.159.0 to 0.160.0 ([#367](https://github.com/geoql/doctor/issues/367)) ([41d7a09](https://github.com/geoql/doctor/commit/41d7a098b3a431a5547299c3332acd5498c7cb02))
+* **deps:** bump oxlint from 1.94.0 to 1.95.0 ([#373](https://github.com/geoql/doctor/issues/373)) ([fb89296](https://github.com/geoql/doctor/commit/fb892960e0d8d2f846877d6bf7fc559d0b337f3c))
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @vue/compiler-core from 3.5.45 to 3.5.46 ([#355](https://github.com/geoql/doctor/issues/355)) ([2f949c4](https://github.com/geoql/doctor/commit/2f949c49d10d4b64a890886aca23ce9f860e7c51))
+* **deps-dev:** bump knip from 6.46.1 to 6.47.0 ([#354](https://github.com/geoql/doctor/issues/354)) ([fa66071](https://github.com/geoql/doctor/commit/fa660718f3175046db76224a0ad42a98a16c9903))
+* **deps-dev:** bump knip from 6.47.0 to 6.48.0 ([#364](https://github.com/geoql/doctor/issues/364)) ([9953dae](https://github.com/geoql/doctor/commit/9953dae64820fdd3aeb4fd81ee66d976779ef787))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/oxlint-plugin-nuxt-doctor bumped to 1.2.7
+    * @geoql/oxlint-plugin-vue-doctor bumped to 1.4.6
+
 ## [1.10.2](https://github.com/geoql/doctor/compare/doctor-core-v1.10.1...doctor-core-v1.10.2) (2026-11-20)
 
 
