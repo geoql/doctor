@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.21](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.20...doctor-language-server-v0.1.21) (2026-11-27)
+
+
+### Bug Fixes
+
+* **deps:** bump vscode-languageserver from 11.0.0 to 11.0.1 ([#362](https://github.com/geoql/doctor/issues/362)) ([4d0c90e](https://github.com/geoql/doctor/commit/4d0c90ee9e68e6c999a4048349c9d4fd50ba967b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-core bumped to 1.10.3
+
 ## [0.1.20](https://github.com/geoql/doctor/compare/doctor-language-server-v0.1.19...doctor-language-server-v0.1.20) (2026-11-20)
 
 

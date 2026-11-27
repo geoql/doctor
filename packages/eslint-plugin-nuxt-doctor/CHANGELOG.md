@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.12](https://github.com/geoql/doctor/compare/eslint-plugin-nuxt-doctor-v1.2.11...eslint-plugin-nuxt-doctor-v1.2.12) (2026-11-27)
+
+
+### Miscellaneous
+
+* **deps-dev:** bump @typescript-eslint/parser from 8.73.0 to 8.74.0 ([#370](https://github.com/geoql/doctor/issues/370)) ([1733f10](https://github.com/geoql/doctor/commit/1733f10174de0ad69f3ee1945e9c60dfc2693541))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @geoql/doctor-rule-core bumped to 1.5.2
+    * @geoql/eslint-plugin-vue-doctor bumped to 1.2.12
+  * devDependencies
+    * @geoql/doctor-core bumped to 1.10.3
+
 ## [1.2.11](https://github.com/geoql/doctor/compare/eslint-plugin-nuxt-doctor-v1.2.10...eslint-plugin-nuxt-doctor-v1.2.11) (2026-11-20)
 
 
