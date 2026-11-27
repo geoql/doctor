@@ -31,7 +31,7 @@
     "@nuxtjs/robots": "^7.1.0",
     "@nuxtjs/sitemap": "^9.1.0",
     "@openpanel/nuxt": "^0.4.4",
-    "@vueuse/core": "^15.0.0",
+    "@vueuse/core": "^15.1.0",
     "@vueuse/nuxt": "^15.1.0",
     "better-sqlite3": "^13.2.0",
     "class-variance-authority": "^0.7.1",
