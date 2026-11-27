@@ -230,8 +230,8 @@ importers:
         specifier: ^1.2.158
         version: 1.2.158
       '@lucide/vue':
-        specifier: ^1.77.0
-        version: 1.77.0(vue@3.5.46(typescript@6.0.3))
+        specifier: ^1.78.0
+        version: 1.78.0(vue@3.5.46(typescript@6.0.3))
       '@nuxt/content':
         specifier: ^3.17.0
         version: 3.17.0(@nuxt/schema@4.7.0)(@oxc-project/types@0.159.0)(@valibot/to-json-schema@1.8.0(valibot@1.5.0(typescript@6.0.3)))(@voidzero-dev/vite-plus-core@8.3.8000(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.3.13)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(typescript@6.0.3)(vue-tsc@3.3.14(typescript@6.0.3))(yaml@2.9.1))(better-sqlite3@13.2.0)(confbox@0.3.1)(dotenv@17.4.2)(esbuild@0.28.2)(giget@3.3.1)(magic-string@1.4.5)(magicast@0.5.5)(mlly@1.8.2)(oxc-parser@0.153.0)(rolldown@1.2.19)(rollup@4.68.8)(supports-color@10.2.2)(valibot@1.5.0(typescript@6.0.3))
@@ -1553,8 +1553,8 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@lucide/vue@1.77.0':
-    resolution: {integrity: sha512-B+okr/d8qC2imLzNPJ5tW8Nf7uKC19DgiOafxU0bOMfLnkd5Tkss4GW640+s5FierTJjgl99LpuO40u+yni0qQ==}
+  '@lucide/vue@1.78.0':
+    resolution: {integrity: sha512-yIh9Fv8cuPRuUmo6fTBlhWfUdl8v9IEnV9Fge29d79WEpbWOMu5XfcwAveLfjFe47HfAfNcJF10sXAzwaZfWRg==}
     peerDependencies:
       vue: '>=3.0.1'
 
@@ -9209,7 +9209,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@lucide/vue@1.77.0(vue@3.5.46(typescript@6.0.3))':
+  '@lucide/vue@1.78.0(vue@3.5.46(typescript@6.0.3))':
     dependencies:
       vue: 3.5.46(typescript@6.0.3)
 
